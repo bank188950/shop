@@ -1,75 +1,90 @@
-# Customer storefront design
+# หน้าร้านลูกค้า — สถานะการพัฒนาปัจจุบัน
 
-## Goal
+## ขอบเขต
 
-Create a trustworthy, warm online storefront for **ลูกชิ้นล้อเลื่อน**. It should feel like a clean local favourite: freshly made food, clear delivery windows, and an effortless path from product discovery to checkout.
+เอกสารนี้บันทึกหน้าร้านสำหรับลูกค้าตามที่พัฒนาอยู่ในปัจจุบัน เส้นทางคือ `/` ใน `frontend/` และสร้างด้วย React, Tailwind CSS, Zustand, Lucide icons และ Swiper
 
-The approved visual reference is `docs/Generated image 1.png`. Use it as a composition reference, not as an image to embed or crop. The intended customer route is `/` in `frontend/`.
+หน้านี้นำเสนอ **ลูกชิ้นล้อเลื่อน** ในบรรยากาศอบอุ่น เน้นอาหารเป็นหลัก เนื้อหาถูกจำกัดความกว้างสูงสุด 1488px มีระยะห่างด้านข้าง 24px บนจอใหญ่ และ 14px บนจอเล็ก ส่วน footer และแถบประกาศขยายเต็มความกว้างของ viewport
 
-## Brand tokens
+## Visual token
 
-| Token | Value | Role |
+| Token | ค่า | การใช้งานปัจจุบัน |
 | --- | --- | --- |
-| `primary` | `#2E7D32` | Primary CTAs, header accents, selected state, cart |
-| `secondary` | `#E3F2FD` | Morning delivery surface |
-| `tertiary` | `#FFF3E0` | Afternoon delivery surface |
-| `neutral` | `#455A64` | Secondary text and utility information |
-| `ink` | `#183326` | High-contrast headings and body text |
-| `canvas` | `#FFFDF9` | Page background |
+| `brand` | `#2E7D32` | สีเขียวหลัก, หัวตาราง, control ที่เลือก และสถานะสต็อก |
+| `brand-deep` | `#1F6E31` | แถบประกาศและตะกร้าลอย |
+| `brand-dark` | `#236527` | สถานะ hover ของ control สินค้าหลัก |
+| `canvas` | `#FFFDF9` | พื้นหลังหน้าและพื้นผิว header |
+| `ink` | `#183326` | สีข้อความหลัก |
+| `muted` | `#455A64` | ข้อความรองและข้อมูลประกอบ |
+| `morning` | `#E3F2FD` | การ์ดช่วงเช้า |
+| `afternoon` | `#FFF3E0` | การ์ดช่วงบ่าย |
+| `brown` | `#76503A` | ปุ่มเข้าสู่ระบบและปุ่มสรุปรายการสั่งซื้อ |
 
-Use the primary colour sparingly but decisively. Keep large surfaces warm white, use secondary/tertiary only to distinguish delivery options, and never use colour as the only status signal.
+หัวข้อใช้ฟอนต์ Kanit และข้อความประกอบใช้ Sarabun หน้าร้านใช้ขนาดตัวอักษรตั้งแต่ 12px ถึงหัวข้อ section แบบ responsive ที่ 32–48px
 
-## Page hierarchy
+## โครงสร้างหน้า
 
-1. **Header:** brand lockup, cart count, and login action only. Keep it visually light on every viewport.
-2. **Announcement bar:** a CSS ticker-style strip, not a `<marquee>` element. Keep the megaphone icon fixed at the far left, animate recent-order details through the remaining space, provide no action button, and stop the motion for `prefers-reduced-motion`.
-3. **Hero:** a two-slide, full-width image carousel: the green food truck and a fried-snacks-and-drinks scene. It uses a 1000ms fade transition, touch swipe, keyboard navigation, visible pagination dots, and a seven-second autoplay that stops for `prefers-reduced-motion`. The image height is 520px on desktop and 260px on mobile. Do not place copy, proof points, or a CTA over the images.
-4. **Recent orders:** immediately under the hero, show a full hero-width `รายการสั่งซื้อ` section with a table icon. The table header uses primary green with white text. The columns are nickname, ordered items, delivery period, order time, and payment status. Morning uses blue text, afternoon uses orange text; unpaid and paid use pastel red and green badges respectively. Use 12 sample orders, show 5 orders per page, and provide an accessible paginator below the table.
-5. **Delivery picker:** use a clock icon with the sole heading `เลือกช่วงเวลาจัดส่ง`, then show two equally prominent cards. Its content aligns directly with the hero width, with no coloured section surface. Use the labels `ช่วงเช้า` and `ช่วงบ่าย` without colour descriptors; the text within both cards is large and readable. Morning is `secondary`; afternoon is `tertiary`. A selected card has a large coloured ring and glow matching its card (blue for morning, orange for afternoon), plus a 56px checkmark control with a 24px tick; selected state also uses `aria-pressed`, not colour alone.
-6. **Menu:** use a chef-hat icon with `เลือกเมนูที่ชอบ` as the sole menu heading; show only three category pills—`ทั้งหมด`, `ลูกชิ้นทอด`, and `เครื่องดื่ม`—with `ทั้งหมด` active initially; use a two-column mobile / four-column desktop product grid.
-7. **Sticky cart:** always reachable, shows item count and total, and disables checkout until an item exists. Its order-summary button uses a brown surface with white text; the disabled state retains this treatment at reduced contrast.
-8. **Footer:** a full-width green footer with a white transparent logo mark and brand name, `จัดส่งช่วงเช้า (08:00–11:00)`, `จัดส่งช่วงบ่าย (14:00–17:00)`, and `© 2024 ลูกชิ้นล้อเลื่อน - Fresh Meatballs Daily`.
+1. **Header** — header สี `canvas` พร้อมเส้นขอบด้านล่าง สูง 92px บนจอใหญ่และ 74px บนจอเล็ก Brand lockup ประกอบด้วยโลโก้ทรงกลม, `ลูกชิ้นล้อเลื่อน` และคำโปรย `อาหารสดใหม่จากกระทะทุกวัน` ด้านขวามีไอคอนตะกร้าสีเขียวพร้อม badge จำนวนรายการเมื่อมีสินค้า และปุ่ม `เข้าสู่ระบบ` สีน้ำตาล
+2. **Announcement bar** — ticker สีเขียวเข้มสูง 56px พร้อมไอคอนโทรโข่งที่ตรึงตำแหน่ง แสดงข้อความคำสั่งซื้อล่าสุด 3 รายการด้วย CSS animation ความยาว 30 วินาที โดยทำซ้ำข้อความเพื่อให้เลื่อนต่อเนื่อง และมีข้อความเวอร์ชันสำหรับ screen reader การเคลื่อนไหวจะหยุดเมื่อเปิด `prefers-reduced-motion`
+3. **Hero** — Swiper carousel แบบมุมโค้ง 2 สไลด์ ใช้ `hero-truck-clean-grille.png` และ `hero-fried-snacks-drinks.png` รูปสูง 520px บนจอใหญ่ และ 260px บนจอเล็ก เปลี่ยนภาพแบบ fade 1000ms, วนลูป, รองรับ keyboard และ touch swipe, แสดง pagination dot และเล่นอัตโนมัติทุก 7 วินาที เว้นแต่ผู้ใช้เลือก reduced motion ไม่มีข้อความหรือ call to action วางทับภาพ
+4. **Recent orders** — เว้นระยะใต้ hero 40px บน desktop / 28px บนจอเล็ก มีไอคอนตารางและหัวข้อ `รายการสั่งซื้อ` ตามด้วยข้อมูลตัวอย่าง 12 รายการ ตารางใช้หัวสีเขียว มีคอลัมน์ `ชื่อเล่น`, `รายการที่สั่ง`, `ช่วงเวลา`, `สั่งเมื่อ` และ `สถานะ` ตารางมีความกว้างเนื้อหาขั้นต่ำ 900px และเลื่อนแนวนอนบนจอแคบ แสดงครั้งละ 5 รายการ รวม 3 หน้า พร้อมปุ่มก่อนหน้า/ถัดไปและปุ่มเลขหน้า
+5. **Delivery picker** — ใช้ไอคอนนาฬิกาและหัวข้อ `เลือกช่วงเวลาจัดส่ง` แสดง `ช่วงเช้า` (08:00 – 11:00) และ `ช่วงบ่าย` (14:00 – 17:00) พร้อมไอคอนดวงอาทิตย์และป้ายรอบจัดส่ง การ์ดเรียง 2 คอลัมน์เหนือ small breakpoint และ 1 คอลัมน์บนจอเล็ก แต่ละการ์ดสูงอย่างน้อย 202px ค่าเริ่มต้นคือช่วงเช้า การ์ดที่เลือกมี `aria-pressed`, control เครื่องหมายถูกขนาด 56px, ring และ glow ตามสีการ์ด
+6. **Menu** — ใช้ไอคอนหมวกเชฟและหัวข้อ `เลือกเมนูที่ชอบ` มีแท็บ `ทั้งหมด`, `ลูกชิ้นทอด` และ `เครื่องดื่ม` โดย `ทั้งหมด` ถูกเลือกตอนเริ่มต้น การเลือกแท็บเปลี่ยนหน้าตาและค่า `aria-selected`; โค้ดปัจจุบันยังแสดงสินค้า 4 รายการเหมือนเดิมในทุกแท็บ Grid เป็น 4 คอลัมน์บนจอใหญ่ และ 2 คอลัมน์เมื่อความกว้างต่ำกว่า breakpoint `lg`
+7. **Sticky cart** — แถบลอยสีเขียวเข้มใกล้ขอบล่างของ viewport กว้างสูงสุด 1440px แสดงจำนวนสินค้าและยอดรวม พร้อมปุ่ม `ดูรายการสั่งซื้อ` สีน้ำตาล ปุ่มจะ disabled เมื่อตะกร้าว่างโดยยังคงพื้นผิวสีน้ำตาลแบบลด contrast ตะกร้าที่ persist จะเริ่มต้นด้วยไส้กรอกอีสานย่าง 1 รายการ
+8. **Footer** — footer สีเขียวเข้มเต็มความกว้าง จัดเนื้อหากึ่งกลาง แสดงโลโก้สีขาว ชื่อแบรนด์ ลิงก์ช่วงเวลาจัดส่ง และ `© 2026 ลูกชิ้นล้อเลื่อน - By Tawatchai`
 
-## Components and interaction
+## เนื้อหาและสถานะ
 
-### Header and hero
+### ตารางคำสั่งซื้อล่าสุด
 
-- Use `docs/logo.png` as the logo asset. Keep it circular and never stretch it.
-- Header remains visually light; cart icons use primary green, while the login action uses a brown surface with white text.
-- The hero is image-only, with no shadow or coloured surface behind it; use descriptive alt text and do not place a text panel or CTA on it.
-- Do not place generated or rasterized text in image assets.
+- ช่วงเช้าใช้ข้อความสีน้ำเงิน และช่วงบ่ายใช้ข้อความสีส้ม
+- `รอชำระเงิน` แสดงเป็น badge สีแดงพาสเทล ส่วน `จ่ายแล้ว` แสดงเป็น badge สีเขียวพาสเทล
+- ปุ่มแบ่งหน้าเป็น control วงกลมขนาด 44px สถานะ disabled ลดความทึบลง
 
-### Delivery picker
+### การ์ดช่วงเวลาจัดส่ง
 
-- Show `08:00–11:00` for the morning window and `14:00–17:00` for afternoon.
-- Each entire card is a button with a 44px-or-larger actionable area.
-- Switching the selection must update the visible selected state without losing keyboard focus.
+- การ์ดช่วงเช้าใช้เส้นขอบและไอคอนสีน้ำเงิน การ์ดช่วงบ่ายใช้สีส้ม
+- เครื่องหมายถูกของการ์ดที่เลือกยังคงอยู่ใน layout แต่ซ่อนด้วย opacity เมื่อไม่ได้เลือก
+- การคลิกการ์ดเปลี่ยนเฉพาะ state ของช่วงเวลาจัดส่ง ไม่เปลี่ยนรายการสินค้าหรือตะกร้า
 
-### Product cards
+### แค็ตตาล็อกสินค้า
 
-- Each product card must use its own image file, never a CSS sprite or a shared background image with different positions.
-- Show badge, name, stock label, price, and an accessible `+` action. The four initial products are: ไส้กรอกอีสานย่าง (เหลือ 25 ไม้), ลูกชิ้นเนื้อเอ็น (เหลือ 16 ไม้), น้ำเก๊กฮวยเย็น (เหลือ 5 แก้ว/ใกล้หมด), and ลูกชิ้นปลาระเบิด (สินค้าหมด/หมดแล้ว).
-- Low-stock labels/badges use red. Sold-out cards are visibly desaturated and muted, and their add control is disabled with a clear unavailable icon.
-- Names should stay within two lines; reserve space so price rows align.
-- Product image crop should not obscure the food. Available cards lift subtly on hover; pressed controls scale briefly rather than flashing.
-- On mobile show two columns; do not reduce text below a comfortably readable size merely to preserve four columns.
+| สินค้า | ราคา | ป้ายสต็อก | Badge | สถานะ |
+| --- | ---: | --- | --- | --- |
+| ไส้กรอกอีสานย่าง | ฿15 | เหลือ 25 ไม้ | มีสินค้า | มีสินค้า |
+| ลูกชิ้นเนื้อเอ็น | ฿20 | เหลือ 16 ไม้ | มีสินค้า | มีสินค้า |
+| น้ำเก๊กฮวยเย็น | ฿25 | เหลือ 5 แก้ว | ใกล้หมด | สต็อกน้อย |
+| ลูกชิ้นปลาระเบิด | ฿15 | สินค้าหมด | หมดแล้ว | สินค้าหมด |
 
-### Cart
+สินค้าแต่ละรายการมีไฟล์ภาพของตนเอง การ์ดสินค้าที่พร้อมขายยกตัวและมีเงาเล็กน้อยเมื่อ hover ส่วนปุ่มบวกจะย่อ/ขยายเมื่อกด ป้ายและข้อความสต็อกน้อยเป็นสีแดง การ์ดสินค้าหมดใช้พื้นผิวและข้อความสีหม่น ภาพลดสีและความทึบ พร้อมปุ่ม unavailable สีเทาที่ disabled และใช้ไอคอน `Ban` ปุ่มเพิ่มสินค้าขนาด 42px บนจอใหญ่ และ 36px บนจอเล็ก
 
-- Aggregate repeated additions into product quantity rather than adding duplicate visual rows.
-- The total must be computed from product price × quantity.
-- The floating bar stays above mobile browser chrome and has a clear disabled empty state.
+### พฤติกรรมตะกร้า
 
-## Type, spacing, motion, accessibility
+- ข้อมูลตะกร้าถูก persist ใน browser storage ด้วยคีย์ `lookchin-cart-v2`
+- การเพิ่มสินค้าเดิมจะเพิ่ม quantity แทนการสร้างแถวใหม่ในตะกร้า
+- ยอดรวมคำนวณจากราคาของสินค้าแต่ละรายการคูณ quantity
+- ปุ่มสรุปรายการสั่งซื้อยังไม่มี navigation หรือ checkout handler
 
-- Use loopless `Kanit` for headings and looped `Sarabun` for all supporting/detail text. The customer storefront uses only four accessible type-size tokens: 16px, 18px, 20px, and a responsive 32–48px display size.
-- Build with an 8px spacing rhythm; use generous whitespace rather than extra card borders.
-- Motion is subtle: 120–160ms for buttons/cards. Respect `prefers-reduced-motion` when adding nonessential animation.
-- Normal text needs 4.5:1 contrast. Every image has useful alt text. Every icon-only action has an `aria-label`.
-- Test at 320px, 768px, and desktop widths. Do not cause horizontal page scrolling.
+## การโต้ตอบ การเคลื่อนไหว และการเข้าถึง
 
-## Assets
+- ปุ่มตะกร้าใน header, ปุ่มเพิ่มสินค้า และปุ่มแบ่งหน้าตาราง มี accessible label เมื่อเป็นปุ่มไอคอน
+- การกดตะกร้าใน header เรียก `scrollIntoView` ไปยัง element ของตะกร้าแบบ fixed
+- keyboard focus ส่วนกลางใช้เส้นขอบสีเขียวหลักขนาด 3px และมี offset 3px
+- ปุ่มและการ์ดใช้ transition timing เริ่มต้นของ Tailwind ปุ่มสินค้าที่พร้อมขายมี active scale effect
+- การ scroll แบบ smooth และ animation ของ announcement จะถูกปิดหรือลดลงเมื่อเปิด `prefers-reduced-motion`; hero autoplay ก็ถูกปิดเช่นกัน
+- Layout กำหนดความกว้าง `body` ขั้นต่ำ 320px ตารางคำสั่งซื้อและแถว category สามารถเลื่อนแนวนอนได้เมื่อจำเป็น
 
-- Brand source: `docs/logo.png`; the footer uses the white transparent variant `frontend/public/images/logo-white.png`.
-- Composition reference: `docs/Generated image 1.png`
-- Runtime assets belong in `frontend/public/images/` and must use filenames that describe their purpose. The customer hero uses `hero-truck-clean-grille.png`, with a centred three-quarter truck angle, a sloped canopy that covers above the cab, clean rectangular grille/headlights with no badge or round marks, and no license plate; its second slide is `hero-fried-snacks-drinks.png`, showing fried meatballs, fried sausage, iced cocoa, and brewed coffee with no vehicle or embedded text.
+## Runtime asset
+
+สินทรัพย์ของหน้าลูกค้าปัจจุบันถูกเสิร์ฟจาก `frontend/public/images/`:
+
+- `logo.png` — โลโก้ทรงกลมใน header
+- `logo-white.png` — โลโก้ใน footer
+- `hero-truck-clean-grille.png` — สไลด์ hero รถขายอาหารสีเขียว
+- `hero-fried-snacks-drinks.png` — สไลด์ hero ของทอดและเครื่องดื่ม
+- `product-isan-sausage.png`
+- `product-beef-tendon.png`
+- `product-chrysanthemum.png`
+- `product-fish-balls.png`
+
+มีไฟล์ `product-pork-premium.png` อยู่ใน public images แต่หน้าลูกค้าปัจจุบันยังไม่ได้ใช้งาน

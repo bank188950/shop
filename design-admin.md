@@ -1,38 +1,38 @@
-# Admin design
+# การออกแบบส่วนผู้ดูแลระบบ
 
-## Status
+## สถานะ
 
-This is the baseline specification for the future `/admin` implementation. There is no approved admin visual reference yet; do not infer a customer-storefront layout for operational screens.
+เอกสารนี้เป็นข้อกำหนดตั้งต้นสำหรับการพัฒนา `/admin` ในอนาคต ขณะนี้ยังไม่มีภาพอ้างอิงสำหรับหน้าผู้ดูแลที่ผ่านการอนุมัติ จึงห้ามอนุมานหรือใช้ layout ของหน้าร้านลูกค้ากับหน้าปฏิบัติการ
 
-## Direction
+## แนวทาง
 
-The admin should be calm, compact, and operationally focused. It supports stock, order, delivery-window, and payment workflows—not brand storytelling.
+ส่วนผู้ดูแลควรดูสงบ กระชับ และเน้นงานปฏิบัติการ รองรับ workflow ด้านสต็อก คำสั่งซื้อ ช่วงเวลาจัดส่ง และการชำระเงิน ไม่ใช่พื้นที่สำหรับการเล่าเรื่องแบรนด์
 
-## Tokens
+## Token
 
-Use the shared brand tokens from `design-user.md`:
+ใช้ brand token ร่วมจาก `design-user.md`:
 
-- `primary #2E7D32` for navigation, active state, and success.
-- `secondary #E3F2FD` for informational/low-priority surfaces.
-- `tertiary #FFF3E0` for pending/attention surfaces.
-- `neutral #455A64` for supporting text and data labels.
+- `primary #2E7D32` สำหรับ navigation, active state และสถานะสำเร็จ
+- `secondary #E3F2FD` สำหรับพื้นผิวข้อมูลหรือรายการลำดับความสำคัญต่ำ
+- `tertiary #FFF3E0` สำหรับพื้นผิวสถานะรอดำเนินการ/ต้องให้ความสนใจ
+- `neutral #455A64` สำหรับข้อความประกอบและป้ายข้อมูล
 
-Use white content surfaces on a very pale neutral background. Reserve red for destructive/error status and do not map operational status through colour alone.
+ใช้พื้นผิวเนื้อหาสีขาวบนพื้นหลัง neutral ที่อ่อนมาก สงวนสีแดงไว้สำหรับสถานะทำลายข้อมูล/error และห้ามสื่อสถานะงานปฏิบัติการด้วยสีเพียงอย่างเดียว
 
-## Planned structure
+## โครงสร้างที่วางแผนไว้
 
-- Desktop: persistent left sidebar, page title, then concise KPI cards followed by filters and data tables.
-- Mobile: compact navigation control, stacked filters, and horizontally scrollable data tables with clear row actions.
-- Data views must make order status, payment status, stock count, and delivery window legible at a glance.
-- Use tables for operational records; avoid decorative charts unless they answer a concrete operational question.
+- Desktop: มี sidebar ด้านซ้ายแบบคงที่ ตามด้วยชื่อหน้า KPI card แบบกระชับ filter และ data table
+- Mobile: ใช้ navigation control แบบกะทัดรัด, filter เรียงซ้อน และ data table ที่เลื่อนแนวนอนได้พร้อม row action ชัดเจน
+- มุมมองข้อมูลต้องทำให้สถานะคำสั่งซื้อ สถานะการชำระเงิน จำนวนสต็อก และช่วงเวลาจัดส่ง อ่านได้ในทันที
+- ใช้ตารางสำหรับข้อมูลปฏิบัติการ หลีกเลี่ยงกราฟตกแต่งที่ไม่ตอบคำถามด้านการทำงานโดยตรง
 
-## Interaction and accessibility
+## การโต้ตอบและการเข้าถึง
 
-- Filter controls, buttons, and status chips must have text labels.
-- Confirm destructive operations; expose loading, empty, and error states.
-- Keep touch targets at least 44px where possible and maintain visible keyboard focus.
-- Use tabular figures for prices, quantities, and totals when the chosen typeface supports them.
+- Filter, ปุ่ม และ status chip ต้องมีข้อความกำกับ
+- ยืนยันก่อนทำรายการที่ทำลายข้อมูล และแสดงสถานะ loading, empty และ error
+- รักษาพื้นที่กดอย่างน้อย 44px เมื่อทำได้ และต้องมี keyboard focus ที่มองเห็นชัด
+- ใช้ตัวเลขแบบ tabular สำหรับราคา จำนวน และยอดรวมเมื่อฟอนต์ที่เลือกสนับสนุน
 
-## Before implementation
+## ก่อนเริ่มพัฒนา
 
-Obtain or create an approved admin screen reference and expand this document with: route-by-route requirements, table columns, status vocabulary, user roles, and empty/loading/error states.
+ต้องได้รับหรือจัดทำภาพอ้างอิงหน้าผู้ดูแลที่ผ่านการอนุมัติก่อน จากนั้นขยายเอกสารนี้ด้วยข้อกำหนดราย route, คอลัมน์ตาราง, คำศัพท์สถานะ, บทบาทผู้ใช้ และสถานะ empty/loading/error

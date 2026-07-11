@@ -1,29 +1,33 @@
-# Shop workspace instructions
+# แนวทางการทำงานใน Shop workspace
 
-## Scope and source of truth
+## ขอบเขตและแหล่งอ้างอิงหลัก
 
-- This workspace contains `frontend/`, `backend/`, and `database/`.
-- Read this file first, then read the closest applicable instruction file before changing code.
-- UI work must follow `design-user.md` for customer routes and `design-admin.md` for admin routes. If an implementation conflicts with a design document, update the design document in the same change or ask for direction.
-- `docs/` is the source for approved visual references and brand assets. Do not treat screenshots as reusable UI images; recreate their layout with semantic HTML/CSS and use real, purpose-made assets.
+- Workspace นี้ประกอบด้วย `frontend/`, `backend/` และ `database/`
+- อ่านไฟล์นี้ก่อน จากนั้นอ่านไฟล์คำแนะนำที่อยู่ใกล้กับโค้ดที่จะเปลี่ยนมากที่สุดก่อนแก้ไข
+- งาน UI สำหรับเส้นทางลูกค้าต้องอ้างอิง `design-user.md` และเส้นทางผู้ดูแลระบบต้องอ้างอิง `design-admin.md` หากโค้ดขัดกับเอกสารออกแบบ ให้ปรับเอกสารในการเปลี่ยนแปลงเดียวกัน หรือขอคำแนะนำก่อนดำเนินการ
 
 ## Frontend
 
-- Keep the React + Vite + TypeScript architecture in `frontend/`; do not introduce a framework migration for feature work.
-- Reuse `lucide-react` for interface icons. Do not add unlabelled icon-only controls except where an accessible label is present.
-- Make customer pages responsive from 320px wide upward. Preserve keyboard focus states, minimum 44px touch targets where practical, and readable Thai copy.
-- Keep UI state functional. Buttons that add products must update the cart; delivery and category controls must expose their selected state.
-- Place customer features in `frontend/src/features/customer/`, admin features in `frontend/src/features/admin/`, reusable layout in `frontend/src/layouts/`, and global visual tokens in `frontend/src/styles/index.css`.
-- Before handing off frontend changes, run `npm run build` from `frontend/` and fix real compilation failures.
+- คงสถาปัตยกรรม React + Vite + TypeScript ไว้ใน `frontend/` ห้ามย้าย framework เพื่อทำฟีเจอร์
+- ใช้ `lucide-react` ซ้ำสำหรับไอคอน UI ห้ามเพิ่มปุ่มที่มีเฉพาะไอคอนโดยไม่มี accessible label เว้นแต่มีป้ายกำกับเพื่อการเข้าถึงแล้ว
+- ทำให้หน้าลูกค้าตอบสนองตั้งแต่ความกว้าง 320px ขึ้นไป รักษาสถานะ keyboard focus, ขนาดพื้นที่กดอย่างน้อย 44px เมื่อเหมาะสม และใช้ข้อความภาษาไทยที่อ่านง่าย
+- สถานะ UI ต้องทำงานจริง ปุ่มเพิ่มสินค้าต้องอัปเดตตะกร้า และตัวเลือกช่วงส่ง/หมวดหมู่ต้องแสดงสถานะที่เลือก
+- วางฟีเจอร์ลูกค้าใน `frontend/src/features/customer/`, ฟีเจอร์ผู้ดูแลใน `frontend/src/features/admin/`, layout ที่ใช้ร่วมกันใน `frontend/src/layouts/` และ visual token ส่วนกลางใน `frontend/src/styles/index.css`
+- ก่อนส่งมอบการเปลี่ยนแปลง frontend ให้รัน `npm run build` จาก `frontend/` และแก้ compilation error ที่เกิดขึ้นจริง
 
-## Backend and database
+## Backend และฐานข้อมูล
 
-- Keep secrets in `backend/.env`; never commit it or expose credentials in client code.
-- Treat database changes as migrations/schema changes in `database/`, and keep API contracts explicit in backend code.
-- Do not change production data, payment behavior, or authentication requirements without explicit approval.
+- เก็บความลับไว้ใน `backend/.env` ห้าม commit หรือเปิดเผย credential ในโค้ดฝั่ง client
+- จัดการการเปลี่ยนแปลงฐานข้อมูลเป็น migration/schema change ใน `database/` และระบุ API contract ให้ชัดเจนในโค้ด backend
+- ห้ามเปลี่ยนข้อมูล production, พฤติกรรมการชำระเงิน หรือข้อกำหนดการยืนยันตัวตนโดยไม่ได้รับอนุมัติอย่างชัดเจน
 
-## Quality bar
+## ข้อควรระวัง
 
-- Prefer small, coherent patches over unrelated cleanup.
-- Preserve user changes in a dirty worktree.
-- Validate only the surfaces affected by the change and report any unverified behavior clearly.
+- คำอธิบายให้ใช้ภาษาไทยเป็นหลัก ยกเว้นคำสั่งและคำทับศัพท์ภาษาอังกฤษที่จำเป็น
+- ห้ามเพิ่มหัวข้อระดับ `#` หรือ `##` ให้ใช้หัวข้อเดิมก่อนเสมอ หากจำเป็นต้องเพิ่มหัวข้อ ให้ถามผู้ใช้ก่อน
+
+## มาตรฐานคุณภาพ
+
+- เลือก patch ขนาดเล็กที่มีขอบเขตสอดคล้องกัน แทนการเก็บกวาดโค้ดที่ไม่เกี่ยวข้อง
+- รักษาการแก้ไขที่ผู้ใช้ทำไว้ใน worktree ที่มีการเปลี่ยนแปลง
+- ตรวจสอบเฉพาะส่วนที่ได้รับผลจากการเปลี่ยนแปลง และรายงานพฤติกรรมที่ยังไม่ได้ตรวจสอบให้ชัดเจน
