@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# ให้ PHP API ทำงานตามไฟล์จริงของมัน
+RewriteRule ^api/ - [L]
+
+# ให้ React Router จัดการ /admin และทุกหน้าฝั่งลูกค้า
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]

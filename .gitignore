@@ -1,0 +1,32 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Environment files and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# JavaScript / TypeScript dependencies and generated files
+**/node_modules/
+**/dist/
+**/coverage/
+*.tsbuildinfo
+
+# PHP dependencies
+**/vendor/
+
+# Backend runtime uploads
+backend/storage/slips/*
+!backend/storage/slips/.gitkeep
+backend/storage/products/*
+!backend/storage/products/.gitkeep
+
+# Logs, caches, and temporary files
+*.log
+*.cache
+*.tmp
+
+# Editor settings
+.idea/
+.vscode/
