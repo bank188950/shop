@@ -1,4 +1,4 @@
-import { Check, ChevronLeft, CloudUpload, CreditCard, Minus, Plus, QrCode, SunMedium, Sunset } from 'lucide-react'
+import { Check, ChevronLeft, CloudUpload, CreditCard, Minus, Plus, QrCode, Send, SunMedium, Sunset } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnnouncementBar } from '@/features/customer/shared/AnnouncementBar'
@@ -37,13 +37,13 @@ export function OrderSummaryPage() {
       <StorefrontHeader />
       <AnnouncementBar />
       <main id="top" className="mx-auto w-full max-w-[1488px] px-6 py-8 max-md:px-3.5 max-md:py-5">
-        <Link to="/" className="mb-5 inline-flex min-h-11 items-center gap-2 text-lg font-bold text-brand no-underline hover:text-brand-dark">
-          <ChevronLeft size={22} aria-hidden="true" /> เลือกเมนูเพิ่ม
+        <Link to="/" className="mb-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#76503a] px-5 text-xl font-extrabold text-white no-underline shadow-md shadow-[#76503a]/20 transition hover:bg-[#5f3d2b]">
+          <ChevronLeft size={22} strokeWidth={2.75} aria-hidden="true" /> เลือกเมนูเพิ่ม
         </Link>
         <div id="cart" className="grid grid-cols-[minmax(0,1.35fr)_minmax(320px,.95fr)] gap-6 max-lg:grid-cols-1">
           <div className="grid content-start gap-5">
-            <section className="rounded-[18px] border border-[#b9cbbf] bg-morning p-5 max-md:p-4" aria-labelledby="items-heading">
-              <h1 id="items-heading" className="m-0 font-heading text-[clamp(2rem,4vw,3rem)] leading-tight text-ink">รายการสินค้า</h1>
+            <section className="rounded-[18px] border border-[#b9cbbf] p-5 max-md:p-4" aria-labelledby="items-heading">
+              <h1 id="items-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">รายการสินค้า</h1>
               <div className="mt-5 grid gap-4">
                 {cartItems.length ? cartItems.map((item) => (
                   <article key={item.id} className="grid grid-cols-[112px_minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-[#bdcbbb] bg-white p-3 max-md:grid-cols-[88px_minmax(0,1fr)] max-md:gap-3">
@@ -68,17 +68,26 @@ export function OrderSummaryPage() {
               </div>
             </section>
 
-            <section className="rounded-[18px] border border-[#b9cbbf] bg-morning p-5 max-md:p-4" aria-labelledby="delivery-heading">
+            <section className="rounded-[18px] border border-[#b9cbbf] p-5 max-md:p-4" aria-labelledby="delivery-heading">
               <h2 id="delivery-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">เลือกรอบการจัดส่ง</h2>
               <div className="mt-4 grid grid-cols-2 gap-4 max-md:grid-cols-1">
                 {(Object.entries(deliveryOptions) as [DeliveryPeriod, typeof deliveryOptions.morning][]).map(([value, option]) => {
                   const Icon = option.icon
                   const selected = delivery === value
-                  return <button key={value} type="button" aria-pressed={selected} onClick={() => setDelivery(value)} className={`relative grid min-h-[92px] place-items-center rounded-xl border-2 px-4 py-3 transition ${selected ? 'border-[#166d29] bg-brand text-white shadow-md' : 'border-[#bdcbbb] bg-white text-[#455048] hover:border-brand'}`}>
-                    {selected && <Check className="absolute right-3 top-3" size={20} aria-hidden="true" />}
-                    <Icon size={27} aria-hidden="true" />
+                  const isMorning = value === 'morning'
+                  const cardClass = isMorning
+                    ? selected
+                      ? 'border-[#77b7ed] bg-gradient-to-br from-morning to-[#f7fcff] ring-2 ring-[#77b7ed]/65 shadow-[0_0_16px_3px_#77b7ed55]'
+                      : 'border-[#77b7ed] bg-gradient-to-br from-morning to-[#f7fcff] hover:-translate-y-0.5 hover:shadow-lg'
+                    : selected
+                      ? 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] ring-2 ring-[#f2b866]/65 shadow-[0_0_16px_3px_#f2b86655]'
+                      : 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] hover:-translate-y-0.5 hover:shadow-lg'
+                  const accentClass = isMorning ? 'text-[#338ad7]' : 'text-[#c88434]'
+                  return <button key={value} type="button" aria-pressed={selected} onClick={() => setDelivery(value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition ${cardClass}`}>
+                    <span className={`absolute right-3 top-3 grid size-11 place-items-center rounded-full border-2 ${accentClass} ${isMorning ? 'border-[#338ad7]' : 'border-[#c88434]'} ${selected ? 'opacity-100' : 'opacity-0'}`}><Check size={20} strokeWidth={2.5} /></span>
+                    <Icon size={32} className={accentClass} aria-hidden="true" />
                     <strong className="font-heading text-xl">{option.label}</strong>
-                    <span className="text-base">{option.time}</span>
+                    <span className="text-lg font-semibold">{option.time}</span>
                   </button>
                 })}
               </div>
@@ -87,11 +96,11 @@ export function OrderSummaryPage() {
             <section className="rounded-[18px] border border-[#b9cbbf] bg-morning p-5 max-md:p-4" aria-labelledby="recipient-heading">
               <h2 id="recipient-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">ข้อมูลผู้รับ</h2>
               <dl className="mt-5 grid grid-cols-2 gap-x-8 gap-y-5 text-lg max-md:grid-cols-1 max-md:gap-y-4">
-                <div><dt className="text-base font-bold text-[#455048]">ชื่อจริง</dt><dd className="mt-1.5 ml-0 font-bold">นายสมชาย ดีใจ</dd></div>
-                <div><dt className="text-base font-bold text-[#455048]">ชื่อเล่น</dt><dd className="mt-1.5 ml-0 font-bold">ชาย</dd></div>
-                <div><dt className="text-base font-bold text-[#455048]">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 font-bold">081-234-5678</dd></div>
-                <div><dt className="text-base font-bold text-[#455048]">LINE ID</dt><dd className="mt-1.5 ml-0 font-bold">@somchai_line</dd></div>
-                <div className="col-span-full"><dt className="text-base font-bold text-[#455048]">ที่อยู่จัดส่ง / ปักหมุด</dt><dd className="mt-1.5 ml-0 font-bold">123 ถนนเพชรบุรี แขวงมักกะสัน เขตราชเทวี กรุงเทพฯ 10400</dd></div>
+                <div><dt className="text-lg font-bold text-ink">ชื่อจริง</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">นายสมชาย ดีใจ</dd></div>
+                <div><dt className="text-lg font-bold text-ink">ชื่อเล่น</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">ชาย</dd></div>
+                <div><dt className="text-lg font-bold text-ink">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">081-234-5678</dd></div>
+                <div><dt className="text-lg font-bold text-ink">LINE ID</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">@somchai_line</dd></div>
+                <div className="col-span-full"><dt className="text-lg font-bold text-ink">ที่อยู่จัดส่ง / ปักหมุด</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">123 ถนนเพชรบุรี แขวงมักกะสัน เขตราชเทวี กรุงเทพฯ 10400</dd></div>
               </dl>
             </section>
           </div>
@@ -126,7 +135,7 @@ export function OrderSummaryPage() {
                   <small className="text-base">JPG, PNG หรือ PDF (ไม่เกิน 5MB)</small>
                 </button>
               </div> : <div className="mt-4 rounded-xl border border-dashed border-[#b8c5aa] bg-white/60 p-5 text-center"><CreditCard size={34} className="mx-auto text-brand" aria-hidden="true" /><p className="mt-2 mb-0 text-lg font-bold text-ink">ชำระเงินออนไลน์</p><p className="mt-1 mb-0 text-base text-muted">เลือกช่องทางนี้เมื่อพร้อมชำระเงิน</p></div>}
-              <button type="button" disabled={!cartItems.length} className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#76503a] px-4 text-lg font-extrabold text-white transition hover:bg-[#5f3d2b] disabled:cursor-not-allowed disabled:opacity-50">ยืนยันรายการสั่งซื้อ</button>
+              <button type="button" disabled={!cartItems.length} className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#76503a] px-4 text-lg font-extrabold text-white transition hover:bg-[#5f3d2b] disabled:cursor-not-allowed disabled:opacity-50">ยืนยันรายการสั่งซื้อ <Send size={20} aria-hidden="true" /></button>
             </section>
           </aside>
         </div>
