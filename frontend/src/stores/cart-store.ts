@@ -2,7 +2,12 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 type CartItem = { productId: number; quantity: number }
-type CartState = { items: CartItem[]; addItem: (item: CartItem) => void; clear: () => void }
+type CartState = {
+  items: CartItem[]
+  addItem: (item: CartItem) => void
+  setQuantity: (productId: number, quantity: number) => void
+  clear: () => void
+}
 
 export const useCartStore = create<CartState>()(persist((set) => ({
   items: [{ productId: 1, quantity: 1 }],
@@ -14,5 +19,10 @@ export const useCartStore = create<CartState>()(persist((set) => ({
         : [...state.items, item],
     }
   }),
+  setQuantity: (productId, quantity) => set((state) => ({
+    items: quantity > 0
+      ? state.items.map((item) => item.productId === productId ? { ...item, quantity } : item)
+      : state.items.filter((item) => item.productId !== productId),
+  })),
   clear: () => set({ items: [] }),
 }), { name: 'lookchin-cart-v2' }))

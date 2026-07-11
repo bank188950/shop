@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { CustomerLayout } from '@/layouts/CustomerLayout'
 import { AdminLayout } from '@/layouts/AdminLayout'
 import { HomePage } from '@/pages/customer/HomePage'
+import { OrderSummaryPage } from '@/pages/customer/OrderSummaryPage'
 import { DashboardPage } from '@/pages/admin/DashboardPage'
 
 export function AppRouter() {
@@ -10,6 +11,7 @@ export function AppRouter() {
       <Routes>
         <Route element={<CustomerLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/order-summary" element={<OrderSummaryPage />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
