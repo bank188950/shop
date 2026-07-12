@@ -1,13 +1,13 @@
-import { Check, ChevronLeft, Clock, CloudUpload, CreditCard, Minus, PanelsTopLeft, Plus, QrCode, Send, SunMedium, Sunset, UserRound } from 'lucide-react'
-import { useMemo, useRef, useState } from 'react'
+import { Check, ChevronLeft, Clock, Minus, PanelsTopLeft, Plus, Send, SunMedium, Sunset, UserRound } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { QRCodeSVG } from 'qrcode.react'
 import { AnnouncementBar } from '@/features/customer/shared/AnnouncementBar'
 import { StorefrontFooter } from '@/features/customer/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/customer/shared/StorefrontHeader'
 import { products } from '@/features/customer/shared/product-data'
 import { useCartStore } from '@/stores/cart-store'
 
-type PaymentMethod = 'transfer' | 'online'
 type DeliveryPeriod = 'morning' | 'afternoon'
 
 const deliveryOptions = {
@@ -16,14 +16,12 @@ const deliveryOptions = {
 }
 
 const formatPrice = (price: number) => `฿${price.toLocaleString('th-TH')}`
+const paymentQrPlaceholder = 'LOOKCHIN_LOR_LUEAN_PAYMENT_TEMPLATE'
 
 export function OrderSummaryPage() {
   const items = useCartStore((state) => state.items)
   const setQuantity = useCartStore((state) => state.setQuantity)
-  const [delivery, setDelivery] = useState<DeliveryPeriod>('morning')
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('transfer')
-  const [slipName, setSlipName] = useState('')
-  const uploadInput = useRef<HTMLInputElement>(null)
+  const [delivery, setDelivery] = useState<DeliveryPeriod | null>(null)
 
   const cartItems = useMemo(() => items.flatMap((item) => {
     const product = products.find((candidate) => candidate.id === item.productId)
@@ -117,24 +115,15 @@ export function OrderSummaryPage() {
 
             <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="payment-heading">
               <h2 id="payment-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">ช่องทางการชำระเงิน</h2>
-              <div className="mt-4 grid grid-cols-2 rounded-xl bg-[#6b7280] p-1" role="tablist" aria-label="วิธีชำระเงิน">
-                <button type="button" role="tab" aria-selected={paymentMethod === 'transfer'} onClick={() => setPaymentMethod('transfer')} className={`min-h-11 rounded-lg px-2 text-lg font-bold text-white transition ${paymentMethod === 'transfer' ? 'bg-brand shadow-sm' : 'hover:bg-[#4b5563]'}`}>โอนเงิน/สลิป</button>
-                <button type="button" role="tab" aria-selected={paymentMethod === 'online'} onClick={() => setPaymentMethod('online')} className={`min-h-11 rounded-lg px-2 text-lg font-bold text-white transition ${paymentMethod === 'online' ? 'bg-brand shadow-sm' : 'hover:bg-[#4b5563]'}`}>ออนไลน์</button>
-              </div>
-
-              {paymentMethod === 'transfer' ? <div className="mt-4 grid gap-4">
-                <div className="flex items-center gap-4 rounded-xl border border-dashed border-[#77a984] bg-white p-4">
-                  <div className="grid size-[72px] shrink-0 place-items-center rounded-lg bg-[#eef2ed] text-brand"><QrCode size={50} aria-label="QR สำหรับชำระเงิน" /></div>
-                  <p className="m-0 text-[17px] leading-relaxed text-ink"><strong className="text-brand">ธนาคารกสิกรไทย (K-Bank)</strong><br />เลขบัญชี: 123-4-56789-0<br />ชื่อ: นายลูกชิ้น ล้อเลื่อน</p>
+              <div className="mt-5 grid place-items-center gap-4 rounded-xl border-2 border-dashed border-[#77a984] bg-white p-5 text-center">
+                <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeSVG value={paymentQrPlaceholder} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} aria-label="QR Code สำหรับชำระเงิน" /></div>
+                <div>
+                  <p className="m-0 text-xl font-extrabold text-ink">สแกน QR Code เพื่อชำระเงิน</p>
+                  <p className="mt-1 mb-0 text-lg font-bold text-brand">ยอดชำระ {formatPrice(subtotal)}</p>
+                  <p className="mt-1 mb-0 text-base text-muted">ใช้แอปธนาคารเพื่อสแกนและยืนยันการชำระเงิน</p>
                 </div>
-                <input ref={uploadInput} className="sr-only" type="file" accept="image/jpeg,image/png,application/pdf" onChange={(event) => setSlipName(event.target.files?.[0]?.name ?? '')} />
-                <button type="button" onClick={() => uploadInput.current?.click()} className="grid min-h-[126px] place-items-center rounded-xl border-2 border-dashed border-[#b8c5aa] bg-white/55 px-4 py-5 text-center text-[#455048] hover:border-brand hover:bg-white">
-                  <CloudUpload size={35} className="text-brand" aria-hidden="true" />
-                  <span className="mt-2 text-lg font-bold text-ink">{slipName || 'อัปโหลดสลิปโอน'}</span>
-                  <small className="text-[17px]">JPG, PNG หรือ PDF (ไม่เกิน 5MB)</small>
-                </button>
-              </div> : <div className="mt-4 rounded-xl border border-dashed border-[#b8c5aa] bg-white/60 p-5 text-center"><CreditCard size={34} className="mx-auto text-brand" aria-hidden="true" /><p className="mt-2 mb-0 text-lg font-bold text-ink">ชำระเงินออนไลน์</p><p className="mt-1 mb-0 text-base text-muted">เลือกช่องทางนี้เมื่อพร้อมชำระเงิน</p></div>}
-              <button type="button" disabled={!cartItems.length} className="mt-5 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#76503a] px-4 text-xl font-extrabold text-white transition hover:bg-[#5f3d2b] disabled:cursor-not-allowed disabled:opacity-50">ยืนยันรายการสั่งซื้อ <Send size={20} aria-hidden="true" /></button>
+              </div>
+              <button type="button" disabled={!cartItems.length} className="mt-5 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#76503a] px-4 text-xl font-extrabold text-white transition hover:bg-[#5f3d2b] disabled:cursor-not-allowed disabled:opacity-50">ยืนยันและสร้าง QR Code <Send size={20} aria-hidden="true" /></button>
             </section>
           </aside>
         </div>

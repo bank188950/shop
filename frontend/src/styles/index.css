@@ -23,6 +23,11 @@ button { cursor: pointer; }
 button:focus-visible, a:focus-visible { outline: 3px solid var(--color-brand); outline-offset: 3px; }
 
 @keyframes announcement-scroll { to { transform: translateX(-50%); } }
+@keyframes announcement-orders-scroll { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+@keyframes announcement-promotion-scroll { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+@keyframes promotion-flash { 50% { opacity: .4; } }
+.announcement-orders-track { animation: announcement-orders-scroll 30s linear 1 forwards; }
+.announcement-promotion-track { animation: announcement-promotion-scroll 16s linear infinite, promotion-flash 1s ease-in-out infinite; }
 .announcement-bar:hover .announcement-track { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; }.announcement-track { animation: none !important; }.motion-safe\:transition, .motion-safe\:transition-transform { transition: none !important; } }
 
