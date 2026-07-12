@@ -69,7 +69,7 @@ export function OrderSummaryPage() {
             </section>
 
             <section className="rounded-[18px] border border-[#b9cbbf] p-5 max-md:p-4" aria-labelledby="delivery-heading">
-              <h2 id="delivery-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><Clock size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />เลือกรอบการจัดส่ง</h2>
+              <h2 id="delivery-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><Clock size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />เลือกรอบการสั่งซื้อ</h2>
               <div className="mt-4 grid grid-cols-2 gap-4 max-md:grid-cols-1">
                 {(Object.entries(deliveryOptions) as [DeliveryPeriod, typeof deliveryOptions.morning][]).map(([value, option]) => {
                   const Icon = option.icon
@@ -96,11 +96,10 @@ export function OrderSummaryPage() {
             <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="recipient-heading">
               <h2 id="recipient-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><UserRound size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />ข้อมูลผู้รับ</h2>
               <dl className="mt-5 grid grid-cols-2 gap-x-8 gap-y-5 text-lg max-md:grid-cols-1 max-md:gap-y-4">
-                <div><dt className="text-lg font-bold text-ink">ชื่อจริง</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">นายสมชาย ดีใจ</dd></div>
-                <div><dt className="text-lg font-bold text-ink">ชื่อเล่น</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">ชาย</dd></div>
-                <div><dt className="text-lg font-bold text-ink">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">081-234-5678</dd></div>
+                <div><dt className="text-lg font-bold text-ink">ชื่อลูกค้า</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">นายสมชาย ดีใจ</dd></div>
+                <div><dt className="text-lg font-bold text-ink">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">0812345678</dd></div>
+                <div><dt className="text-lg font-bold text-ink">สถานที่ส่งของ</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">จุดรับสินค้า B</dd></div>
                 <div><dt className="text-lg font-bold text-ink">LINE ID</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">@somchai_line</dd></div>
-                <div className="col-span-full"><dt className="text-lg font-bold text-ink">ที่อยู่จัดส่ง / ปักหมุด</dt><dd className="mt-1.5 ml-0 text-base font-bold text-[#455048]">123 ถนนเพชรบุรี แขวงมักกะสัน เขตราชเทวี กรุงเทพฯ 10400</dd></div>
               </dl>
             </section>
           </div>

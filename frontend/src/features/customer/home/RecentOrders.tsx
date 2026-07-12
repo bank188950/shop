@@ -5,6 +5,7 @@ const recentOrders = [
   {
     nickname: 'คุณบอม',
     items: ['ลูกชิ้น 3 ไม้', 'ไส้กรอก 2 ไม้', 'น้ำโกโก้ 2 ขวด'],
+    totalAmount: 100,
     period: 'ช่วงเช้า',
     orderedAt: '04 เม.ย. 2568 08:23',
     status: 'รอชำระเงิน',
@@ -12,6 +13,7 @@ const recentOrders = [
   {
     nickname: 'คุณฝน',
     items: ['ลูกชิ้น 2 ไม้', 'ไส้กรอก 1 ไม้', 'กาแฟชง 1 แก้ว'],
+    totalAmount: 120,
     period: 'ช่วงบ่าย',
     orderedAt: '04 เม.ย. 2568 13:01',
     status: 'จ่ายแล้ว',
@@ -19,6 +21,7 @@ const recentOrders = [
   {
     nickname: 'คุณต้น',
     items: ['ลูกชิ้น 4 ไม้', 'น้ำโกโก้ 1 ขวด'],
+    totalAmount: 80,
     period: 'ช่วงเช้า',
     orderedAt: '03 เม.ย. 2568 09:15',
     status: 'จ่ายแล้ว',
@@ -26,6 +29,7 @@ const recentOrders = [
   {
     nickname: 'คุณแอน',
     items: ['ไส้กรอก 3 ไม้', 'กาแฟชง 2 แก้ว'],
+    totalAmount: 90,
     period: 'ช่วงบ่าย',
     orderedAt: '03 เม.ย. 2568 14:26',
     status: 'รอชำระเงิน',
@@ -33,6 +37,7 @@ const recentOrders = [
   {
     nickname: 'คุณกอล์ฟ',
     items: ['ลูกชิ้น 2 ไม้', 'ไส้กรอก 2 ไม้'],
+    totalAmount: 70,
     period: 'ช่วงเช้า',
     orderedAt: '02 เม.ย. 2568 10:04',
     status: 'จ่ายแล้ว',
@@ -40,6 +45,7 @@ const recentOrders = [
   {
     nickname: 'คุณนิด',
     items: ['น้ำโกโก้ 2 ขวด', 'กาแฟชง 1 แก้ว'],
+    totalAmount: 75,
     period: 'ช่วงบ่าย',
     orderedAt: '02 เม.ย. 2568 15:12',
     status: 'รอชำระเงิน',
@@ -47,6 +53,7 @@ const recentOrders = [
   {
     nickname: 'คุณพีท',
     items: ['ลูกชิ้น 5 ไม้', 'น้ำโกโก้ 1 ขวด'],
+    totalAmount: 95,
     period: 'ช่วงเช้า',
     orderedAt: '01 เม.ย. 2568 08:40',
     status: 'จ่ายแล้ว',
@@ -54,6 +61,7 @@ const recentOrders = [
   {
     nickname: 'คุณเมย์',
     items: ['ไส้กรอก 2 ไม้', 'กาแฟชง 1 แก้ว'],
+    totalAmount: 80,
     period: 'ช่วงบ่าย',
     orderedAt: '01 เม.ย. 2568 13:35',
     status: 'จ่ายแล้ว',
@@ -61,6 +69,7 @@ const recentOrders = [
   {
     nickname: 'คุณจอย',
     items: ['ลูกชิ้น 3 ไม้', 'ไส้กรอก 1 ไม้'],
+    totalAmount: 65,
     period: 'ช่วงเช้า',
     orderedAt: '31 มี.ค. 2568 09:06',
     status: 'รอชำระเงิน',
@@ -68,6 +77,7 @@ const recentOrders = [
   {
     nickname: 'คุณอาร์ต',
     items: ['น้ำโกโก้ 1 ขวด', 'กาแฟชง 2 แก้ว'],
+    totalAmount: 85,
     period: 'ช่วงบ่าย',
     orderedAt: '31 มี.ค. 2568 14:08',
     status: 'จ่ายแล้ว',
@@ -75,6 +85,7 @@ const recentOrders = [
   {
     nickname: 'คุณอ้อย',
     items: ['ลูกชิ้น 2 ไม้', 'ไส้กรอก 3 ไม้'],
+    totalAmount: 70,
     period: 'ช่วงเช้า',
     orderedAt: '30 มี.ค. 2568 10:18',
     status: 'จ่ายแล้ว',
@@ -82,6 +93,7 @@ const recentOrders = [
   {
     nickname: 'คุณกิ่ง',
     items: ['ลูกชิ้น 1 ไม้', 'น้ำโกโก้ 2 ขวด'],
+    totalAmount: 60,
     period: 'ช่วงบ่าย',
     orderedAt: '30 มี.ค. 2568 15:04',
     status: 'รอชำระเงิน',
@@ -101,13 +113,14 @@ export function RecentOrders() {
         <h2 id="recent-orders-heading" className="m-0 font-heading text-[clamp(2rem,4vw,3rem)] leading-tight tracking-[-0.035em] text-[#1d4f29]">รายการสั่งซื้อ</h2>
       </div>
       <div className="mt-5 overflow-x-auto rounded-[18px] border border-[#d8dfd5] bg-white max-md:mt-4" tabIndex={0} aria-label="ตารางรายการสั่งซื้อล่าสุด">
-        <table className="w-full min-w-[900px] border-collapse text-left">
+        <table className="w-full min-w-[1040px] border-collapse text-left">
           <thead className="bg-brand text-white">
             <tr>
-              <th scope="col" className="px-6 py-4 text-lg font-extrabold">ชื่อเล่น</th>
+              <th scope="col" className="px-6 py-4 text-lg font-extrabold">ชื่อลูกค้า</th>
               <th scope="col" className="px-6 py-4 text-lg font-extrabold">รายการที่สั่ง</th>
               <th scope="col" className="px-6 py-4 text-lg font-extrabold">ช่วงเวลา</th>
               <th scope="col" className="px-6 py-4 text-lg font-extrabold">สั่งเมื่อ</th>
+              <th scope="col" className="px-6 py-4 text-lg font-extrabold">จำนวนเงิน</th>
               <th scope="col" className="px-6 py-4 text-lg font-extrabold">สถานะ</th>
             </tr>
           </thead>
@@ -118,6 +131,7 @@ export function RecentOrders() {
                 <td className="px-6 py-5"><ul className="m-0 grid list-none gap-1 p-0 text-lg leading-snug">{order.items.map((item) => <li key={item}>{item}</li>)}</ul></td>
                 <td className={`whitespace-nowrap px-6 py-5 text-lg font-extrabold ${order.period === 'ช่วงเช้า' ? 'text-[#338ad7]' : 'text-[#c88434]'}`}>{order.period}</td>
                 <td className="whitespace-nowrap px-6 py-5 text-lg font-semibold text-[#455a64]">{order.orderedAt}</td>
+                <td className="whitespace-nowrap px-6 py-5 text-lg font-extrabold text-[#76503a]">{order.totalAmount} บาท</td>
                 <td className="whitespace-nowrap px-6 py-5"><span className={`inline-flex rounded-full px-4 py-1.5 text-lg font-extrabold ${order.status === 'รอชำระเงิน' ? 'bg-[#ffe6e3] text-[#bd3b35]' : 'bg-[#def2e1] text-[#287b3b]'}`}>{order.status}</span></td>
               </tr>
             ))}
