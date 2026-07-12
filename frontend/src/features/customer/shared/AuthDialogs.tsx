@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from 'react'
-import { CircleUserRound, Mail, UserPlus, X } from 'lucide-react'
+import { CircleUserRound, UserPlus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -43,6 +43,15 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 function DialogCloseButton() {
   return <DialogClose asChild><Button type="button" variant="ghost" size="icon" className="absolute right-3 top-3 rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand" aria-label="ปิดหน้าต่าง"><X size={22} strokeWidth={2.5} aria-hidden="true" /></Button></DialogClose>
+}
+
+function GoogleMark() {
+  return <svg width="24" height="24" viewBox="0 0 18 18" className="shrink-0" shapeRendering="geometricPrecision" aria-hidden="true">
+    <path fill="#EA4335" d="M17.64 9.205c0-.638-.057-1.251-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.797 2.716v2.258h2.909c1.704-1.569 2.688-3.878 2.688-6.614Z" />
+    <path fill="#4285F4" d="M9 18c2.43 0 4.468-.806 5.957-2.181l-2.909-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.71H.956v2.332A9 9 0 0 0 9 18Z" />
+    <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.956A9 9 0 0 0 0 9c0 1.452.348 2.827.956 4.042l3.008-2.332Z" />
+    <path fill="#34A853" d="M9 3.58c1.321 0 2.508.455 3.44 1.346l2.581-2.581C13.464.892 11.426 0 9 0A9 9 0 0 0 .956 4.958l3.008 2.332C4.672 5.164 6.656 3.58 9 3.58Z" />
+  </svg>
 }
 
 function RegisterForm() {
@@ -145,7 +154,7 @@ function LoginForm() {
     <div className="relative py-1 text-center before:absolute before:inset-x-0 before:top-1/2 before:border-t before:border-[#d6e1d7]">
       <span className="relative bg-canvas px-3 text-sm font-semibold text-muted">หรือ</span>
     </div>
-    <Button type="button" variant="outline" className="min-h-12 rounded-full border-[#b9cbbf] bg-white px-5 text-lg font-extrabold text-ink hover:bg-[#f1f8f3] hover:text-brand"><Mail size={20} className="text-brand" aria-hidden="true" />เข้าสู่ระบบด้วย Gmail</Button>
+    <Button type="button" variant="outline" className="min-h-11 rounded-full border border-[#5f6368] bg-white px-5 text-base font-semibold text-[#202124] shadow-none hover:border-[#202124] hover:bg-[#f8fafd] hover:text-[#202124]"><GoogleMark />เข้าสู่ระบบด้วย Google</Button>
   </form>
 }
 
