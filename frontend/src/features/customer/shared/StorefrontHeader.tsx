@@ -34,10 +34,10 @@ export function StorefrontHeader() {
   return (
     <header className="relative z-10 border-b border-[#ecf0ea] bg-canvas/95">
       <div className="mx-auto flex min-h-[92px] w-full max-w-[1488px] items-center justify-between gap-6 px-6 py-3 max-md:min-h-[74px] max-md:px-[18px] max-md:py-2">
-        <Link className="flex shrink-0 items-center gap-3 text-[#195a2b] no-underline max-md:gap-2" to="/" aria-label="ลูกชิ้นล้อเลื่อน หน้าหลัก">
-          <img className="size-[62px] rounded-full object-cover mix-blend-multiply max-md:size-12" src="/images/logo.png" alt="โลโกลูกชิ้นล้อเลื่อน" />
+        <Link className="flex shrink-0 items-center gap-3 text-[#195a2b] no-underline max-md:gap-2" to="/" aria-label="ลูกชิ้นทอดล้อเลื่อน หน้าหลัก">
+          <img className="size-[62px] rounded-full object-cover mix-blend-multiply max-md:size-12" src="/images/logo.png" alt="โลโกลูกชิ้นทอดล้อเลื่อน" />
           <span className="grid leading-[1.05]">
-            <strong className="font-heading text-xl tracking-[-0.05em] max-md:text-base">ลูกชิ้นล้อเลื่อน</strong>
+            <strong className="font-heading text-xl tracking-[-0.05em] max-md:text-base">ลูกชิ้นทอดล้อเลื่อน</strong>
             <small className="mt-1.5 text-base font-semibold text-[#56805c] max-md:mt-0.5 max-md:text-sm">อาหารสดใหม่จากกระทะทุกวัน</small>
           </span>
         </Link>

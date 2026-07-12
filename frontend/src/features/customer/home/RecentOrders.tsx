@@ -131,7 +131,7 @@ export function RecentOrders() {
                 <td className="px-6 py-5"><ul className="m-0 grid list-none gap-1 p-0 text-lg leading-snug">{order.items.map((item) => <li key={item}>{item}</li>)}</ul></td>
                 <td className={`whitespace-nowrap px-6 py-5 text-lg font-extrabold ${order.period === 'ช่วงเช้า' ? 'text-[#338ad7]' : 'text-[#c88434]'}`}>{order.period}</td>
                 <td className="whitespace-nowrap px-6 py-5 text-lg font-semibold text-[#455a64]">{order.orderedAt}</td>
-                <td className="whitespace-nowrap px-6 py-5 text-lg font-extrabold text-[#76503a]">{order.totalAmount} บาท</td>
+                <td className="whitespace-nowrap px-6 py-5 text-lg font-extrabold text-[#76503a]">{order.totalAmount.toLocaleString('th-TH')} บาท</td>
                 <td className="whitespace-nowrap px-6 py-5"><span className={`inline-flex rounded-full px-4 py-1.5 text-lg font-extrabold ${order.status === 'รอชำระเงิน' ? 'bg-[#ffe6e3] text-[#bd3b35]' : 'bg-[#def2e1] text-[#287b3b]'}`}>{order.status}</span></td>
               </tr>
             ))}

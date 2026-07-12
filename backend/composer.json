@@ -1,6 +1,6 @@
 {
   "name": "lookchin-lor-luean/api",
-  "description": "PHP API for ลูกชิ้นล้อเลื่อน",
+  "description": "PHP API for ลูกชิ้นทอดล้อเลื่อน",
   "type": "project",
   "require": {
     "php": ">=8.2"

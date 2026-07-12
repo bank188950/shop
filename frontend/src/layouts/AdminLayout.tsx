@@ -12,7 +12,7 @@ export function AdminLayout() {
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <p className="admin-brand">ลูกชิ้นล้อเลื่อน</p>
+        <p className="admin-brand">ลูกชิ้นทอดล้อเลื่อน</p>
         <nav>{items.map(({ icon: Icon, label, to }) => <NavLink key={to} to={to} end={to === '/admin'}><Icon size={18} />{label}</NavLink>)}</nav>
       </aside>
       <main className="admin-content"><Outlet /></main>

@@ -22,7 +22,7 @@ export function HeroBanner() {
   }, [])
 
   return (
-    <section className="overflow-hidden rounded-[26px] max-md:rounded-[19px]" aria-label="ภาพบรรยากาศลูกชิ้นล้อเลื่อน">
+    <section className="overflow-hidden rounded-[26px] max-md:rounded-[19px]" aria-label="ภาพบรรยากาศลูกชิ้นทอดล้อเลื่อน">
       <Swiper
         modules={[A11y, Autoplay, EffectFade, Keyboard, Pagination]}
         className="hero-swiper"
