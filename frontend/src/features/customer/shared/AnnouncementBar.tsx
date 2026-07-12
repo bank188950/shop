@@ -8,7 +8,7 @@ const recentOrders = [
 
 export function AnnouncementBar() {
   return (
-    <section className="min-h-14 overflow-hidden bg-brand-deep text-white" aria-label="รายการสั่งซื้อล่าสุด">
+    <section className="announcement-bar min-h-14 overflow-hidden bg-brand-deep text-white" aria-label="รายการสั่งซื้อล่าสุด">
       <div className="mx-auto flex min-h-14 w-full max-w-[1488px] items-center gap-3.5 px-6 max-md:px-3.5">
         <span className="grid size-[42px] shrink-0 place-items-center rounded-full bg-white/10 text-[#fff5c6] max-md:size-[38px]" aria-hidden="true"><Megaphone size={25} /></span>
         <div className="min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]">

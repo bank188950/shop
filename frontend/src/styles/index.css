@@ -23,6 +23,7 @@ button { cursor: pointer; }
 button:focus-visible, a:focus-visible { outline: 3px solid var(--color-brand); outline-offset: 3px; }
 
 @keyframes announcement-scroll { to { transform: translateX(-50%); } }
+.announcement-bar:hover .announcement-track { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; }.announcement-track { animation: none !important; }.motion-safe\:transition, .motion-safe\:transition-transform { transition: none !important; } }
 
 .hero-swiper .swiper-pagination { bottom: 18px; }.hero-swiper .swiper-pagination-bullet { width: 10px; height: 10px; background: #fff; opacity: .55; }.hero-swiper .swiper-pagination-bullet-active { width: 28px; border-radius: 999px; opacity: 1; }

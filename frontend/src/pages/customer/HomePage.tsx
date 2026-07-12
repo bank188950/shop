@@ -1,4 +1,3 @@
-import { DeliveryPicker } from '@/features/customer/home/DeliveryPicker'
 import { HeroBanner } from '@/features/customer/home/HeroBanner'
 import { ProductCatalog } from '@/features/customer/home/ProductCatalog'
 import { RecentOrders } from '@/features/customer/home/RecentOrders'
@@ -15,7 +14,6 @@ export function HomePage() {
       <main id="top" className="mx-auto mt-7 w-full max-w-[1488px] px-6 max-md:mt-3.5 max-md:px-3.5">
         <HeroBanner />
         <RecentOrders />
-        <DeliveryPicker />
         <ProductCatalog />
       </main>
       <StorefrontFooter />

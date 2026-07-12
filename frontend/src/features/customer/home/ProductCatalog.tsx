@@ -8,7 +8,7 @@ export function ProductCatalog() {
   const addItem = useCartStore((state) => state.addItem)
 
   return (
-    <section id="menu" className="px-1 pt-12 pb-6 max-md:px-0.5 max-md:pt-8" aria-labelledby="menu-heading">
+    <section id="menu" className="px-1 pt-8 pb-6 max-md:px-0.5 max-md:pt-8" aria-labelledby="menu-heading">
       <div className="flex items-end"><div className="flex items-center gap-3 text-brand max-md:gap-2"><ChefHat size={30} className="max-md:size-[26px]" aria-hidden="true" /><h2 id="menu-heading" className="m-0 font-heading text-[clamp(2rem,4vw,3rem)] leading-tight tracking-[-0.035em] text-[#1d4f29]">เลือกเมนูที่ชอบ</h2></div></div>
       <div className="mt-6 flex gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-md:mt-4 max-md:gap-2" role="tablist" aria-label="หมวดสินค้า">
         {productCategories.map((item) => <button type="button" key={item} role="tab" aria-selected={category === item} className={`shrink-0 rounded-full border px-6 py-2 text-lg font-bold transition ${category === item ? 'border-brand bg-brand text-white shadow-md shadow-brand/20' : 'border-[#d5dbd4] bg-canvas text-[#435048] hover:border-brand hover:text-brand'} max-md:px-4`} onClick={() => setCategory(item)}>{item}</button>)}
