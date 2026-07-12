@@ -1,6 +1,7 @@
-import { CircleUserRound, ShoppingCart, UserPlus, X } from 'lucide-react'
+import { ShoppingCart, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AuthDialogs } from '@/features/customer/shared/AuthDialogs'
 import { products } from '@/features/customer/shared/product-data'
 import { useCartStore } from '@/stores/cart-store'
 
@@ -64,8 +65,7 @@ export function StorefrontHeader() {
               </> : <p className="mt-3 mb-0 text-base font-semibold text-muted">ยังไม่มีสินค้าในตะกร้า</p>}
             </div>}
           </div>
-          <button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-0 bg-[#76503a] px-5 py-2.5 text-lg font-extrabold text-white shadow-md shadow-[#76503a]/20 transition hover:bg-[#5f3d2b] max-md:px-3.5 max-sm:size-11 max-sm:px-0" type="button" aria-label="สมัครสมาชิก"><UserPlus size={18} aria-hidden="true" /><span className="max-sm:hidden">สมัครสมาชิก</span></button>
-          <button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-0 bg-[#76503a] px-5 py-2.5 text-lg font-extrabold text-white shadow-md shadow-[#76503a]/20 transition hover:bg-[#5f3d2b] max-md:px-3.5 max-sm:size-11 max-sm:px-0" type="button" aria-label="เข้าสู่ระบบ"><CircleUserRound size={18} aria-hidden="true" /><span className="max-sm:hidden">เข้าสู่ระบบ</span></button>
+          <AuthDialogs />
         </div>
       </div>
     </header>
