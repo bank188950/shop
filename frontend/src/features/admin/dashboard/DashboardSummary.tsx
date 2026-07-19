@@ -1,14 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import { api } from '@/libs/api'
+import { ArrowUpRight, Boxes, CircleAlert, ClipboardList, WalletCards } from 'lucide-react'
 
 export function DashboardSummary() {
-  const health = useQuery({ queryKey: ['health'], queryFn: () => api<{ status: string }>('/health') })
-
   return (
-    <div className="admin-cards">
-      <article><span>ออเดอร์วันนี้</span><strong>—</strong></article>
-      <article><span>ยอดขายวันนี้</span><strong>—</strong></article>
-      <article><span>สถานะ API</span><strong>{health.isSuccess ? 'พร้อมใช้งาน' : 'รอเชื่อมต่อ'}</strong></article>
-    </div>
+    <><div className="admin-cards"><article><span className="admin-card-icon mint"><ClipboardList size={22} /></span><div><small>ออเดอร์วันนี้</small><strong>24 รายการ</strong><p className="positive"><ArrowUpRight size={14} />เพิ่มขึ้น 12%</p></div></article><article><span className="admin-card-icon peach"><WalletCards size={22} /></span><div><small>ยอดขายวันนี้</small><strong>8,640 บาท</strong><p className="positive"><ArrowUpRight size={14} />เพิ่มขึ้น 8%</p></div></article><article><span className="admin-card-icon green"><Boxes size={22} /></span><div><small>สินค้าคงเหลือ</small><strong>42 รายการ</strong><p>พร้อมจำหน่าย</p></div></article><article><span className="admin-card-icon rose"><CircleAlert size={22} /></span><div><small>สต็อกใกล้หมด</small><strong>5 รายการ</strong><p className="warning">ต้องตรวจสอบ</p></div></article></div><section className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>รายการที่ต้องดำเนินการ</h2><p>ติดตามงานสำคัญของร้านในวันนี้</p></div><button type="button" className="admin-text-button">ดูออเดอร์ทั้งหมด</button></div><div className="admin-task-list"><article><span className="admin-task-icon orange"><CircleAlert size={20} /></span><div><strong>สินค้าคงเหลือต่ำ 5 รายการ</strong><p>กรุณาเติมสินค้าเพื่อไม่ให้การขายสะดุด</p></div><button type="button">ตรวจสอบ</button></article><article><span className="admin-task-icon blue"><ClipboardList size={20} /></span><div><strong>มี 3 ออเดอร์รอจัดส่ง</strong><p>ลูกค้ารอรับสินค้าในรอบจัดส่งถัดไป</p></div><button type="button">ดูออเดอร์</button></article></div></section></>
   )
 }
