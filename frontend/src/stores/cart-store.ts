@@ -10,7 +10,7 @@ type CartState = {
 }
 
 export const useCartStore = create<CartState>()(persist((set) => ({
-  items: [{ productId: 1, quantity: 1 }],
+  items: [],
   addItem: (item) => set((state) => {
     const existing = state.items.find((cartItem) => cartItem.productId === item.productId)
     return {
@@ -25,4 +25,4 @@ export const useCartStore = create<CartState>()(persist((set) => ({
       : state.items.filter((item) => item.productId !== productId),
   })),
   clear: () => set({ items: [] }),
-}), { name: 'lookchin-cart-v2' }))
+}), { name: 'lookchin-cart-v1' }))

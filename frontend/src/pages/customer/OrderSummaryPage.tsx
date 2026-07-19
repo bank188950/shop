@@ -1,4 +1,4 @@
-import { Check, ChevronLeft, Clock, Minus, PanelsTopLeft, Plus, Send, SunMedium, Sunset, UserRound } from 'lucide-react'
+import { Check, ChevronLeft, Clock, Info, Minus, PanelsTopLeft, Plus, Send, SunMedium, Sunset, UserRound, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
@@ -8,6 +8,8 @@ import { StorefrontFooter } from '@/features/customer/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/customer/shared/StorefrontHeader'
 import { products } from '@/features/customer/shared/product-data'
 import { useCartStore } from '@/stores/cart-store'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 type DeliveryPeriod = 'morning' | 'afternoon'
 
@@ -88,7 +90,24 @@ export function OrderSummaryPage() {
               <h1 id="items-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><PanelsTopLeft size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />รายการสินค้า</h1>
               <div className="mt-5 grid gap-4">
                 {cartItems.length ? cartItems.map((item) => (
-                  <article key={item.id} className="grid grid-cols-[112px_minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-[#bdcbbb] bg-white p-3 max-md:grid-cols-[88px_minmax(0,1fr)] max-md:gap-3">
+                  <article key={item.id} className="relative grid grid-cols-[112px_minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-[#bdcbbb] bg-white p-3 max-md:grid-cols-[88px_minmax(0,1fr)] max-md:gap-3">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <button type="button" className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full text-[#f97316] transition hover:bg-[#fff1e6] active:scale-95 max-md:size-7" aria-label={`ดูรายละเอียด ${item.name}`}><Info size={22} strokeWidth={2.5} /></button>
+                      </DialogTrigger>
+                      <DialogContent showCloseButton={false} className="max-w-md border border-[#d8dfd5] bg-white shadow-2xl">
+                        <DialogClose asChild><Button type="button" variant="ghost" size="icon" className="absolute right-2 top-1 z-10 size-8 rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand" aria-label="ปิดหน้าต่าง"><X size={18} strokeWidth={2.5} aria-hidden="true" /></Button></DialogClose>
+                        <img className="mt-4 aspect-[1.4/1] w-full rounded-lg object-cover" src={item.image} alt={item.name} />
+                        <DialogHeader>
+                          <DialogTitle className="font-heading text-2xl text-ink">{item.name}</DialogTitle>
+                          <DialogDescription className="text-base leading-relaxed text-[#455048]">{item.description}</DialogDescription>
+                        </DialogHeader>
+                        <div className="flex items-center justify-between border-t border-[#e2e8e3] pt-4">
+                          <span className="text-lg font-bold text-muted">{item.stockLabel}</span>
+                          <strong className="font-heading text-2xl text-brand">{formatPrice(item.price)}</strong>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                     <img className="size-[112px] rounded-lg object-cover max-md:size-[88px]" src={item.image} alt={item.name} />
                     <div className="min-w-0">
                       <h2 className="m-0 font-heading text-[22px] leading-tight text-ink">{item.name}</h2>
@@ -125,7 +144,7 @@ export function OrderSummaryPage() {
                       ? 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] ring-2 ring-[#f2b866]/65 shadow-[0_0_16px_3px_#f2b86655]'
                       : 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] hover:-translate-y-0.5 hover:shadow-lg'
                   const accentClass = isMorning ? 'text-[#338ad7]' : 'text-[#c88434]'
-                  return <button key={value} type="button" disabled={isOrderConfirmed} aria-pressed={selected} onClick={() => setDelivery(value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none ${cardClass}`}>
+                  return <button key={value} type="button" disabled={isOrderConfirmed} aria-pressed={selected} onClick={() => setDelivery((current) => current === value ? null : value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none ${cardClass}`}>
                     <span className={`absolute right-3 top-3 grid size-11 place-items-center rounded-full border-2 ${accentClass} ${isMorning ? 'border-[#338ad7]' : 'border-[#c88434]'} ${selected ? 'opacity-100' : 'opacity-0'}`}><Check size={20} strokeWidth={2.5} /></span>
                     <Icon size={32} className={accentClass} aria-hidden="true" />
                     <strong className="font-heading text-[22px]">{option.label}</strong>
