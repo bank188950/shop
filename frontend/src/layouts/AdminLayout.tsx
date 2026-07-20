@@ -17,7 +17,7 @@ export function AdminLayout() {
     <div className="admin-shell">
       <button type="button" className={`admin-mobile-menu-toggle ${isSidebarOpen ? 'is-open' : ''}`} aria-controls="admin-sidebar" aria-expanded={isSidebarOpen} aria-label={isSidebarOpen ? 'ซ่อนเมนูผู้ดูแล' : 'แสดงเมนูผู้ดูแล'} onClick={() => setIsSidebarOpen((open) => !open)}>{isSidebarOpen ? <ChevronLeft size={20} /> : <Menu size={20} />}</button>
       <aside id="admin-sidebar" className={`admin-sidebar ${isSidebarOpen ? 'is-open' : ''}`}>
-        <NavLink to="/admin" className="admin-brand" aria-label="หน้าหลักระบบแอดมิน" onClick={() => setIsSidebarOpen(false)}><span className="admin-brand-mark"><Store size={23} /></span><span><strong>Admin</strong><small>Management System</small></span></NavLink>
+        <NavLink to="/admin" className="admin-brand" aria-label="หน้าหลักระบบแอดมิน" onClick={() => setIsSidebarOpen(false)}><span className="admin-brand-mark"><Store size={23} /></span><span><strong>Admin</strong><small>Management Content</small></span></NavLink>
         <nav>{items.map(({ icon: Icon, label, to }) => <NavLink key={to} to={to} end={to === '/admin'} onClick={() => setIsSidebarOpen(false)}><Icon size={19} />{label}</NavLink>)}</nav>
         <div className="admin-sidebar-bottom"><NavLink to="/admin/login" className="admin-logout" onClick={() => setIsSidebarOpen(false)}><LogOut size={19} />ออกจากระบบ</NavLink></div>
       </aside>
