@@ -1,0 +1,117 @@
+.admin-table-link {
+  position: relative;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  min-height: 0;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.admin-table-link::before {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  content: '';
+  transition: background-color 160ms ease;
+}
+
+.admin-table-link:hover::before,
+.admin-table-link:focus-visible::before {
+  background: #edf3ee;
+}
+
+.admin-table-link:hover {
+  background: transparent;
+}
+
+.admin-table-link svg {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-filter-card {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.admin-filter-date,
+.admin-filter-select {
+  grid-column: span 2;
+}
+
+.admin-filter-card .admin-search {
+  grid-column: span 4;
+}
+
+.admin-search svg {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.admin-filter-card [data-slot='select-trigger'] {
+  min-height: 44px;
+  padding: 0 11px;
+  border-color: #aab6ad;
+  color: #27362e;
+  font: inherit;
+  font-size: 14px;
+}
+
+.product-form-card [data-slot='select-trigger'] {
+  min-height: 46px;
+  border-color: #aab6ad;
+  color: #27362e;
+  font: inherit;
+  font-weight: 500;
+}
+
+.admin-status-editor [data-slot='select-trigger'] {
+  min-height: 44px;
+  border-color: #aab6ad;
+  color: #27362e;
+  font: inherit;
+  font-size: 14px;
+}
+
+.admin-status.preparing {
+  color: #62519b;
+  background: #e9e2ff;
+}
+
+.admin-status.delivering {
+  color: #316b8a;
+  background: #dcedf5;
+}
+
+.admin-order-status {
+  padding: 8px 18px;
+  font-size: 16px;
+}
+
+@media (max-width: 900px) {
+  .admin-filter-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-filter-date,
+  .admin-filter-select,
+  .admin-filter-card .admin-search {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-filter-card {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-filter-date,
+  .admin-filter-select,
+  .admin-filter-card .admin-search {
+    grid-column: auto;
+  }
+}

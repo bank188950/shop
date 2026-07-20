@@ -14,8 +14,8 @@ import { Button } from '@/components/ui/button'
 type DeliveryPeriod = 'morning' | 'afternoon'
 
 const deliveryOptions = {
-  morning: { label: 'รอบเช้า', cutoff: 'สั่งได้ถึง 08:00', time: 'จัดส่ง 09:00–10:00', cutoffHour: 8, icon: SunMedium },
-  afternoon: { label: 'รอบบ่าย', cutoff: 'สั่งได้ถึง 12:00', time: 'จัดส่ง 14:00–15:00', cutoffHour: 12, icon: Sunset },
+  morning: { label: 'รอบเช้า', cutoff: 'สั่งได้ถึง 08:00', time: 'จัดส่ง 09:00–10:00', icon: SunMedium },
+  afternoon: { label: 'รอบบ่าย', cutoff: 'สั่งได้ถึง 12:00', time: 'จัดส่ง 14:00–15:00', icon: Sunset },
 }
 
 const formatPrice = (price: number) => `${price.toLocaleString('th-TH')} บาท`
@@ -49,11 +49,6 @@ export function OrderSummaryPage() {
   }), [items])
   const itemCount = useMemo(() => cartItems.reduce((total, item) => total + item.quantity, 0), [cartItems])
   const subtotal = useMemo(() => cartItems.reduce((total, item) => total + item.price * item.quantity, 0), [cartItems])
-  const openPeriods = useMemo(() => {
-    const currentHour = new Date().getHours()
-    return { morning: currentHour < deliveryOptions.morning.cutoffHour, afternoon: currentHour < deliveryOptions.afternoon.cutoffHour }
-  }, [])
-
   const confirmOrder = async () => {
     if (!delivery) {
       await Swal.fire({
@@ -85,7 +80,7 @@ export function OrderSummaryPage() {
       <StorefrontHeader />
       <AnnouncementBar />
       <main id="top" className="mx-auto w-full max-w-[1488px] px-6 py-8 max-md:px-3.5 max-md:py-5">
-        {!isOrderConfirmed && <Link to="/" className="mb-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#76503a] px-5 text-xl font-extrabold text-white no-underline shadow-md shadow-[#76503a]/20 transition hover:bg-[#5f3d2b]">
+        {!isOrderConfirmed && <Link to="/" className="mb-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#76503a] px-5 text-xl font-extrabold text-white no-underline shadow-md shadow-[#76503a]/20 transition hover:bg-[#5f3d2b]">
           <ChevronLeft size={22} strokeWidth={2.75} aria-hidden="true" /> เลือกเมนูเพิ่ม
         </Link>}
         <div id="cart" className="grid grid-cols-[minmax(0,1.35fr)_minmax(320px,.95fr)] gap-6 max-lg:grid-cols-1">
@@ -148,13 +143,13 @@ export function OrderSummaryPage() {
                       ? 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] ring-2 ring-[#f2b866]/65 shadow-[0_0_16px_3px_#f2b86655]'
                       : 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] hover:-translate-y-0.5 hover:shadow-lg'
                   const accentClass = isMorning ? 'text-[#338ad7]' : 'text-[#c88434]'
-                  const isOpen = openPeriods[value]
-                  return <button key={value} type="button" disabled={isOrderConfirmed || !isOpen} aria-pressed={selected} onClick={() => setDelivery((current) => current === value ? null : value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none ${cardClass}`}>
+                  const cutoffBadgeClass = isMorning ? 'bg-[#c8e7fb]/75 text-[#2d78b9]' : 'bg-[#ffe1b4]/75 text-[#a86117]'
+                  return <button key={value} type="button" disabled={isOrderConfirmed} aria-pressed={selected} onClick={() => setDelivery((current) => current === value ? null : value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none ${cardClass}`}>
                     <span className={`absolute right-3 top-3 grid size-11 place-items-center rounded-full border-2 ${accentClass} ${isMorning ? 'border-[#338ad7]' : 'border-[#c88434]'} ${selected ? 'opacity-100' : 'opacity-0'}`}><Check size={20} strokeWidth={2.5} /></span>
                     <Icon size={32} className={accentClass} aria-hidden="true" />
                     <strong className="font-heading text-[22px]">{option.label}</strong>
                     <span className="text-xl font-semibold">{option.time}</span>
-                    <span className="text-base font-bold">{isOpen ? option.cutoff : 'ปิดรับแล้วสำหรับวันนี้'}</span>
+                    <span className={`mt-2 rounded-full px-3 py-1 text-base font-bold ${cutoffBadgeClass}`}>{option.cutoff}</span>
                   </button>
                 })}
               </div>

@@ -10,6 +10,7 @@
 
 - คงสถาปัตยกรรม React + Vite + TypeScript ไว้ใน `frontend/` ห้ามย้าย framework เพื่อทำฟีเจอร์
 - ใช้ `lucide-react` ซ้ำสำหรับไอคอน UI ห้ามเพิ่มปุ่มที่มีเฉพาะไอคอนโดยไม่มี accessible label เว้นแต่มีป้ายกำกับเพื่อการเข้าถึงแล้ว
+- ฟอร์มกรอกข้อมูลในส่วนผู้ดูแลระบบ (back office) ให้ใช้ component ของ `shadcn/ui` เช่น `Input`, `Select` และ `Textarea` เป็นค่าเริ่มต้น; ใช้ HTML native เฉพาะเมื่อ component ไม่รองรับความต้องการนั้นจริง
 - ทำให้หน้าลูกค้าตอบสนองตั้งแต่ความกว้าง 320px ขึ้นไป รักษาสถานะ keyboard focus, ขนาดพื้นที่กดอย่างน้อย 44px เมื่อเหมาะสม และใช้ข้อความภาษาไทยที่อ่านง่าย
 - สถานะ UI ต้องทำงานจริง ปุ่มเพิ่มสินค้าต้องอัปเดตตะกร้า และตัวเลือกช่วงส่ง/หมวดหมู่ต้องแสดงสถานะที่เลือก
 - วางฟีเจอร์ลูกค้าใน `frontend/src/features/customer/`, ฟีเจอร์ผู้ดูแลใน `frontend/src/features/admin/`, layout ที่ใช้ร่วมกันใน `frontend/src/layouts/` และ visual token ส่วนกลางใน `frontend/src/styles/index.css`

@@ -1,4 +1,4 @@
-import { ShoppingCart, X } from 'lucide-react'
+import { ClipboardList, ShoppingCart, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthDialogs } from '@/features/customer/shared/AuthDialogs'
@@ -42,14 +42,14 @@ export function StorefrontHeader() {
           </span>
         </Link>
         <div className="flex items-center gap-4 max-md:gap-1">
-          <Link to="/my-orders" className="hidden min-h-11 items-center rounded-full px-3 text-base font-extrabold text-[#195a2b] no-underline hover:bg-[#e1f3e5] sm:inline-flex">ออเดอร์ของฉัน</Link>
+          <Link to="/my-orders" className="hidden size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none sm:inline-flex" aria-label="ออเดอร์ของฉัน"><ClipboardList size={24} strokeWidth={2.3} aria-hidden="true" /></Link>
           <div ref={cartMenuRef} className="relative">
             <button className="relative grid size-11 place-items-center border-0 bg-transparent p-2 text-[#165c2e]" type="button" onClick={() => setIsCartOpen((open) => !open)} aria-label={`${isCartOpen ? 'ปิด' : 'เปิด'}ตะกร้า มี ${itemCount} รายการ`} aria-expanded={isCartOpen} aria-controls="header-cart-menu">
               <ShoppingCart size={25} strokeWidth={2.3} />{itemCount > 0 && <span className="absolute right-0 top-0 grid min-h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-xs font-extrabold text-white">{itemCount}</span>}
             </button>
             {isCartOpen && <div id="header-cart-menu" className="absolute right-0 top-[calc(100%+10px)] z-20 w-[min(360px,calc(100vw-28px))] rounded-2xl border border-[#b9cbbf] bg-canvas p-4 shadow-xl shadow-[#183326]/15" role="dialog" aria-label="ตะกร้าสินค้า">
               <h2 className="m-0 font-heading text-xl text-ink">สินค้าที่สั่ง</h2>
-              <button type="button" onClick={() => setIsCartOpen(false)} className="absolute right-3 top-3 grid size-11 place-items-center rounded-full text-muted transition hover:bg-[#e1f3e5] hover:text-brand" aria-label="ปิดตะกร้าสินค้า"><X size={22} strokeWidth={2.5} aria-hidden="true" /></button>
+              <button type="button" onClick={() => setIsCartOpen(false)} className="group absolute right-2 top-2 grid size-11 place-items-center rounded-full text-muted transition hover:text-brand" aria-label="ปิดตะกร้าสินค้า"><span className="grid size-9 place-items-center rounded-full transition group-hover:bg-[#e1f3e5]"><X size={18} strokeWidth={2.5} aria-hidden="true" /></span></button>
               {cartItems.length ? <>
                 <ul className="mt-3 mb-0 grid list-none gap-3 p-0">
                   {cartItems.map((item) => <li key={item.id} className="flex items-center gap-3">
