@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { Bell, ChartNoAxesColumnIncreasing, ChevronLeft, ClipboardList, LayoutDashboard, LogOut, Menu, Package, Settings, Store, UserRound } from 'lucide-react'
+import { Bell, ChevronLeft, ClipboardList, LayoutDashboard, LogOut, Menu, Package, Settings, Store, Truck, UserRound } from 'lucide-react'
 
 const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
-  { label: 'สินค้า', icon: Package, to: '/admin/products' },
   { label: 'ออเดอร์', icon: ClipboardList, to: '/admin/orders' },
-  { label: 'รายงาน', icon: ChartNoAxesColumnIncreasing, to: '/admin/reports' },
+  { label: 'รอบส่งวันนี้', icon: Truck, to: '/admin/dispatches/today' },
+  { label: 'สินค้า', icon: Package, to: '/admin/products' },
   { label: 'ตั้งค่า', icon: Settings, to: '/admin/settings' },
 ]
 

@@ -1,6 +1,8 @@
 import { Bar, Line } from 'react-chartjs-2'
 import { BarElement, CategoryScale, Chart as ChartJS, Filler, Legend, LineElement, LinearScale, PointElement, Tooltip, type TooltipItem } from 'chart.js'
-import { ArrowUpRight, Boxes, CircleAlert, ClipboardList, WalletCards } from 'lucide-react'
+import { ArrowUpRight, Boxes, CircleAlert, ClipboardList, MapPin, WalletCards } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { formatPrice, getOrderTotal, mockOrders } from '@/features/admin/orders/order-data'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Filler, Tooltip, Legend)
 
@@ -55,6 +57,11 @@ const salesChartOptions = {
 }
 
 export function DashboardSummary() {
+  const todayOrders = mockOrders.filter((order) => order.deliveryDate === '2026-07-20')
+  const locationSummary = Array.from(new Set(todayOrders.map((order) => order.location))).map((location) => {
+    const orders = todayOrders.filter((order) => order.location === location)
+    return { location, orders: orders.length, total: orders.reduce((sum, order) => sum + getOrderTotal(order), 0) }
+  })
   return <>
     <div className="admin-cards">
       <article><span className="admin-card-icon mint"><ClipboardList size={22} /></span><div><small>ออเดอร์วันนี้</small><strong>24 รายการ</strong><p className="positive"><ArrowUpRight size={14} />เพิ่มขึ้น 12%</p></div></article>
@@ -66,6 +73,7 @@ export function DashboardSummary() {
       <article className="dashboard-chart-card"><div><h2>ยอดขาย 7 วันล่าสุด</h2><p>ติดตามรายได้รวมในแต่ละวัน</p></div><div className="dashboard-chart"><Line data={salesData} options={salesChartOptions} aria-label="กราฟยอดขาย 7 วันล่าสุด" role="img" /></div></article>
       <article className="dashboard-chart-card"><div><h2>ออเดอร์ตามช่วงเวลา</h2><p>ดูช่วงเวลาที่มีออเดอร์หนาแน่น</p></div><div className="dashboard-chart"><Bar data={orderData} options={chartOptions} aria-label="กราฟจำนวนออเดอร์ตามช่วงเวลา" role="img" /></div></article>
     </section>
-    <section className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>รายการที่ต้องดำเนินการ</h2><p>ติดตามงานสำคัญของร้านในวันนี้</p></div><button type="button" className="admin-text-button">ดูออเดอร์ทั้งหมด</button></div><div className="admin-task-list"><article><span className="admin-task-icon orange"><CircleAlert size={20} /></span><div><strong>สินค้าคงเหลือต่ำ 5 รายการ</strong><p>กรุณาเติมสินค้าเพื่อไม่ให้การขายสะดุด</p></div><button type="button">ตรวจสอบ</button></article><article><span className="admin-task-icon blue"><ClipboardList size={20} /></span><div><strong>มี 3 ออเดอร์รอจัดส่ง</strong><p>ลูกค้ารอรับสินค้าในรอบจัดส่งถัดไป</p></div><button type="button">ดูออเดอร์</button></article></div></section>
+    <section className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>ยอดขายวันนี้แยกตามจุดรับ</h2><p>ดูจำนวนลูกค้าและยอดขายก่อนเตรียมของแต่ละรอบ</p></div><Link to="/admin/dispatches/today" className="admin-text-button">ดูสรุปรอบส่งวันนี้</Link></div><div className="dashboard-location-list">{locationSummary.map((item) => <article key={item.location}><span className="admin-task-icon blue"><MapPin size={20} /></span><div><strong>{item.location}</strong><p>{item.orders} คนสั่งซื้อวันนี้</p></div><strong>{formatPrice(item.total)}</strong></article>)}</div></section>
+    <section className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>รายการที่ต้องดำเนินการ</h2><p>ติดตามงานสำคัญของร้านในวันนี้</p></div><Link to="/admin/orders" className="admin-text-button">ดูออเดอร์ทั้งหมด</Link></div><div className="admin-task-list"><article><span className="admin-task-icon orange"><CircleAlert size={20} /></span><div><strong>สินค้าคงเหลือต่ำ 5 รายการ</strong><p>กรุณาเติมสินค้าเพื่อไม่ให้การขายสะดุด</p></div><Link className="admin-secondary-button" to="/admin/products">ตรวจสอบ</Link></article><article><span className="admin-task-icon blue"><ClipboardList size={20} /></span><div><strong>มี 3 ออเดอร์รอจัดส่ง</strong><p>ลูกค้ารอรับสินค้าในรอบจัดส่งถัดไป</p></div><Link className="admin-secondary-button" to="/admin/dispatches/today">ดูรอบส่ง</Link></article></div></section>
   </>
 }

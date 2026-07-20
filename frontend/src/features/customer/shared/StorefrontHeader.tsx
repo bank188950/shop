@@ -42,6 +42,7 @@ export function StorefrontHeader() {
           </span>
         </Link>
         <div className="flex items-center gap-4 max-md:gap-1">
+          <Link to="/my-orders" className="hidden min-h-11 items-center rounded-full px-3 text-base font-extrabold text-[#195a2b] no-underline hover:bg-[#e1f3e5] sm:inline-flex">ออเดอร์ของฉัน</Link>
           <div ref={cartMenuRef} className="relative">
             <button className="relative grid size-11 place-items-center border-0 bg-transparent p-2 text-[#165c2e]" type="button" onClick={() => setIsCartOpen((open) => !open)} aria-label={`${isCartOpen ? 'ปิด' : 'เปิด'}ตะกร้า มี ${itemCount} รายการ`} aria-expanded={isCartOpen} aria-controls="header-cart-menu">
               <ShoppingCart size={25} strokeWidth={2.3} />{itemCount > 0 && <span className="absolute right-0 top-0 grid min-h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-xs font-extrabold text-white">{itemCount}</span>}

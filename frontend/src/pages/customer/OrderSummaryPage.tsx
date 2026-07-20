@@ -14,8 +14,8 @@ import { Button } from '@/components/ui/button'
 type DeliveryPeriod = 'morning' | 'afternoon'
 
 const deliveryOptions = {
-  morning: { label: 'รอบเช้า', time: '08:00 - 11:00', icon: SunMedium },
-  afternoon: { label: 'รอบบ่าย', time: '14:00 - 17:00', icon: Sunset },
+  morning: { label: 'รอบเช้า', cutoff: 'สั่งได้ถึง 08:00', time: 'จัดส่ง 09:00–10:00', cutoffHour: 8, icon: SunMedium },
+  afternoon: { label: 'รอบบ่าย', cutoff: 'สั่งได้ถึง 12:00', time: 'จัดส่ง 14:00–15:00', cutoffHour: 12, icon: Sunset },
 }
 
 const formatPrice = (price: number) => `${price.toLocaleString('th-TH')} บาท`
@@ -49,6 +49,10 @@ export function OrderSummaryPage() {
   }), [items])
   const itemCount = useMemo(() => cartItems.reduce((total, item) => total + item.quantity, 0), [cartItems])
   const subtotal = useMemo(() => cartItems.reduce((total, item) => total + item.price * item.quantity, 0), [cartItems])
+  const openPeriods = useMemo(() => {
+    const currentHour = new Date().getHours()
+    return { morning: currentHour < deliveryOptions.morning.cutoffHour, afternoon: currentHour < deliveryOptions.afternoon.cutoffHour }
+  }, [])
 
   const confirmOrder = async () => {
     if (!delivery) {
@@ -144,11 +148,13 @@ export function OrderSummaryPage() {
                       ? 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] ring-2 ring-[#f2b866]/65 shadow-[0_0_16px_3px_#f2b86655]'
                       : 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] hover:-translate-y-0.5 hover:shadow-lg'
                   const accentClass = isMorning ? 'text-[#338ad7]' : 'text-[#c88434]'
-                  return <button key={value} type="button" disabled={isOrderConfirmed} aria-pressed={selected} onClick={() => setDelivery((current) => current === value ? null : value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none ${cardClass}`}>
+                  const isOpen = openPeriods[value]
+                  return <button key={value} type="button" disabled={isOrderConfirmed || !isOpen} aria-pressed={selected} onClick={() => setDelivery((current) => current === value ? null : value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none ${cardClass}`}>
                     <span className={`absolute right-3 top-3 grid size-11 place-items-center rounded-full border-2 ${accentClass} ${isMorning ? 'border-[#338ad7]' : 'border-[#c88434]'} ${selected ? 'opacity-100' : 'opacity-0'}`}><Check size={20} strokeWidth={2.5} /></span>
                     <Icon size={32} className={accentClass} aria-hidden="true" />
                     <strong className="font-heading text-[22px]">{option.label}</strong>
                     <span className="text-xl font-semibold">{option.time}</span>
+                    <span className="text-base font-bold">{isOpen ? option.cutoff : 'ปิดรับแล้วสำหรับวันนี้'}</span>
                   </button>
                 })}
               </div>
