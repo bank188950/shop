@@ -12,7 +12,7 @@ export function ProductForm() {
       <div className="product-form-grid"><label>ชื่อสินค้า<input required placeholder="เช่น ลูกชิ้นหมูพรีเมียม" /></label><label>หมวดหมู่<select required defaultValue=""><option value="" disabled>เลือกหมวดหมู่</option><option>ลูกชิ้น</option><option>ไส้กรอก</option><option>เครื่องดื่ม</option></select></label><label>ราคา (บาท)<input type="number" min="0" required placeholder="0" /></label><label>จำนวนคงเหลือ<input type="number" min="0" required placeholder="0" /></label></div>
       <label className="product-form-full">รายละเอียดสินค้า<textarea rows={4} placeholder="ระบุขนาด หรือจำนวนต่อไม้" /></label>
       <div className="product-image-upload"><ImagePlus size={27} /><div><strong>อัปโหลดรูปสินค้า</strong><span>รองรับ JPG, PNG ขนาดไม่เกิน 5 MB</span></div><input type="file" accept="image/png,image/jpeg" aria-label="อัปโหลดรูปสินค้า" /></div>
-      <div className="product-form-actions"><Link to="/admin/products" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit"><Save size={18} />{saved ? 'บันทึกแล้ว' : 'บันทึกสินค้า'}</button></div>
+      <div className="product-form-actions"><Link to="/admin/products" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saved} aria-busy={saved}><Save size={18} />บันทึก</button></div>
     </form>
   </section>
 }

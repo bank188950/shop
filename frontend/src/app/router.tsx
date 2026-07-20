@@ -20,7 +20,7 @@ export function AppRouter() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="products" element={<ProductPage />} />
-          <Route path="products/new" element={<ProductInsertPage />} />
+          <Route path="products/add" element={<ProductInsertPage />} />
           <Route path="*" element={<div className="page-message">กำลังเตรียมหน้านี้</div>} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
