@@ -5,6 +5,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { getLocations } from '@/features/admin/location/admin-locations'
 
 type FormErrors = Record<string, string>
 
@@ -43,6 +44,7 @@ function DialogCloseButton() {
 function RegisterForm() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [location, setLocation] = useState('')
+  const activeLocations = getLocations().filter((item) => item.isActive)
 
   const validate = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -95,9 +97,7 @@ function RegisterForm() {
             <SelectValue placeholder="เลือกสถานที่ส่งของ" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="pickup-a">จุดรับสินค้า A</SelectItem>
-            <SelectItem value="pickup-b">จุดรับสินค้า B</SelectItem>
-            <SelectItem value="pickup-c">จุดรับสินค้า C</SelectItem>
+            {activeLocations.map((item) => <SelectItem key={item.id} value={String(item.id)}>{item.name}</SelectItem>)}
           </SelectContent>
         </Select>
         <FieldError id="register-location-error" message={errors.location} />

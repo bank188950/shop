@@ -6,6 +6,7 @@ import { getLocations, saveLocations, type AdminLocation } from './admin-locatio
 
 export function LocationForm({ location }: { location?: AdminLocation }) {
   const [name, setName] = useState(location?.name ?? '')
+  const [isActive, setIsActive] = useState(location?.isActive ?? true)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
   const navigate = useNavigate()
@@ -22,8 +23,8 @@ export function LocationForm({ location }: { location?: AdminLocation }) {
     }
 
     const nextLocations = location
-      ? locations.map((item) => item.id === location.id ? { ...item, name: nextName } : item)
-      : [...locations, { id: Date.now(), name: nextName }]
+      ? locations.map((item) => item.id === location.id ? { ...item, name: nextName, isActive } : item)
+      : [...locations, { id: Date.now(), name: nextName, isActive }]
     saveLocations(nextLocations)
     setSaved(true)
     window.setTimeout(() => navigate('/admin/locations'), 400)
@@ -34,6 +35,7 @@ export function LocationForm({ location }: { location?: AdminLocation }) {
     <form className="product-form-card location-form-card" onSubmit={submit}>
       <label htmlFor="location-name">ชื่อสถานที่รับสินค้า<Input id="location-name" required value={name} onChange={(event) => { setName(event.target.value); setError('') }} placeholder="เช่น หน้าโรงเรียนชุมชน" aria-describedby={error ? 'location-name-error' : undefined} /></label>
       {error && <p id="location-name-error" className="location-form-error" role="alert">{error}</p>}
+      <label className="location-active-toggle"><input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} /><span>เปิดการใช้งาน</span></label>
       <div className="product-form-actions"><Link to="/admin/locations" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saved} aria-busy={saved}><Save size={18} aria-hidden="true" />{saved ? 'บันทึกแล้ว' : 'บันทึก'}</button></div>
     </form>
   </section>
