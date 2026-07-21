@@ -13,6 +13,8 @@ import { OrderDetailPage } from '@/pages/admin/OrderDetailPage'
 import { DispatchTodayPage } from '@/pages/admin/DispatchTodayPage'
 import { SettingsPage } from '@/pages/admin/SettingsPage'
 import { MyOrdersPage } from '@/pages/customer/MyOrdersPage'
+import { LocationPage } from '@/pages/admin/LocationPage'
+import { LocationFormPage } from '@/pages/admin/LocationFormPage'
 
 export function AppRouter() {
   return (
@@ -29,6 +31,9 @@ export function AppRouter() {
           <Route path="products" element={<ProductPage />} />
           <Route path="products/add" element={<ProductInsertPage />} />
           <Route path="products/:productId/edit" element={<ProductEditPage />} />
+          <Route path="locations" element={<LocationPage />} />
+          <Route path="locations/add" element={<LocationFormPage />} />
+          <Route path="locations/:locationId/edit" element={<LocationFormPage />} />
           <Route path="orders" element={<OrderPage />} />
           <Route path="orders/:orderId" element={<OrderDetailPage />} />
           <Route path="dispatches/today" element={<DispatchTodayPage />} />
