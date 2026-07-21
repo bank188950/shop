@@ -15,6 +15,8 @@ import { SettingsPage } from '@/pages/admin/SettingsPage'
 import { MyOrdersPage } from '@/pages/customer/MyOrdersPage'
 import { LocationPage } from '@/pages/admin/LocationPage'
 import { LocationFormPage } from '@/pages/admin/LocationFormPage'
+import { ProductCategoryPage } from '@/pages/admin/ProductCategoryPage'
+import { ProductCategoryFormPage } from '@/pages/admin/ProductCategoryFormPage'
 
 export function AppRouter() {
   return (
@@ -31,6 +33,9 @@ export function AppRouter() {
           <Route path="products" element={<ProductPage />} />
           <Route path="products/add" element={<ProductInsertPage />} />
           <Route path="products/:productId/edit" element={<ProductEditPage />} />
+          <Route path="product-categories" element={<ProductCategoryPage />} />
+          <Route path="product-categories/add" element={<ProductCategoryFormPage />} />
+          <Route path="product-categories/:categoryId/edit" element={<ProductCategoryFormPage />} />
           <Route path="locations" element={<LocationPage />} />
           <Route path="locations/add" element={<LocationFormPage />} />
           <Route path="locations/:locationId/edit" element={<LocationFormPage />} />
