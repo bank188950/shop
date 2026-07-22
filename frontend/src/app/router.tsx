@@ -44,7 +44,7 @@ export function AppRouter() {
           <Route path="locations/:locationId/edit" element={<LocationFormPage />} />
           <Route path="orders" element={<OrderPage />} />
           <Route path="orders/:orderId" element={<OrderDetailPage />} />
-          <Route path="dispatches/today" element={<DispatchTodayPage />} />
+          <Route path="dispatches-today" element={<DispatchTodayPage />} />
           <Route path="banners" element={<BannerPage />} />
           <Route path="banners/add" element={<BannerInsertPage />} />
           <Route path="banners/:bannerId/edit" element={<BannerEditPage />} />

@@ -4,7 +4,7 @@ import { Bell, ChevronLeft, ClipboardList, Image, Layers, LayoutDashboard, LogOu
 
 const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
-  { label: 'รอบส่งวันนี้', icon: Truck, to: '/admin/dispatches/today' },
+  { label: 'รอบส่งวันนี้', icon: Truck, to: '/admin/dispatches-today' },
   { label: 'ออเดอร์', icon: ClipboardList, to: '/admin/orders' },
   { label: 'สินค้า', icon: Package, to: '/admin/products' },
   { label: 'หมวดสินค้า', icon: Layers, to: '/admin/product-categories' },

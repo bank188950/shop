@@ -1,4 +1,4 @@
-import { Eye, ListChecks, Search } from 'lucide-react'
+import { Eye, ListChecks, Repeat2, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
@@ -83,7 +83,7 @@ export function OrderPage() {
   }
 
   return <section className="admin-page">
-    <div className="admin-page-heading"><div><h1 className="admin-title">ออเดอร์</h1></div><Link to="/admin/dispatches/today" className="admin-secondary-button">ดูสรุปรอบส่งวันนี้</Link></div>
+    <div className="admin-page-heading"><div><h1 className="admin-title">ออเดอร์</h1></div><Link to="/admin/dispatches-today" className="admin-secondary-button"><Repeat2 size={18} aria-hidden="true" />ดูสรุปรอบส่งวันนี้</Link></div>
     <section className="admin-filter-card" aria-label="ตัวกรองออเดอร์">
       <label className="admin-filter-date">วันจัดส่ง<Input type="date" value={date} onChange={(event) => setDate(event.target.value)} /></label>
       <label className="admin-search"><Search size={18} aria-hidden="true" /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ค้นหาชื่อลูกค้า หรือเลขออเดอร์" /></label>

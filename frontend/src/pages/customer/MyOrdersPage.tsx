@@ -4,8 +4,8 @@ import { StorefrontHeader } from '@/features/customer/shared/StorefrontHeader'
 import { StorefrontFooter } from '@/features/customer/shared/StorefrontFooter'
 
 const orders = [
-  { id: 'ORD-200720-02', date: '20 ก.ค. 2569', period: 'รอบเช้า 09:00–10:00', location: 'จุดรับสินค้า A', total: '150 บาท', status: 'กำลังเตรียมของ', items: 'ลูกชิ้นเนื้อเอ็น 5 ไม้, น้ำเก๊กฮวยเย็น 2 แก้ว' },
-  { id: 'ORD-190720-01', date: '19 ก.ค. 2569', period: 'รอบบ่าย 14:00–15:00', location: 'จุดรับสินค้า B', total: '115 บาท', status: 'ส่งแล้ว', items: 'น้ำเก๊กฮวยเย็น 3 แก้ว, ลูกชิ้นเนื้อเอ็น 2 ไม้' },
+  { id: 'PO-200720-02', date: '20 ก.ค. 2569', period: 'รอบเช้า 09:00–10:00', location: 'จุดรับสินค้า A', total: '150 บาท', status: 'กำลังเตรียมของ', items: 'ลูกชิ้นเนื้อเอ็น 5 ไม้, น้ำเก๊กฮวยเย็น 2 แก้ว' },
+  { id: 'PO-190720-01', date: '19 ก.ค. 2569', period: 'รอบบ่าย 14:00–15:00', location: 'จุดรับสินค้า B', total: '115 บาท', status: 'ส่งแล้ว', items: 'น้ำเก๊กฮวยเย็น 3 แก้ว, ลูกชิ้นเนื้อเอ็น 2 ไม้' },
 ]
 
 export function MyOrdersPage() {
