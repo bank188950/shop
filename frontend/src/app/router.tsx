@@ -20,6 +20,8 @@ import { LocationPage } from '@/pages/admin/LocationPage'
 import { LocationFormPage } from '@/pages/admin/LocationFormPage'
 import { ProductCategoryPage } from '@/pages/admin/ProductCategoryPage'
 import { ProductCategoryFormPage } from '@/pages/admin/ProductCategoryFormPage'
+import { ProductUnitPage } from '@/pages/admin/ProductUnitPage'
+import { ProductUnitFormPage } from '@/pages/admin/ProductUnitFormPage'
 import { UserFormPage } from '@/pages/admin/UserFormPage'
 import { UserPage } from '@/pages/admin/UserPage'
 
@@ -41,6 +43,9 @@ export function AppRouter() {
           <Route path="product-categories" element={<ProductCategoryPage />} />
           <Route path="product-categories/add" element={<ProductCategoryFormPage />} />
           <Route path="product-categories/:categoryId/edit" element={<ProductCategoryFormPage />} />
+          <Route path="product-units" element={<ProductUnitPage />} />
+          <Route path="product-units/add" element={<ProductUnitFormPage />} />
+          <Route path="product-units/:unitId/edit" element={<ProductUnitFormPage />} />
           <Route path="locations" element={<LocationPage />} />
           <Route path="locations/add" element={<LocationFormPage />} />
           <Route path="locations/:locationId/edit" element={<LocationFormPage />} />

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { Bell, ClipboardList, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, Settings, Store, Truck, UserRound } from 'lucide-react'
+import { Bell, ClipboardList, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, Ruler, Settings, Store, Truck, UserRound } from 'lucide-react'
 
 const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
@@ -9,6 +9,7 @@ const items = [
   { label: 'ผู้ใช้งาน', icon: UserRound, to: '/admin/users' },
   { label: 'สินค้า', icon: Package, to: '/admin/products' },
   { label: 'หมวดสินค้า', icon: Layers, to: '/admin/product-categories' },
+  { label: 'หน่วยสินค้า', icon: Ruler, to: '/admin/product-units' },
   { label: 'สถานที่รับสินค้า', icon: MapPin, to: '/admin/locations' },
   { label: 'แบนเนอร์', icon: Image, to: '/admin/banners' },
   { label: 'ตั้งค่า', icon: Settings, to: '/admin/settings' },

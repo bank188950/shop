@@ -17,7 +17,9 @@ export function getProductCategories() {
   if (!savedCategories) return defaultCategories
 
   try {
-    return (JSON.parse(savedCategories) as AdminProductCategory[]).map((category) => ({ ...category, tracksQuantity: category.tracksQuantity ?? false }))
+    const categories = JSON.parse(savedCategories) as AdminProductCategory[]
+    if (!categories.length) return defaultCategories
+    return categories.map((category) => ({ ...category, tracksQuantity: category.tracksQuantity ?? false }))
   } catch {
     return defaultCategories
   }
