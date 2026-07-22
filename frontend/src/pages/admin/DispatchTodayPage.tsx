@@ -38,8 +38,8 @@ export function DispatchTodayPage() {
     let selectedStatus = ''
     let selectRoot: Root | undefined
     const result = await Swal.fire({
-      title: 'เปลี่ยนสถานะออเดอร์',
-      text: `เลือกสถานะใหม่สำหรับ ${locationOrders.length} ออเดอร์`,
+      title: 'เปลี่ยนสถานะรายการสั่งซื้อ',
+      text: `เลือกสถานะใหม่สำหรับ ${locationOrders.length} รายการสั่งซื้อ`,
       html: '<div id="dispatch-status-select"></div>',
       showCancelButton: true,
       confirmButtonText: 'เปลี่ยนสถานะ',
@@ -67,7 +67,7 @@ export function DispatchTodayPage() {
   }
 
   return <section className="admin-page">
-    <div className="admin-page-heading"><div><h1 className="admin-title">รอบส่งวันนี้</h1></div><Link className="admin-secondary-button" to="/admin/orders"><Repeat2 size={18} aria-hidden="true" />ดูออเดอร์แต่ละรายการ</Link></div>
+    <div className="admin-page-heading"><div><h1 className="admin-title">รอบส่งวันนี้</h1></div><Link className="admin-secondary-button" to="/admin/orders"><Repeat2 size={18} aria-hidden="true" />ดูรายการสั่งซื้อ</Link></div>
     <section className="dispatch-period-picker" aria-label="เลือกรอบจัดส่ง">{(Object.keys(deliveryPeriods) as DeliveryPeriod[]).map((value) => { const Icon = value === 'morning' ? Sun : Sunset; const isSelected = period === value; return <button type="button" key={value} className={`${value} ${isSelected ? 'active' : ''}`} aria-pressed={isSelected} onClick={() => setPeriod(value)}>{isSelected && <Check className="dispatch-period-selected-icon" size={20} aria-hidden="true" />}<Icon size={24} aria-hidden="true" /><span>{deliveryPeriods[value].label}</span><small>จัด{deliveryPeriods[value].deliveryTime}</small></button> })}</section>
     <section className="dispatch-summary"><div><small>ลูกค้าทั้งหมด</small><strong>{orders.length} คน</strong></div><div><small>ยอดรวมรอบนี้</small><strong>{formatPrice(total)}</strong></div><div><small>จุดรับสินค้า</small><strong>{locations.length} จุด</strong></div></section>
     <section className="dispatch-total-card"><div><h2><PackageOpen size={22} aria-hidden="true" />รวมของที่ต้องเตรียม</h2><p>นับจากทุกสถานที่ใน{deliveryPeriods[period].label}</p></div><ul>{totalItems.map(([name, item]) => <li key={name} className={name.includes('น้ำ') ? 'drink' : name.includes('ไส้กรอก') ? 'sausage' : name.includes('เนื้อ') ? 'beef' : 'pork'}><span>{name}</span><strong>{item.quantity} {item.unit}</strong></li>)}</ul></section>

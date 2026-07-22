@@ -16,7 +16,7 @@ export function AdminLoginForm() {
     <section className="admin-login-intro">
       <span className="admin-login-logo"><Store size={37} /></span>
       <h1>Admin Portal</h1>
-      <p>จัดการออเดอร์และคลังสินค้าได้อย่างง่ายดาย</p>
+      <p>จัดการรายการสั่งซื้อและคลังสินค้าได้อย่างง่ายดาย</p>
     </section>
     <form className="admin-login-card" onSubmit={signIn}>
       <label htmlFor="admin-username">ชื่อผู้ใช้</label>
