@@ -4,7 +4,8 @@ import { createRoot, type Root } from 'react-dom/client'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, mockOrders, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderStatus } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderStatus } from '@/features/admin/orders/order-data'
+import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 const dispatchStatusOptions = orderListStatuses.filter((status) => status !== 'รอชำระเงิน' && status !== 'ยกเลิก')
 
@@ -14,7 +15,7 @@ function DispatchStatusSelect({ onValueChange }: { onValueChange: (value: string
 
 export function DispatchTodayPage() {
   const [period, setPeriod] = useState<DeliveryPeriod>('morning')
-  const [ordersData, setOrdersData] = useState<AdminOrder[]>(mockOrders)
+  const { orders: ordersData, setOrdersStatus } = usePreparationStore()
   const orders = ordersData.filter((order) => order.deliveryDate === '2026-07-20' && order.period === period && order.paymentStatus === 'จ่ายแล้ว' && order.status !== 'ยกเลิก')
   const locations = useMemo(() => Array.from(new Set(orders.map((order) => order.location))).map((location) => {
     const locationOrders = orders.filter((order) => order.location === location)
@@ -62,8 +63,7 @@ export function DispatchTodayPage() {
     })
     if (!result.value) return
 
-    const locationOrderIds = new Set(locationOrders.map((order) => order.id))
-    setOrdersData((current) => current.map((order) => locationOrderIds.has(order.id) ? { ...order, status: result.value as OrderStatus } : order))
+    setOrdersStatus(locationOrders.map((order) => order.id), result.value as OrderStatus)
   }
 
   return <section className="admin-page">

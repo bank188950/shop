@@ -6,7 +6,8 @@ import Swal from 'sweetalert2'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, mockOrders, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderListStatus, type OrderStatus } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderListStatus, type OrderStatus } from '@/features/admin/orders/order-data'
+import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 const bulkStatusOptions = orderListStatuses.filter((item) => item !== 'รอชำระเงิน')
 
@@ -15,7 +16,7 @@ function BulkStatusSelect({ onValueChange }: { onValueChange: (value: string) =>
 }
 
 export function OrderPage() {
-  const [ordersData, setOrdersData] = useState<AdminOrder[]>(mockOrders)
+  const { orders: ordersData, setOrdersStatus } = usePreparationStore()
   const [date, setDate] = useState('2026-07-20')
   const [period, setPeriod] = useState<'all' | DeliveryPeriod>('all')
   const [location, setLocation] = useState('all')
@@ -87,7 +88,7 @@ export function OrderPage() {
     })
     if (!result.value) return
 
-    setOrdersData((current) => current.map((order) => selectedChangeableOrderIds.includes(order.id) ? { ...order, status: result.value as OrderStatus } : order))
+    setOrdersStatus(selectedChangeableOrderIds, result.value as OrderStatus)
     setSelectedOrderIds((current) => current.filter((id) => !selectedChangeableOrderIds.includes(id)))
   }
 

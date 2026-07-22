@@ -5,7 +5,8 @@ import { ArrowRight, Banknote, CalendarDays, CircleAlert, ClipboardList, Eye, Ma
 import { Link } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, mockOrders, statusClass, type DeliveryPeriod } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, statusClass, type DeliveryPeriod } from '@/features/admin/orders/order-data'
+import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
@@ -49,6 +50,7 @@ function formatDashboardDate(value: string) {
 }
 
 export function DashboardSummary() {
+  const { orders: adminOrders } = usePreparationStore()
   const [date, setDate] = useState(dashboardDate)
   const [period, setPeriod] = useState<'all' | DeliveryPeriod>('all')
   const [location, setLocation] = useState('all')
@@ -57,15 +59,15 @@ export function DashboardSummary() {
   const [chartMonth, setChartMonth] = useState('6')
   const [chartLocation, setChartLocation] = useState('all')
 
-  const locations = useMemo(() => Array.from(new Set(mockOrders.map((order) => order.location))), [])
+  const locations = useMemo(() => Array.from(new Set(adminOrders.map((order) => order.location))), [adminOrders])
   const periodSummary = period === 'all' ? 'รอบเช้าและรอบบ่าย' : deliveryPeriods[period].label
-  const filteredOrders = useMemo(() => mockOrders.filter((order) => (
+  const filteredOrders = useMemo(() => adminOrders.filter((order) => (
     order.deliveryDate === date
     && (period === 'all' || order.period === period)
     && (location === 'all' || order.location === location)
-  )), [date, location, period])
+  )), [adminOrders, date, location, period])
   const paidOrders = filteredOrders.filter((order) => order.paymentStatus === 'จ่ายแล้ว')
-  const activeOrders = filteredOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'พร้อมส่ง'].includes(order.status))
+  const activeOrders = filteredOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมของ', 'พร้อมส่ง'].includes(order.status))
   const pendingOrders = filteredOrders
     .filter((order) => order.paymentStatus === 'รอชำระเงิน' || order.status === 'ยกเลิก')
     .slice(0, 5)
@@ -74,7 +76,7 @@ export function DashboardSummary() {
     const morning = orders.filter((order) => order.period === 'morning').length
     const afternoon = orders.filter((order) => order.period === 'afternoon').length
     const paid = orders.filter((order) => order.paymentStatus === 'จ่ายแล้ว').length
-    const active = orders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'พร้อมส่ง'].includes(order.status)).length
+    const active = orders.filter((order) => ['รอตรวจสอบ', 'เตรียมของ', 'พร้อมส่ง'].includes(order.status)).length
     return { location: item, morning, afternoon, paid, active, total: paid ? orders.filter((order) => order.paymentStatus === 'จ่ายแล้ว').reduce((sum, order) => sum + getOrderTotal(order), 0) : 0 }
   }).filter((item) => item.morning + item.afternoon > 0)
   const selectedMonthIndex = Number(chartMonth)

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { ClipboardList, ClipboardPlus, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Truck, UserRound } from 'lucide-react'
+import { ClipboardList, ClipboardPlus, Flame, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Truck, UserRound } from 'lucide-react'
 import { mockOrders } from '@/features/admin/orders/order-data'
 import { adminProducts } from '@/features/admin/product/admin-products'
 
@@ -8,6 +8,7 @@ const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
   { label: 'รอบส่งวันนี้', icon: Truck, to: '/admin/dispatches-today' },
   { label: 'รายการสั่งซื้อ', icon: ClipboardList, to: '/admin/orders' },
+  { label: 'เตรียมของ', icon: Flame, to: '/admin/preparations' },
   { label: 'ผู้ใช้งาน', icon: UserRound, to: '/admin/users' },
   { label: 'สินค้า', icon: Package, to: '/admin/products' },
   { label: 'หมวดสินค้า', icon: Layers, to: '/admin/product-categories' },
