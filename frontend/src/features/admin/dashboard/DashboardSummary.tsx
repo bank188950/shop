@@ -58,14 +58,13 @@ export function DashboardSummary() {
   const [chartLocation, setChartLocation] = useState('all')
 
   const locations = useMemo(() => Array.from(new Set(mockOrders.map((order) => order.location))), [])
-  const todayOrders = useMemo(() => mockOrders.filter((order) => order.deliveryDate === dashboardDate), [])
-  const filteredOrders = useMemo(() => todayOrders.filter((order) => (
+  const filteredOrders = useMemo(() => mockOrders.filter((order) => (
     order.deliveryDate === date
     && (period === 'all' || order.period === period)
     && (location === 'all' || order.location === location)
-  )), [date, location, period, todayOrders])
-  const paidOrders = todayOrders.filter((order) => order.paymentStatus === 'จ่ายแล้ว')
-  const activeOrders = todayOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'กำลังส่ง'].includes(order.status))
+  )), [date, location, period])
+  const paidOrders = filteredOrders.filter((order) => order.paymentStatus === 'จ่ายแล้ว')
+  const activeOrders = filteredOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'กำลังส่ง'].includes(order.status))
   const pendingOrders = filteredOrders
     .filter((order) => order.paymentStatus === 'รอชำระเงิน' || order.status === 'ยกเลิก')
     .slice(0, 5)
@@ -113,7 +112,7 @@ export function DashboardSummary() {
 
     <div className="admin-cards dashboard-kpis">
       <Link to="/admin/orders" className="dashboard-kpi"><span className="admin-card-icon mint"><WalletCards size={22} aria-hidden="true" /></span><span><small>ยอดขายที่ชำระแล้ว</small><strong>{formatPrice(paidOrders.reduce((sum, order) => sum + getOrderTotal(order), 0))}</strong><p>มี {paidOrders.length} รายการ <ArrowRight size={14} aria-hidden="true" /></p></span></Link>
-      <Link to="/admin/orders" className="dashboard-kpi"><span className="admin-card-icon peach"><ClipboardList size={22} aria-hidden="true" /></span><span><small>แสดงรายการ</small><strong>{todayOrders.length} รายการ</strong><p>ดูรายการทั้งหมด <ArrowRight size={14} aria-hidden="true" /></p></span></Link>
+      <Link to="/admin/orders" className="dashboard-kpi"><span className="admin-card-icon peach"><ClipboardList size={22} aria-hidden="true" /></span><span><small>แสดงรายการ</small><strong>{filteredOrders.length} รายการ</strong><p>ดูรายการทั้งหมด <ArrowRight size={14} aria-hidden="true" /></p></span></Link>
       <Link to="/admin/dispatches-today" className="dashboard-kpi"><span className="admin-card-icon blue"><Truck size={22} aria-hidden="true" /></span><span><small>รอดำเนินการ</small><strong>{activeOrders.length} รายการ</strong><p className={activeOrders.length ? 'warning' : 'positive'}>{activeOrders.length ? <>ดูรายการ <ArrowRight size={14} aria-hidden="true" /></> : 'ไม่มีงานค้าง'}</p></span></Link>
       <a href="#dashboard-pending-orders" className="dashboard-kpi"><span className="admin-card-icon rose"><CircleAlert size={22} aria-hidden="true" /></span><span><small>รอชำระเงินและยกเลิก</small><strong>{pendingOrders.length} รายการ</strong><p>ดูรายการ <ArrowRight size={14} aria-hidden="true" /></p></span></a>
     </div>
