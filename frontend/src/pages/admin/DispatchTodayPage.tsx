@@ -36,7 +36,7 @@ export function DispatchTodayPage() {
   }
 
   return <section className="admin-page">
-    <div className="admin-page-heading"><div><p className="admin-kicker">สรุปเพื่อเตรียมของและออกส่ง</p><h1 className="admin-title">รอบส่งวันนี้</h1></div><Link className="admin-secondary-button" to="/admin/orders">ดูออเดอร์รายรายการ</Link></div>
+    <div className="admin-page-heading"><div><h1 className="admin-title">รอบส่งวันนี้</h1></div><Link className="admin-secondary-button" to="/admin/orders">ดูออเดอร์รายรายการ</Link></div>
     <section className="dispatch-period-picker" aria-label="เลือกรอบจัดส่ง">{(Object.keys(deliveryPeriods) as DeliveryPeriod[]).map((value) => <button type="button" key={value} className={period === value ? 'active' : ''} aria-pressed={period === value} onClick={() => setPeriod(value)}><span>{deliveryPeriods[value].label}</span><small>{deliveryPeriods[value].deliveryTime}</small></button>)}</section>
     <section className="dispatch-summary"><div><small>ลูกค้าทั้งหมด</small><strong>{orders.length} คน</strong></div><div><small>ยอดรวมรอบนี้</small><strong>{formatPrice(total)}</strong></div><div><small>จุดรับสินค้า</small><strong>{locations.length} จุด</strong></div><div><small>สถานะรอบ</small><strong>{deliveryPeriods[period].label}</strong><span>{deliveryPeriods[period].deliveryTime}</span></div></section>
     <section className="dispatch-total-card"><div><h2><PackageOpen size={22} aria-hidden="true" />รวมของที่ต้องเตรียม</h2><p>นับจากทุกสถานที่ใน{deliveryPeriods[period].label}</p></div><ul>{totalItems.map(([name, item]) => <li key={name}><span>{name}</span><strong>{item.quantity} {item.unit}</strong></li>)}</ul></section>

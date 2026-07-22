@@ -1,13 +1,14 @@
 import { Check, MapPin, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
 import { getLocations, saveLocations } from './admin-locations'
 
 export function LocationTable() {
   const [locations, setLocations] = useState(getLocations)
 
-  function deleteLocation(locationId: number, locationName: string) {
-    if (!window.confirm(`ต้องการลบ ${locationName} ใช่หรือไม่?`)) return
+  async function deleteLocation(locationId: number, locationName: string) {
+    if (!await confirmAdminDelete(locationName)) return
 
     const nextLocations = locations.filter((location) => location.id !== locationId)
     setLocations(nextLocations)

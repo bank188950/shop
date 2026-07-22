@@ -1,13 +1,14 @@
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
 import { getProductCategories, saveProductCategories } from './admin-categories'
 
 export function CategoryTable() {
   const [categories, setCategories] = useState(getProductCategories)
 
-  function deleteCategory(categoryId: number, categoryName: string) {
-    if (!window.confirm(`ต้องการลบ ${categoryName} ใช่หรือไม่?`)) return
+  async function deleteCategory(categoryId: number, categoryName: string) {
+    if (!await confirmAdminDelete(categoryName)) return
 
     const nextCategories = categories.filter((category) => category.id !== categoryId)
     setCategories(nextCategories)

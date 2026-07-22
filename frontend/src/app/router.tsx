@@ -12,6 +12,9 @@ import { OrderPage } from '@/pages/admin/OrderPage'
 import { OrderDetailPage } from '@/pages/admin/OrderDetailPage'
 import { DispatchTodayPage } from '@/pages/admin/DispatchTodayPage'
 import { SettingsPage } from '@/pages/admin/SettingsPage'
+import { BannerPage } from '@/pages/admin/BannerPage'
+import { BannerInsertPage } from '@/pages/admin/BannerInsertPage'
+import { BannerEditPage } from '@/pages/admin/BannerEditPage'
 import { MyOrdersPage } from '@/pages/customer/MyOrdersPage'
 import { LocationPage } from '@/pages/admin/LocationPage'
 import { LocationFormPage } from '@/pages/admin/LocationFormPage'
@@ -42,6 +45,9 @@ export function AppRouter() {
           <Route path="orders" element={<OrderPage />} />
           <Route path="orders/:orderId" element={<OrderDetailPage />} />
           <Route path="dispatches/today" element={<DispatchTodayPage />} />
+          <Route path="banners" element={<BannerPage />} />
+          <Route path="banners/add" element={<BannerInsertPage />} />
+          <Route path="banners/:bannerId/edit" element={<BannerEditPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="*" element={<div className="page-message">กำลังเตรียมหน้านี้</div>} />
         </Route>

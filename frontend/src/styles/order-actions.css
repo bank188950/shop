@@ -114,4 +114,51 @@
   .admin-filter-card .admin-search {
     grid-column: auto;
   }
+
+  .banner-image-upload {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .banner-image-upload [data-slot='input'] {
+    width: 100%;
+    margin-left: 40px;
+  }
+
+  .banner-form-actions .admin-primary-button {
+    width: 100%;
+  }
+
+  .banner-add-action .admin-secondary-button {
+    width: 100%;
+  }
+
+  .banner-list-card {
+    grid-template-columns: 1fr;
+  }
+
+  .banner-list-card > img {
+    height: auto;
+    aspect-ratio: 3 / 1;
+  }
+
+  .banner-table-image {
+    width: 150px;
+    height: 64px;
+  }
+
+  .product-image-preview img {
+    width: 150px;
+    height: 150px;
+  }
+
+  .admin-bulk-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-bulk-actions .admin-primary-button {
+    width: 100%;
+  }
+
 }
