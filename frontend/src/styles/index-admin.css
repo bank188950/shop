@@ -150,3 +150,4 @@
 @media (max-width: 600px) { .admin-cards .dashboard-kpi small { font-size: 14px; }.admin-cards .dashboard-kpi strong { font-size: 25px; }.admin-cards .dashboard-kpi p { font-size: 14px; } }
 .dashboard-filter-summary { display: inline-flex; align-items: center; gap: 7px; color: #316b8a; }
 .dashboard-dispatch-controls .dashboard-filter-summary { margin-top: 20px; }
+.dashboard-filter-summary-bottom { margin: 20px 2px 0; }
