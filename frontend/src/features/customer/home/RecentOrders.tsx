@@ -8,7 +8,7 @@ const recentOrders = [
     totalAmount: 100,
     period: 'ช่วงเช้า',
     orderedAt: '04 เม.ย. 2568 08:23',
-    status: 'รอชำระเงิน',
+    paymentStatus: 'รอชำระเงิน',
   },
   {
     nickname: 'คุณฝน',
@@ -16,7 +16,7 @@ const recentOrders = [
     totalAmount: 120,
     period: 'ช่วงบ่าย',
     orderedAt: '04 เม.ย. 2568 13:01',
-    status: 'จ่ายแล้ว',
+    paymentStatus: 'จ่ายแล้ว',
   },
   {
     nickname: 'คุณต้น',
@@ -24,7 +24,7 @@ const recentOrders = [
     totalAmount: 80,
     period: 'ช่วงเช้า',
     orderedAt: '03 เม.ย. 2568 09:15',
-    status: 'จ่ายแล้ว',
+    paymentStatus: 'จ่ายแล้ว',
   },
   {
     nickname: 'คุณแอน',
@@ -32,7 +32,7 @@ const recentOrders = [
     totalAmount: 90,
     period: 'ช่วงบ่าย',
     orderedAt: '03 เม.ย. 2568 14:26',
-    status: 'รอชำระเงิน',
+    paymentStatus: 'รอชำระเงิน',
   },
   {
     nickname: 'คุณกอล์ฟ',
@@ -40,7 +40,7 @@ const recentOrders = [
     totalAmount: 70,
     period: 'ช่วงเช้า',
     orderedAt: '02 เม.ย. 2568 10:04',
-    status: 'จ่ายแล้ว',
+    paymentStatus: 'จ่ายแล้ว',
   },
   {
     nickname: 'คุณนิด',
@@ -48,7 +48,7 @@ const recentOrders = [
     totalAmount: 75,
     period: 'ช่วงบ่าย',
     orderedAt: '02 เม.ย. 2568 15:12',
-    status: 'รอชำระเงิน',
+    paymentStatus: 'รอชำระเงิน',
   },
   {
     nickname: 'คุณพีท',
@@ -56,7 +56,7 @@ const recentOrders = [
     totalAmount: 95,
     period: 'ช่วงเช้า',
     orderedAt: '01 เม.ย. 2568 08:40',
-    status: 'จ่ายแล้ว',
+    paymentStatus: 'จ่ายแล้ว',
   },
   {
     nickname: 'คุณเมย์',
@@ -64,7 +64,7 @@ const recentOrders = [
     totalAmount: 80,
     period: 'ช่วงบ่าย',
     orderedAt: '01 เม.ย. 2568 13:35',
-    status: 'จ่ายแล้ว',
+    paymentStatus: 'จ่ายแล้ว',
   },
   {
     nickname: 'คุณจอย',
@@ -72,7 +72,7 @@ const recentOrders = [
     totalAmount: 65,
     period: 'ช่วงเช้า',
     orderedAt: '31 มี.ค. 2568 09:06',
-    status: 'รอชำระเงิน',
+    paymentStatus: 'รอชำระเงิน',
   },
   {
     nickname: 'คุณอาร์ต',
@@ -80,7 +80,7 @@ const recentOrders = [
     totalAmount: 85,
     period: 'ช่วงบ่าย',
     orderedAt: '31 มี.ค. 2568 14:08',
-    status: 'จ่ายแล้ว',
+    paymentStatus: 'จ่ายแล้ว',
   },
   {
     nickname: 'คุณอ้อย',
@@ -88,7 +88,7 @@ const recentOrders = [
     totalAmount: 70,
     period: 'ช่วงเช้า',
     orderedAt: '30 มี.ค. 2568 10:18',
-    status: 'จ่ายแล้ว',
+    paymentStatus: 'จ่ายแล้ว',
   },
   {
     nickname: 'คุณกิ่ง',
@@ -96,7 +96,7 @@ const recentOrders = [
     totalAmount: 60,
     period: 'ช่วงบ่าย',
     orderedAt: '30 มี.ค. 2568 15:04',
-    status: 'รอชำระเงิน',
+    paymentStatus: 'รอชำระเงิน',
   },
 ]
 
@@ -121,7 +121,7 @@ export function RecentOrders() {
               <th scope="col" className="px-6 py-4 text-lg font-extrabold">ช่วงเวลา</th>
               <th scope="col" className="px-6 py-4 text-lg font-extrabold">สั่งเมื่อ</th>
               <th scope="col" className="px-6 py-4 text-lg font-extrabold">จำนวนเงิน</th>
-              <th scope="col" className="px-6 py-4 text-lg font-extrabold">สถานะ</th>
+              <th scope="col" className="px-6 py-4 text-lg font-extrabold">ชำระเงิน</th>
             </tr>
           </thead>
           <tbody>
@@ -132,7 +132,7 @@ export function RecentOrders() {
                 <td className={`whitespace-nowrap px-6 py-5 text-lg font-extrabold ${order.period === 'ช่วงเช้า' ? 'text-[#338ad7]' : 'text-[#c88434]'}`}>{order.period}</td>
                 <td className="whitespace-nowrap px-6 py-5 text-lg font-semibold text-[#455a64]">{order.orderedAt}</td>
                 <td className="whitespace-nowrap px-6 py-5 text-lg font-extrabold text-[#76503a]">{order.totalAmount.toLocaleString('th-TH')} บาท</td>
-                <td className="whitespace-nowrap px-6 py-5"><span className={`inline-flex rounded-full px-4 py-1.5 text-lg font-extrabold ${order.status === 'รอชำระเงิน' ? 'bg-[#ffe6e3] text-[#bd3b35]' : 'bg-[#def2e1] text-[#287b3b]'}`}>{order.status}</span></td>
+                <td className="whitespace-nowrap px-6 py-5"><span className={`inline-flex rounded-full px-4 py-1.5 text-lg font-extrabold ${order.paymentStatus === 'รอชำระเงิน' ? 'bg-[#ffe6e3] text-[#bd3b35]' : 'bg-[#def2e1] text-[#287b3b]'}`}>{order.paymentStatus}</span></td>
               </tr>
             ))}
           </tbody>

@@ -2,14 +2,14 @@ import { ArrowLeft, CheckCircle2, Clock3, MapPin, PackageCheck, Phone, ReceiptTe
 import { Link, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { deliveryPeriods, formatPrice, getOrderTotal, mockOrders, statusClass, type OrderStatus } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderTotal, mockOrders, orderListStatuses, statusClass, type OrderStatus } from '@/features/admin/orders/order-data'
 
-const statusOptions: OrderStatus[] = ['เตรียมของ', 'ออกส่งแล้ว', 'ส่งแล้ว', 'ยกเลิก']
+const statusOptions: OrderStatus[] = [...orderListStatuses]
 
 export function OrderDetailPage() {
   const { orderId } = useParams()
   const order = mockOrders.find((item) => item.id === orderId)
-  const [status, setStatus] = useState<OrderStatus>(order?.status ?? 'เตรียมของ')
+  const [status, setStatus] = useState<OrderStatus>(order?.status ?? 'รอชำระเงิน')
   const [paymentStatus, setPaymentStatus] = useState(order?.paymentStatus ?? 'รอชำระเงิน')
   if (!order) return <section className="admin-page"><div className="admin-page-heading"><div><h1 className="admin-title">ไม่พบออเดอร์</h1></div></div><Link className="admin-primary-button" to="/admin/orders">กลับไปหน้าออเดอร์</Link></section>
 
