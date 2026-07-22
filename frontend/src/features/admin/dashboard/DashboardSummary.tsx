@@ -65,7 +65,7 @@ export function DashboardSummary() {
     && (location === 'all' || order.location === location)
   )), [date, location, period])
   const paidOrders = filteredOrders.filter((order) => order.paymentStatus === 'จ่ายแล้ว')
-  const activeOrders = filteredOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'กำลังส่ง'].includes(order.status))
+  const activeOrders = filteredOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'พร้อมส่ง'].includes(order.status))
   const pendingOrders = filteredOrders
     .filter((order) => order.paymentStatus === 'รอชำระเงิน' || order.status === 'ยกเลิก')
     .slice(0, 5)
@@ -74,7 +74,7 @@ export function DashboardSummary() {
     const morning = orders.filter((order) => order.period === 'morning').length
     const afternoon = orders.filter((order) => order.period === 'afternoon').length
     const paid = orders.filter((order) => order.paymentStatus === 'จ่ายแล้ว').length
-    const active = orders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'กำลังส่ง'].includes(order.status)).length
+    const active = orders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'พร้อมส่ง'].includes(order.status)).length
     return { location: item, morning, afternoon, paid, active, total: paid ? orders.filter((order) => order.paymentStatus === 'จ่ายแล้ว').reduce((sum, order) => sum + getOrderTotal(order), 0) : 0 }
   }).filter((item) => item.morning + item.afternoon > 0)
   const selectedMonthIndex = Number(chartMonth)
