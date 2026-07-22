@@ -6,13 +6,11 @@ import { Link } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { adminProducts } from '@/features/admin/product/admin-products'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, mockOrders, statusClass, type DeliveryPeriod, type OrderListStatus } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderTotal, mockOrders, type DeliveryPeriod } from '@/features/admin/orders/order-data'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
 const dashboardDate = '2026-07-20'
-const statusFilters = ['ทั้งหมด', 'รอชำระเงิน', 'รอตรวจสอบ', 'เตรียมสินค้า', 'กำลังส่ง'] as const
-
 const chartOptions = (metric: 'sales' | 'orders') => ({
   responsive: true,
   maintainAspectRatio: false,
@@ -53,7 +51,6 @@ export function DashboardSummary() {
   const [date, setDate] = useState(dashboardDate)
   const [period, setPeriod] = useState<'all' | DeliveryPeriod>('all')
   const [location, setLocation] = useState('all')
-  const [orderStatus, setOrderStatus] = useState<(typeof statusFilters)[number]>('ทั้งหมด')
   const [chartMetric, setChartMetric] = useState<'sales' | 'orders'>('sales')
 
   const locations = useMemo(() => Array.from(new Set(mockOrders.map((order) => order.location))), [])
@@ -66,10 +63,9 @@ export function DashboardSummary() {
   const paidOrders = todayOrders.filter((order) => order.paymentStatus === 'จ่ายแล้ว')
   const activeOrders = todayOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'กำลังส่ง'].includes(order.status))
   const lowStockProducts = adminProducts.filter((product) => product.status === 'สต็อกต่ำ')
-  const requiredOrders = filteredOrders
-    .filter((order) => !['ส่งแล้ว', 'ยกเลิก'].includes(order.status))
-    .filter((order) => orderStatus === 'ทั้งหมด' || getOrderListStatus(order) === orderStatus)
-    .slice(0, 6)
+  const unpaidOrders = filteredOrders
+    .filter((order) => order.paymentStatus === 'รอชำระเงิน' && order.status !== 'ยกเลิก')
+    .slice(0, 5)
   const locationSummary = locations.map((item) => {
     const orders = filteredOrders.filter((order) => order.location === item)
     const morning = orders.filter((order) => order.period === 'morning').length
@@ -109,8 +105,8 @@ export function DashboardSummary() {
     <section className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>สรุปรอบส่งแยกตามจุดรับสินค้า</h2><p>ใช้ตรวจจำนวนงานและยอดขายก่อนเตรียมของ</p></div><Link to="/admin/dispatches-today" className="admin-text-button">ดูรอบส่งวันนี้</Link></div><div className="dashboard-table-scroll"><table className="dashboard-data-table"><thead><tr><th>จุดรับสินค้า</th><th>รอบเช้า</th><th>รอบบ่าย</th><th>จ่ายแล้ว</th><th>รอดำเนินการ</th><th>ยอดขาย</th><th><span className="sr-only">ดูรอบส่ง</span></th></tr></thead><tbody>{locationSummary.length ? locationSummary.map((item) => <tr key={item.location}><td><strong>{item.location}</strong></td><td className="numeric">{item.morning}</td><td className="numeric">{item.afternoon}</td><td className="numeric">{item.paid}</td><td className="numeric">{item.active}</td><td className="numeric"><strong>{formatPrice(item.total)}</strong></td><td><Link className="admin-table-link" to="/admin/dispatches-today" aria-label={`ดูรอบส่ง ${item.location}`}><Eye size={18} aria-hidden="true" /></Link></td></tr>) : <tr><td colSpan={7} className="dashboard-empty-cell">ไม่มีออเดอร์ในตัวกรองนี้</td></tr>}</tbody></table></div></section>
 
     <section className="dashboard-bottom-grid">
-      <article className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>ออเดอร์ที่ต้องติดตาม</h2><p>แสดงเฉพาะออเดอร์ที่ยังไม่เสร็จสิ้น</p></div><div className="dashboard-inline-filter"><Select value={orderStatus} onValueChange={(value) => setOrderStatus(value as (typeof statusFilters)[number])}><SelectTrigger aria-label="กรองสถานะออเดอร์"><SelectValue /></SelectTrigger><SelectContent>{statusFilters.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select><Link to="/admin/orders" className="admin-text-button">ดูทั้งหมด</Link></div></div><div className="dashboard-table-scroll"><table className="dashboard-data-table dashboard-order-table"><thead><tr><th>เลขออเดอร์</th><th>ลูกค้า / จุดรับ</th><th>รอบส่ง</th><th>ยอดรวม</th><th>ชำระเงิน</th><th>สถานะงาน</th><th><span className="sr-only">ดูรายละเอียด</span></th></tr></thead><tbody>{requiredOrders.length ? requiredOrders.map((order) => <tr key={order.id}><td><strong>{order.id}</strong></td><td><strong>{order.customerName}</strong><small>{order.location}</small></td><td><strong>{deliveryPeriods[order.period].label}</strong></td><td className="numeric">{formatPrice(getOrderTotal(order))}</td><td><span className={`admin-status ${statusClass(order.paymentStatus)}`}>{order.paymentStatus}</span></td><td><span className={`admin-status ${statusClass(getOrderListStatus(order))}`}>{getOrderListStatus(order)}</span></td><td><Link className="admin-table-link" to={`/admin/orders/${order.id}`} aria-label={`ดูรายละเอียดออเดอร์ ${order.id}`}><Eye size={18} aria-hidden="true" /></Link></td></tr>) : <tr><td colSpan={7} className="dashboard-empty-cell">ไม่มีออเดอร์ที่ต้องติดตาม</td></tr>}</tbody></table></div></article>
-      <article className="dashboard-panel dashboard-stock-panel"><div className="dashboard-panel-heading"><div><h2>สินค้าสต็อกต่ำ</h2><p>ตรวจและเติมสินค้าให้ทันรอบถัดไป</p></div><Link to="/admin/products" className="admin-text-button">ดูสินค้า</Link></div><div className="dashboard-table-scroll"><table className="dashboard-data-table dashboard-stock-table"><thead><tr><th>สินค้า</th><th>คงเหลือ</th><th>จุดแจ้งเตือน</th><th>สถานะ</th></tr></thead><tbody>{lowStockProducts.length ? lowStockProducts.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small>{product.category}</small></td><td className="numeric">{product.stock}</td><td className="numeric">{product.lowStockThreshold} ชิ้น</td><td><span className="admin-status low">สต็อกต่ำ</span></td></tr>) : <tr><td colSpan={4} className="dashboard-empty-cell">ไม่มีสินค้าที่ต้องเติม</td></tr>}</tbody></table></div></article>
+      <article className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>ออเดอร์รอการชำระเงิน</h2><p>แสดงเฉพาะออเดอร์ที่ยังไม่ชำระเงิน</p></div><Link to="/admin/orders" className="admin-text-button">ดูออเดอร์</Link></div><div className="dashboard-table-scroll"><table className="dashboard-data-table dashboard-order-table"><thead><tr><th>เลขออเดอร์</th><th>ลูกค้า / จุดรับ</th><th>รอบส่ง</th><th>ยอดรวม</th><th>ดูรายการ</th></tr></thead><tbody>{unpaidOrders.length ? unpaidOrders.map((order) => <tr key={order.id}><td><strong>{order.id}</strong></td><td><strong>{order.customerName}</strong><small>{order.location}</small></td><td><strong>{deliveryPeriods[order.period].label}</strong></td><td className="numeric">{formatPrice(getOrderTotal(order))}</td><td><Link className="admin-table-link" to={`/admin/orders/${order.id}`} aria-label={`ดูรายละเอียดออเดอร์ ${order.id}`}><Eye size={18} aria-hidden="true" /></Link></td></tr>) : <tr><td colSpan={5} className="dashboard-empty-cell">ไม่มีออเดอร์รอการชำระเงิน</td></tr>}</tbody></table></div></article>
+      <article className="dashboard-panel dashboard-stock-panel"><div className="dashboard-panel-heading"><div><h2>สินค้าสต็อกต่ำ</h2><p>ตรวจและเติมสินค้าให้ทันรอบถัดไป</p></div><Link to="/admin/products" className="admin-text-button">ดูสินค้า</Link></div><div className="dashboard-table-scroll"><table className="dashboard-data-table dashboard-stock-table"><thead><tr><th>สินค้า</th><th>คงเหลือ</th><th>ดูรายการ</th></tr></thead><tbody>{lowStockProducts.length ? lowStockProducts.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small>{product.category}</small></td><td className="numeric">{product.stock}</td><td><Link className="admin-table-link" to={`/admin/products/${product.id}/edit`} aria-label={`ดูรายละเอียดสินค้า ${product.name}`}><Eye size={18} aria-hidden="true" /></Link></td></tr>) : <tr><td colSpan={3} className="dashboard-empty-cell">ไม่มีสินค้าที่ต้องเติม</td></tr>}</tbody></table></div></article>
     </section>
   </>
 }
