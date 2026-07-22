@@ -1,4 +1,4 @@
-import { Check, ChevronRight, ClipboardCheck, ListChecks, MapPin, PackageOpen, Repeat2, Sun, Sunset } from 'lucide-react'
+import { CalendarDays, Check, ChevronRight, ListChecks, MapPin, PackageOpen, Repeat2, Sun, Sunset } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { Link } from 'react-router-dom'
@@ -72,6 +72,6 @@ export function DispatchTodayPage() {
     <section className="dispatch-summary"><div><small>ลูกค้าทั้งหมด</small><strong>{orders.length} คน</strong></div><div><small>ยอดรวมรอบนี้</small><strong>{formatPrice(total)}</strong></div><div><small>จุดรับสินค้า</small><strong>{locations.length} จุด</strong></div></section>
     <section className="dispatch-total-card"><div><h2><PackageOpen size={22} aria-hidden="true" />รวมของที่ต้องเตรียม</h2><p>นับจากทุกสถานที่ใน{deliveryPeriods[period].label}</p></div><ul>{totalItems.map(([name, item]) => <li key={name} className={name.includes('น้ำ') ? 'drink' : name.includes('ไส้กรอก') ? 'sausage' : name.includes('เนื้อ') ? 'beef' : 'pork'}><span>{name}</span><strong>{item.quantity} {item.unit}</strong></li>)}</ul></section>
     <div className="dispatch-location-grid">{locations.map((group) => <article className="dispatch-location-card" key={group.location}><div className="dispatch-location-heading"><div><span className="dispatch-location-icon"><MapPin size={20} aria-hidden="true" /></span><div><h2>{group.location}</h2><p>{group.orders.length} คน · {formatPrice(group.total)}</p></div></div></div><div className="dispatch-items">{group.items.map(([name, item]) => <p key={name}><span>{name}</span><strong>{item.quantity} {item.unit}</strong></p>)}</div><details><summary>ดูรายชื่อลูกค้า <ChevronRight size={17} aria-hidden="true" /></summary><ul>{group.orders.map((order) => <li key={order.id}><Link to={`/admin/orders/${order.id}`}>{order.id}</Link><span>{order.customerName}</span><span className={`admin-status ${statusClass(getOrderListStatus(order))}`}>{getOrderListStatus(order)}</span></li>)}</ul></details><button type="button" className="admin-primary-button" onClick={() => updateLocationStatuses(group.orders)}><ListChecks size={18} aria-hidden="true" />เลือกสถานะ</button></article>)}</div>
-    <p className="admin-page-note dispatch-page-note"><ClipboardCheck size={18} aria-hidden="true" /> ข้อมูลหน้านี้เป็นรอบส่งของวันที่ 20 ก.ค. 2569</p>
+    <p className="admin-page-note dispatch-page-note"><CalendarDays size={18} aria-hidden="true" /> ข้อมูลหน้านี้เป็นรอบส่งของวันที่ 20 ก.ค. 2569</p>
   </section>
 }
