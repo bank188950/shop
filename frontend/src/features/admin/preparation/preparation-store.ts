@@ -79,4 +79,4 @@ export const usePreparationStore = create<PreparationStore>()(persist((set) => (
     const selectedOrderIds = new Set(orderIds)
     return { orders: state.orders.map((order) => selectedOrderIds.has(order.id) ? { ...order, status } : order) }
   }),
-}), { name: 'lookchin-admin-preparation-v1' }))
+}), { name: 'lookchin-admin-preparation-v2' }))

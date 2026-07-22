@@ -41,6 +41,28 @@ export const mockOrders: AdminOrder[] = [
   { id: 'PO-200720-08', orderedAt: '20 ก.ค. 2569 11:46', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า A', customerName: 'คุณนิด', phone: '0867778899', lineId: '@nid_day', items: [{ name: 'น้ำเก๊กฮวยเย็น', quantity: 3, unit: 'แก้ว', unitPrice: 25 }, { name: 'ลูกชิ้นเนื้อเอ็น', quantity: 2, unit: 'ไม้', unitPrice: 20 }], paymentStatus: 'จ่ายแล้ว', status: 'ส่งแล้ว' },
   { id: 'PO-200720-09', orderedAt: '20 ก.ค. 2569 12:05', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า B', customerName: 'คุณจอย', phone: '0831112233', lineId: '@joy_snack', items: [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 5, unit: 'ไม้', unitPrice: 15 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 2, unit: 'แก้ว', unitPrice: 25 }], paymentStatus: 'รอชำระเงิน', status: 'รอชำระเงิน' },
   { id: 'PO-200720-10', orderedAt: '20 ก.ค. 2569 12:22', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า C', customerName: 'คุณอาร์ต', phone: '0876665544', lineId: '@art_grill', items: [{ name: 'ไส้กรอกอีสานย่าง', quantity: 6, unit: 'ไม้', unitPrice: 15 }], paymentStatus: 'จ่ายแล้ว', status: 'พร้อมส่ง' },
+  ...Array.from({ length: 20 }, (_, index): AdminOrder => {
+    const customers = ['คุณนัท', 'คุณเมย์', 'คุณโอ๊ต', 'คุณพลอย', 'คุณก้อง', 'คุณอ้อม', 'คุณเจ', 'คุณมิ้น', 'คุณนนท์', 'คุณแพร', 'คุณวิน', 'คุณน้ำ', 'คุณฟ้า', 'คุณโต้ง', 'คุณจูน', 'คุณกิ๊ฟ', 'คุณบี', 'คุณดรีม', 'คุณอาร์ม', 'คุณบาส']
+    const locations = ['จุดรับสินค้า A', 'จุดรับสินค้า B', 'จุดรับสินค้า C']
+    const itemSets: OrderItem[][] = [
+      [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 3 + index % 5, unit: 'ไม้', unitPrice: 15 }],
+      [{ name: 'ไส้กรอกอีสานย่าง', quantity: 2 + index % 4, unit: 'ไม้', unitPrice: 15 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 1, unit: 'แก้ว', unitPrice: 25 }],
+      [{ name: 'ลูกชิ้นเนื้อเอ็น', quantity: 2 + index % 5, unit: 'ไม้', unitPrice: 20 }, { name: 'ลูกชิ้นหมูพรีเมียม', quantity: 2, unit: 'ไม้', unitPrice: 15 }],
+    ]
+    return {
+      id: `PO-200720-${String(index + 11).padStart(2, '0')}`,
+      orderedAt: `20 ก.ค. 2569 13:${String(index * 3).padStart(2, '0')}`,
+      deliveryDate: '2026-07-20',
+      period: index % 2 === 0 ? 'morning' : 'afternoon',
+      location: locations[index % locations.length],
+      customerName: customers[index],
+      phone: `08${String(10000000 + index * 371).padStart(8, '0')}`,
+      lineId: `@customer_${index + 11}`,
+      items: itemSets[index % itemSets.length],
+      paymentStatus: 'จ่ายแล้ว',
+      status: 'รอตรวจสอบ',
+    }
+  }),
 ]
 
 export function getOrderTotal(order: AdminOrder) {
