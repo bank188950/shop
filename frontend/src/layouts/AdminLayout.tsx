@@ -6,6 +6,7 @@ const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
   { label: 'รอบส่งวันนี้', icon: Truck, to: '/admin/dispatches-today' },
   { label: 'ออเดอร์', icon: ClipboardList, to: '/admin/orders' },
+  { label: 'ผู้ใช้งาน', icon: UserRound, to: '/admin/users' },
   { label: 'สินค้า', icon: Package, to: '/admin/products' },
   { label: 'หมวดสินค้า', icon: Layers, to: '/admin/product-categories' },
   { label: 'สถานที่รับสินค้า', icon: MapPin, to: '/admin/locations' },

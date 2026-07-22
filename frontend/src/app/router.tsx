@@ -20,6 +20,8 @@ import { LocationPage } from '@/pages/admin/LocationPage'
 import { LocationFormPage } from '@/pages/admin/LocationFormPage'
 import { ProductCategoryPage } from '@/pages/admin/ProductCategoryPage'
 import { ProductCategoryFormPage } from '@/pages/admin/ProductCategoryFormPage'
+import { UserFormPage } from '@/pages/admin/UserFormPage'
+import { UserPage } from '@/pages/admin/UserPage'
 
 export function AppRouter() {
   return (
@@ -44,6 +46,9 @@ export function AppRouter() {
           <Route path="locations/:locationId/edit" element={<LocationFormPage />} />
           <Route path="orders" element={<OrderPage />} />
           <Route path="orders/:orderId" element={<OrderDetailPage />} />
+          <Route path="users" element={<UserPage />} />
+          <Route path="users/add" element={<UserFormPage />} />
+          <Route path="users/:userId/edit" element={<UserFormPage />} />
           <Route path="dispatches-today" element={<DispatchTodayPage />} />
           <Route path="banners" element={<BannerPage />} />
           <Route path="banners/add" element={<BannerInsertPage />} />
