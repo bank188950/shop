@@ -1,7 +1,9 @@
-import { BellRing, Clock3, Megaphone, Save } from 'lucide-react'
+import { BellRing, CircleAlert, Clock3, Megaphone, Plus, Save, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+
+const maxAdvertisementCount = 3
 
 export function SettingsPage() {
   const [morningCutoff, setMorningCutoff] = useState('08:00')
@@ -10,13 +12,16 @@ export function SettingsPage() {
   const [afternoonDelivery, setAfternoonDelivery] = useState('14:00–15:00')
   const [noticeMessage, setNoticeMessage] = useState('')
   const [isNoticePopupEnabled, setIsNoticePopupEnabled] = useState(false)
-  const [advertisementText, setAdvertisementText] = useState('')
+  const [advertisementTexts, setAdvertisementTexts] = useState([''])
   const [isAdvertisementVisible, setIsAdvertisementVisible] = useState(false)
   const [saved, setSaved] = useState(false)
   const saveSettings = () => {
     setSaved(true)
     window.setTimeout(() => setSaved(false), 1800)
   }
+  const updateAdvertisement = (index: number, value: string) => setAdvertisementTexts((items) => items.map((item, itemIndex) => itemIndex === index ? value : item))
+  const addAdvertisement = () => setAdvertisementTexts((items) => items.length < maxAdvertisementCount ? [...items, ''] : items)
+  const removeAdvertisement = (index: number) => setAdvertisementTexts((items) => items.length > 1 ? items.filter((_, itemIndex) => itemIndex !== index) : items)
 
   return <section className="admin-page">
     <div className="admin-page-heading"><div><h1 className="admin-title">ตั้งค่า</h1></div></div>
@@ -33,7 +38,7 @@ export function SettingsPage() {
       </div>
       <div className="notice-settings">
         <div className="admin-section-heading"><div><h2><Megaphone size={21} aria-hidden="true" />ตั้งค่าโฆษณา</h2><p>กำหนดข้อความและการแสดงโฆษณาบนหน้าร้าน</p></div></div>
-        <label className="notice-message-label" htmlFor="advertisement-text"><strong>คำโฆษณา</strong><Input id="advertisement-text" value={advertisementText} onChange={(event) => setAdvertisementText(event.target.value)} placeholder="กรอกคำโฆษณา" /></label>
+        <fieldset className="advertisement-list"><p id="advertisement-limit" className="advertisement-limit"><CircleAlert size={15} aria-hidden="true" />เพิ่มได้สูงสุด {maxAdvertisementCount} ข้อความ</p>{advertisementTexts.map((text, index) => <div className="advertisement-field" key={index}><label htmlFor={`advertisement-text-${index}`}><span className="sr-only">คำโฆษณาที่ {index + 1}</span><Input id={`advertisement-text-${index}`} value={text} onChange={(event) => updateAdvertisement(index, event.target.value)} placeholder="กรอกคำโฆษณา" aria-describedby="advertisement-limit" /></label>{advertisementTexts.length > 1 && <button type="button" className="advertisement-remove" aria-label={`ลบคำโฆษณาที่ ${index + 1}`} onClick={() => removeAdvertisement(index)}><Trash2 size={17} aria-hidden="true" /><span>ลบ</span></button>}</div>)}{advertisementTexts.length < maxAdvertisementCount && <button type="button" className="advertisement-add" onClick={addAdvertisement}><Plus size={17} aria-hidden="true" />เพิ่มคำโฆษณา</button>}</fieldset>
         <label className="notice-popup-toggle"><input type="checkbox" checked={isAdvertisementVisible} onChange={(event) => setIsAdvertisementVisible(event.target.checked)} /><span><strong>แสดงโฆษณา</strong></span></label>
       </div>
       <div className="settings-save-action"><button type="button" className="admin-primary-button" onClick={saveSettings} aria-live="polite"><Save size={18} aria-hidden="true" />{saved ? 'บันทึกแล้ว' : 'บันทึก'}</button></div>

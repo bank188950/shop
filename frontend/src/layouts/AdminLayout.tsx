@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { Bell, ClipboardList, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, Ruler, Settings, Store, Truck, UserRound } from 'lucide-react'
+import { ClipboardList, ClipboardPlus, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Truck, UserRound } from 'lucide-react'
+import { mockOrders } from '@/features/admin/orders/order-data'
+import { adminProducts } from '@/features/admin/product/admin-products'
 
 const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
@@ -15,6 +17,9 @@ const items = [
   { label: 'ตั้งค่า', icon: Settings, to: '/admin/settings' },
 ]
 
+const newOrderCount = mockOrders.filter((order) => order.status === 'รอตรวจสอบ').length
+const lowStockCount = adminProducts.filter((product) => product.status === 'สต็อกต่ำ').length
+
 export function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -27,7 +32,7 @@ export function AdminLayout() {
         <div className="admin-sidebar-bottom"><NavLink to="/admin/login" className="admin-logout" onClick={() => setIsSidebarOpen(false)}><LogOut size={19} />ออกจากระบบ</NavLink></div>
       </aside>
       {isSidebarOpen && <button type="button" className="admin-sidebar-backdrop" aria-label="ปิดเมนูผู้ดูแล" onClick={() => setIsSidebarOpen(false)} />}
-      <div className="admin-main"><header className="admin-topbar"><div className="admin-topbar-actions"><button className="admin-topbar-icon" aria-label="การแจ้งเตือน"><Bell size={20} /></button><NavLink to="/admin/products" className="admin-topbar-icon" aria-label="สินค้าคงคลัง"><Package size={20} /></NavLink></div><span className="admin-topbar-divider" /><div className="admin-profile"><span><strong>Admin Profile</strong><small>ผู้ดูแลระบบ</small></span><span className="admin-avatar"><UserRound size={20} /></span></div></header><main className="admin-content"><Outlet /></main><footer className="admin-footer">© 2026 ลูกชิ้นทอดล้อเลื่อน สงวนลิขสิทธิ์</footer></div>
+      <div className="admin-main"><header className="admin-topbar"><div className="admin-topbar-actions"><NavLink to="/admin/orders" className="admin-topbar-icon" aria-label={`รายการสั่งซื้อใหม่ ${newOrderCount} รายการ`}><ClipboardPlus size={20} aria-hidden="true" />{newOrderCount > 0 && <span className="admin-topbar-badge admin-topbar-badge-new" aria-hidden="true">{newOrderCount}</span>}</NavLink><NavLink to="/admin/products" className="admin-topbar-icon" aria-label={`สินค้าใกล้หมด ${lowStockCount} รายการ`}><PackageX size={20} aria-hidden="true" />{lowStockCount > 0 && <span className="admin-topbar-badge admin-topbar-badge-stock" aria-hidden="true">{lowStockCount}</span>}</NavLink></div><span className="admin-topbar-divider" /><div className="admin-profile"><span><strong>Admin Profile</strong><small>ผู้ดูแลระบบ</small></span><span className="admin-avatar"><UserRound size={20} /></span></div></header><main className="admin-content"><Outlet /></main><footer className="admin-footer">© 2026 ลูกชิ้นทอดล้อเลื่อน สงวนลิขสิทธิ์</footer></div>
     </div>
   )
 }
