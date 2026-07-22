@@ -5,6 +5,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import Swal from 'sweetalert2'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
 import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, mockOrders, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderListStatus, type OrderStatus } from '@/features/admin/orders/order-data'
 
 const bulkStatusOptions = orderListStatuses.filter((item) => item !== 'รอชำระเงิน')
@@ -21,6 +22,7 @@ export function OrderPage() {
   const [status, setStatus] = useState<'all' | OrderListStatus>('all')
   const [query, setQuery] = useState('')
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([])
+  const [page, setPage] = useState(1)
   const selectAllRef = useRef<HTMLInputElement>(null)
   const locations = [...new Set(ordersData.map((order) => order.location))]
   const orders = useMemo(() => ordersData.filter((order) => (
@@ -34,10 +36,17 @@ export function OrderPage() {
   const selectedChangeableOrderIds = selectedOrderIds.filter((id) => changeableOrders.some((order) => order.id === id))
   const allChangeableSelected = changeableOrders.length > 0 && changeableOrders.every((order) => selectedOrderIds.includes(order.id))
   const hasPartialSelection = selectedChangeableOrderIds.length > 0 && !allChangeableSelected
+  const pageSize = 5
+  const pageCount = Math.max(1, Math.ceil(orders.length / pageSize))
+  const visibleOrders = orders.slice((page - 1) * pageSize, page * pageSize)
 
   useEffect(() => {
     if (selectAllRef.current) selectAllRef.current.indeterminate = hasPartialSelection
   }, [hasPartialSelection])
+
+  useEffect(() => {
+    setPage((currentPage) => Math.min(currentPage, pageCount))
+  }, [pageCount])
 
   function toggleOrder(order: AdminOrder) {
     if (order.paymentStatus === 'รอชำระเงิน') return
@@ -92,6 +101,6 @@ export function OrderPage() {
       <label className="admin-filter-select">สถานะ<Select value={status} onValueChange={(value) => setStatus(value as 'all' | OrderListStatus)}><SelectTrigger aria-label="สถานะ"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem>{orderListStatuses.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label>
     </section>
     <div className="admin-bulk-actions" aria-live="polite"><p>{selectedChangeableOrderIds.length ? `เลือกแล้ว ${selectedChangeableOrderIds.length} ออเดอร์` : 'เลือกออเดอร์ที่ชำระเงินแล้วเพื่อเปลี่ยนสถานะ'}</p><button className="admin-primary-button" type="button" onClick={updateSelectedStatuses} disabled={!selectedChangeableOrderIds.length}><ListChecks size={18} aria-hidden="true" />เปลี่ยนสถานะ</button></div>
-    <div className="admin-table-wrap"><div className="admin-table-scroll"><table className="admin-data-table"><thead><tr><th className="admin-order-select"><input ref={selectAllRef} type="checkbox" checked={allChangeableSelected} onChange={toggleAllChangeableOrders} disabled={!changeableOrders.length} aria-label="เลือกออเดอร์ที่ชำระเงินแล้วทั้งหมด" title="เลือกเฉพาะออเดอร์ที่ชำระเงินแล้ว" /></th><th>เลขออเดอร์</th><th>ลูกค้า / จุดรับ</th><th>รอบส่ง</th><th>รายการ</th><th>ยอดรวม</th><th>ชำระเงิน</th><th>สถานะ</th><th><span className="sr-only">ดูรายละเอียด</span></th></tr></thead><tbody>{orders.length ? orders.map((order) => { const isPendingPayment = order.paymentStatus === 'รอชำระเงิน'; return <tr key={order.id}><td className="admin-order-select"><input type="checkbox" checked={selectedOrderIds.includes(order.id)} onChange={() => toggleOrder(order)} disabled={isPendingPayment} aria-label={isPendingPayment ? `ไม่สามารถเปลี่ยนสถานะออเดอร์ ${order.id} เพราะรอชำระเงิน` : `เลือกออเดอร์ ${order.id}`} title={isPendingPayment ? 'ออเดอร์รอชำระเงินไม่สามารถเปลี่ยนสถานะได้' : 'เลือกออเดอร์'} /></td><td><strong>{order.id}</strong><small>{order.orderedAt}</small></td><td><strong>{order.customerName}</strong><small>{order.location}</small></td><td><strong>{deliveryPeriods[order.period].label}</strong><small>{deliveryPeriods[order.period].deliveryTime}</small></td><td>{order.items.map((item) => <small key={item.name}>{item.name} {item.quantity} {item.unit}</small>)}</td><td className="numeric"><strong>{formatPrice(getOrderTotal(order))}</strong></td><td><span className={`admin-status ${statusClass(order.paymentStatus)}`}>{order.paymentStatus}</span></td><td><span className={`admin-status ${statusClass(getOrderListStatus(order))}`}>{getOrderListStatus(order)}</span></td><td><Link className="admin-table-link" to={`/admin/orders/${order.id}`} aria-label={`ดูรายละเอียดออเดอร์ ${order.id}`}><Eye size={19} aria-hidden="true" /></Link></td></tr> }) : <tr><td className="admin-empty-cell" colSpan={9}>ไม่พบออเดอร์ที่ตรงกับตัวกรอง</td></tr>}</tbody></table></div></div>
+    <div className="admin-table-wrap"><div className="admin-table-scroll"><table className="admin-data-table"><thead><tr><th className="admin-order-select"><input ref={selectAllRef} type="checkbox" checked={allChangeableSelected} onChange={toggleAllChangeableOrders} disabled={!changeableOrders.length} aria-label="เลือกออเดอร์ที่ชำระเงินแล้วทั้งหมด" title="เลือกเฉพาะออเดอร์ที่ชำระเงินแล้ว" /></th><th>เลขออเดอร์</th><th>ลูกค้า / จุดรับ</th><th>รอบส่ง</th><th>รายการ</th><th>ยอดรวม</th><th>ชำระเงิน</th><th>สถานะ</th><th><span className="sr-only">ดูรายละเอียด</span></th></tr></thead><tbody>{orders.length ? visibleOrders.map((order) => { const isPendingPayment = order.paymentStatus === 'รอชำระเงิน'; return <tr key={order.id}><td className="admin-order-select"><input type="checkbox" checked={selectedOrderIds.includes(order.id)} onChange={() => toggleOrder(order)} disabled={isPendingPayment} aria-label={isPendingPayment ? `ไม่สามารถเปลี่ยนสถานะออเดอร์ ${order.id} เพราะรอชำระเงิน` : `เลือกออเดอร์ ${order.id}`} title={isPendingPayment ? 'ออเดอร์รอชำระเงินไม่สามารถเปลี่ยนสถานะได้' : 'เลือกออเดอร์'} /></td><td><strong>{order.id}</strong><small>{order.orderedAt}</small></td><td><strong>{order.customerName}</strong><small>{order.location}</small></td><td><strong>{deliveryPeriods[order.period].label}</strong><small>{deliveryPeriods[order.period].deliveryTime}</small></td><td>{order.items.map((item) => <small key={item.name}>{item.name} {item.quantity} {item.unit}</small>)}</td><td className="numeric"><strong>{formatPrice(getOrderTotal(order))}</strong></td><td><span className={`admin-status ${statusClass(order.paymentStatus)}`}>{order.paymentStatus}</span></td><td><span className={`admin-status ${statusClass(getOrderListStatus(order))}`}>{getOrderListStatus(order)}</span></td><td><Link className="admin-table-link" to={`/admin/orders/${order.id}`} aria-label={`ดูรายละเอียดออเดอร์ ${order.id}`}><Eye size={19} aria-hidden="true" /></Link></td></tr> }) : <tr><td className="admin-empty-cell" colSpan={9}>ไม่พบออเดอร์ที่ตรงกับตัวกรอง</td></tr>}</tbody></table></div><AdminTablePagination currentPage={page} totalItems={orders.length} pageSize={pageSize} onPageChange={setPage} label="ออเดอร์" /></div>
   </section>
 }
