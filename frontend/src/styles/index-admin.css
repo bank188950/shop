@@ -53,7 +53,6 @@
   .admin-topbar { position: sticky; z-index: 10; top: 0; }
   .product-table-wrap { margin-right: 0; border-right: 1px solid #839187; border-radius: 11px; }
   .admin-mobile-menu-toggle { position: fixed; z-index: 21; top: 8px; left: 12px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #b9c7bd; border-radius: 50%; color: #075b3c; background: #fbfcfa; box-shadow: 0 2px 8px #18261d24; transition: left 180ms ease, background 180ms ease; }
-  .admin-mobile-menu-toggle.is-open { left: min(238px, calc(100vw - 66px)); }
   .admin-mobile-menu-toggle:hover, .admin-mobile-menu-toggle:focus-visible { background: #edf3ee; }
 }
 
@@ -203,3 +202,15 @@
 .location-table, .category-table, .dashboard-order-table, .dashboard-stock-table { min-width: 100%; table-layout: auto; }
 .banner-table { table-layout: auto; }
 .product-table-scroll, .admin-table-scroll, .dashboard-table-scroll { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+.dashboard-order-table td:nth-child(3) strong { font-weight: 400; }
+.dashboard-location-summary-table .numeric strong { color: #27362e; }
+.preparation-order-items { display: grid; gap: 4px; font-weight: 400; }
+.preparation-order-items > span { display: block; }
+.preparation-item-summary h4 { font-weight: 800; }
+.preparation-queue-order strong { color: #202722; }
+.preparation-item-summary li, .preparation-item-summary li strong { color: #202722; font-weight: 400; }
+.preparation-item-summary li strong { color: #65716a; }
+.preparation-item-summary li strong small, .preparation-item-pieces { color: #2f83d4; }
+@media (max-width: 1024px) { .admin-sidebar { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: visible; }.admin-sidebar nav { min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }.admin-brand, .admin-sidebar-bottom { flex: 0 0 auto; } }
+@media (max-width: 1024px) { .admin-sidebar-close { position: absolute; top: 42px; right: -27px; display: grid; width: 54px; height: 54px; place-items: center; border: 1px solid #b9c7bd; border-radius: 50%; color: #075b3c; background: #fbfcfa; box-shadow: 0 2px 8px #18261d24; transform: translateY(-50%); }.admin-sidebar-close:hover, .admin-sidebar-close:focus-visible { background: #edf3ee; } }
+@media (max-width: 640px) { .admin-sidebar-close { right: -24px; width: 48px; height: 48px; } }
