@@ -199,3 +199,7 @@
 .preparation-batch-heading h3 { font-size: 20px; }
 .preparation-item-summary h4 { font-size: 16px; }
 .preparation-batch-card summary svg { width: 22px; height: 22px; }
+.product-table, .admin-data-table, .dashboard-data-table { width: max-content; min-width: 100%; }
+.location-table, .category-table, .dashboard-order-table, .dashboard-stock-table { min-width: 100%; table-layout: auto; }
+.banner-table { table-layout: auto; }
+.product-table-scroll, .admin-table-scroll, .dashboard-table-scroll { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }

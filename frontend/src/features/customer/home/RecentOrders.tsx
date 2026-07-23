@@ -113,7 +113,7 @@ export function RecentOrders() {
         <h2 id="recent-orders-heading" className="m-0 font-heading text-[clamp(2rem,4vw,3rem)] leading-tight tracking-[-0.035em] text-[#1d4f29]">รายการสั่งซื้อ</h2>
       </div>
       <div className="mt-5 overflow-x-auto rounded-[18px] border border-[#d8dfd5] bg-white max-md:mt-4" tabIndex={0} aria-label="ตารางรายการสั่งซื้อล่าสุด">
-        <table className="w-full min-w-[1040px] border-collapse text-left">
+        <table className="w-max min-w-full border-collapse text-left">
           <thead className="bg-brand text-white">
             <tr>
               <th scope="col" className="px-6 py-4 text-lg font-extrabold">ชื่อลูกค้า</th>
