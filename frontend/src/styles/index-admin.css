@@ -121,6 +121,7 @@
 .dashboard-kpis .dashboard-kpi:nth-child(-n+3) .admin-card-icon { color: #fff; background: #347657; }
 .dispatch-total-card h2, .dispatch-location-heading h2 { color: #1c2520; }
 .dispatch-location-heading h2 { font-size: 22px; }.dispatch-location-heading p { margin-top: 4px; color: #2f83d4; font-size: 15px; }
+.dispatch-location-heading p, .dispatch-items p, .dispatch-location-card summary, .dispatch-location-card details li, .dispatch-location-card details .admin-status { font-size: 16px; }
 @media (max-width: 600px) { .dispatch-total-card { gap: 18px; } }
 .admin-status.cancelled { color: #bd3b35; background: #ffe6e3; }
 .admin-status.pending { color: #bd3b35; background: #ffe6e3; }
@@ -179,3 +180,5 @@
 
 @media (max-width: 900px) { .preparation-batch-grid { grid-template-columns: 1fr; }.preparation-queue-order { grid-template-columns: auto minmax(160px, .8fr) minmax(0, 1.2fr); } }
 @media (max-width: 600px) { .preparation-filter { grid-template-columns: 1fr; }.preparation-queue, .preparation-batches, .preparation-ready-history { padding: 16px; }.preparation-section-heading { flex-direction: column; }.preparation-create-button { width: 100%; }.preparation-queue-order, .preparation-customer-list li { grid-template-columns: auto minmax(0, 1fr); align-items: start; }.preparation-order-items, .preparation-customer-list p { grid-column: 2; }.preparation-customer-list button { grid-column: 2; width: fit-content; }.preparation-batch-heading { flex-direction: column; }.preparation-ready-history li { align-items: flex-start; flex-direction: column; } }
+
+.admin-shell .admin-content .dispatch-location-heading p, .admin-shell .admin-content .dispatch-items p, .admin-shell .admin-content .dispatch-location-card summary, .admin-shell .admin-content .dispatch-location-card details li { font-size: 16px; }
