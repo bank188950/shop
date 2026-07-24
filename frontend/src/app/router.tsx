@@ -26,6 +26,7 @@ import { UserFormPage } from '@/pages/admin/UserFormPage'
 import { UserPage } from '@/pages/admin/UserPage'
 import { PreparationPage } from '@/pages/admin/PreparationPage'
 import { AdminProfilePage } from '@/pages/admin/AdminProfilePage'
+import { AdminUserChatPage } from '@/pages/admin/AdminUserChatPage'
 
 export function AppRouter() {
   return (
@@ -58,6 +59,7 @@ export function AppRouter() {
           <Route path="users" element={<UserPage />} />
           <Route path="users/add" element={<UserFormPage />} />
           <Route path="users/:userId/edit" element={<UserFormPage />} />
+          <Route path="users/:userId/chat" element={<AdminUserChatPage />} />
           <Route path="dispatches-today" element={<DispatchTodayPage />} />
           <Route path="banners" element={<BannerPage />} />
           <Route path="banners/add" element={<BannerInsertPage />} />
