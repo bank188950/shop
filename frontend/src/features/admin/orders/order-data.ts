@@ -89,7 +89,7 @@ export const mockOrders: AdminOrder[] = [
       lineId: `@customer_${index + 11}`,
       items: itemSets[index % itemSets.length],
       paymentStatus: 'จ่ายแล้ว',
-      status: period === 'morning' && location === 'จุดรับสินค้า B' ? 'พร้อมส่ง' : 'รอตรวจสอบ',
+      status: period === 'morning' && (location === 'จุดรับสินค้า B' || (location === 'จุดรับสินค้า C' && (index === 2 || index === 8))) ? 'พร้อมส่ง' : 'รอตรวจสอบ',
     }
   }),
 ]

@@ -28,12 +28,12 @@ export function DispatchTodayPage() {
     return Array.from(items.entries())
   }, [orders])
   async function updateLocationStatuses(locationOrders: AdminOrder[]) {
-    const hasIncompletePreparation = locationOrders.some((order) => order.status !== 'พร้อมส่ง')
+    const readyOrders = locationOrders.filter((order) => order.status === 'พร้อมส่ง')
 
-    if (hasIncompletePreparation) {
+    if (!readyOrders.length) {
       await Swal.fire({
         title: 'ยังไม่พร้อมเปลี่ยนสถานะ',
-        html: 'ไม่สามารถเปลี่ยนสถานะเป็นส่งแล้วได้<span class="dispatch-warning-message-line">เนื่องจากยังมีรายการที่ยังไม่พร้อมส่ง</span>',
+        html: 'ไม่สามารถเปลี่ยนสถานะเป็นส่งแล้วได้<span class="dispatch-warning-message-line">เนื่องจากยังไม่มีรายการที่พร้อมส่ง</span>',
         icon: 'warning',
         confirmButtonText: 'ตกลง',
         confirmButtonColor: '#607168',
@@ -44,7 +44,7 @@ export function DispatchTodayPage() {
 
     const result = await Swal.fire({
       title: 'ยืนยันการส่งสินค้า',
-      text: `ต้องการเปลี่ยนสถานะ ${locationOrders.length} รายการของ ${locationOrders[0].location} เป็นส่งแล้ว`,
+      text: `ต้องการเปลี่ยนสถานะ ${readyOrders.length} รายการของ ${locationOrders[0].location} เป็นส่งแล้ว`,
       icon: 'success',
       showCancelButton: true,
       confirmButtonText: 'ยืนยัน',
@@ -57,7 +57,7 @@ export function DispatchTodayPage() {
     })
     if (!result.isConfirmed) return
 
-    setOrdersStatus(locationOrders.map((order) => order.id), 'ส่งแล้ว')
+    setOrdersStatus(readyOrders.map((order) => order.id), 'ส่งแล้ว')
   }
 
   return <section className="admin-page">

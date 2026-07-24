@@ -28,12 +28,13 @@ const initialBatches: PreparationBatch[] = [
 ]
 
 const legacyPreparationStatus = '\u0e40\u0e15\u0e23\u0e35\u0e22\u0e21\u0e02\u0e2d\u0e07'
+const additionalReadyOrderIds = new Set(['PO-200720-13', 'PO-200720-19'])
 
 function migratePreparationState(persistedState: unknown) {
   const state = persistedState as Pick<PreparationStore, 'orders' | 'batches'>
   const orders = state.orders.map((order) => ({
     ...order,
-    status: order.deliveryDate === '2026-07-20' && order.period === 'morning' && order.location === 'จุดรับสินค้า B' && order.paymentStatus === 'จ่ายแล้ว'
+    status: additionalReadyOrderIds.has(order.id) || (order.deliveryDate === '2026-07-20' && order.period === 'morning' && order.location === 'จุดรับสินค้า B' && order.paymentStatus === 'จ่ายแล้ว')
       ? 'พร้อมส่ง'
       : String(order.status) === legacyPreparationStatus ? 'เตรียมสินค้า' : order.status,
   }))
@@ -95,4 +96,4 @@ export const usePreparationStore = create<PreparationStore>()(persist((set) => (
     const selectedOrderIds = new Set(orderIds)
     return { orders: state.orders.map((order) => selectedOrderIds.has(order.id) ? { ...order, status } : order) }
   }),
-}), { name: 'lookchin-admin-preparation-v2', version: 4, migrate: migratePreparationState }))
+}), { name: 'lookchin-admin-preparation-v2', version: 5, migrate: migratePreparationState }))
