@@ -200,7 +200,7 @@
 .admin-profile-toggle { display: inline-flex; width: 44px; min-height: 44px; align-items: center; justify-content: center; padding: 0; border: 0; color: #526259; background: transparent; cursor: pointer; }
 .admin-profile-toggle:hover .admin-avatar, .admin-profile-toggle:focus-visible .admin-avatar { box-shadow: 0 0 0 3px #2e7d3233, 0 1px 4px #58705f66; }
 .admin-profile-toggle:focus-visible { outline: 2px solid #2e7d32; outline-offset: 3px; border-radius: 8px; }
-.admin-profile-menu { position: absolute; z-index: 25; top: calc(100% + 16px); right: 0; box-sizing: border-box; width: 220px; padding: 8px; border: 1px solid #d6ded8; border-radius: 8px; background: #fff; box-shadow: 0 9px 22px #18261d24; }
+.admin-profile-menu { position: absolute; z-index: 25; top: 100%; right: 0; box-sizing: border-box; width: 220px; padding: 8px; border: 1px solid #d6ded8; border-radius: 8px; background: #fff; box-shadow: 0 9px 22px #18261d24; }
 .admin-profile-menu::before { position: absolute; top: -7px; right: 15px; width: 14px; height: 14px; border-top: 1px solid #d6ded8; border-left: 1px solid #d6ded8; background: #fff; content: ''; transform: rotate(45deg); }
 .admin-profile-menu a { position: relative; display: flex; min-height: 44px; align-items: center; gap: 10px; padding: 0 12px; border-radius: 6px; color: #25342b; font-size: 14px; font-weight: 800; text-decoration: none; }
 .admin-profile-menu a:hover, .admin-profile-menu a:focus-visible { color: #176344; background: #e4f2e8; }
@@ -219,7 +219,7 @@
 .admin-profile-avatar-preview { display: grid; justify-items: start; gap: 7px; margin-top: 14px; color: #33443a; font-size: 14px; font-weight: 800; }
 
 @media (max-width: 640px) {
-  .admin-profile-menu { top: calc(100% + 8px); width: 210px; }
+  .admin-profile-menu { top: 100%; width: 210px; }
   .admin-profile-page-heading { align-items: center; }
 }
 .admin-shell .admin-content :is(.admin-table-link, .product-edit, .location-table .product-delete)::before { width: 38px; height: 38px; }
