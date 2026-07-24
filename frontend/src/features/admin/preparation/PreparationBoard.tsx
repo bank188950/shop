@@ -63,7 +63,28 @@ export function PreparationBoard() {
     setSelectedOrderIds((current) => allQueueSelected ? current.filter((id) => !queueIds.includes(id)) : [...new Set([...current, ...queueIds])])
   }
 
-  function handleCreateBatch() {
+  async function handleCreateBatch() {
+    const selectedOrders = paidQueue.filter((order) => selectedOrderIds.includes(order.id))
+    const selectedLocations = new Set(selectedOrders.map((order) => order.location))
+
+    if (selectedLocations.size > 1) {
+      const result = await Swal.fire({
+        title: 'เตรียมสินค้าที่เลือกมีหลายสถานที่',
+        text: 'คุณต้องการเตรียมสินค้าที่มีสถานที่ต่างกันใช่ไหม',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#075b3c',
+        cancelButtonColor: '#607168',
+        reverseButtons: true,
+        focusCancel: true,
+        customClass: { icon: 'preparation-multi-location-alert-icon' },
+      })
+
+      if (!result.isConfirmed) return
+    }
+
     createBatch(date, period, selectedOrderIds)
     setSelectedOrderIds([])
   }

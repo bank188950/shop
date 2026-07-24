@@ -33,7 +33,7 @@ export const deliveryPeriods: Record<DeliveryPeriod, { label: string; cutoff: st
 export const mockOrders: AdminOrder[] = [
   { id: 'PO-200720-01', orderedAt: '20 ก.ค. 2569 07:18', deliveryDate: '2026-07-20', period: 'morning', location: 'จุดรับสินค้า A', customerName: 'คุณบอม', phone: '0812345678', lineId: '@bom_eats', items: [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 8, unit: 'ไม้', unitPrice: 15 }, { name: 'ไส้กรอกอีสานย่าง', quantity: 3, unit: 'ไม้', unitPrice: 15 }], paymentStatus: 'รอชำระเงิน', status: 'รอชำระเงิน' },
   { id: 'PO-200720-02', orderedAt: '20 ก.ค. 2569 07:26', deliveryDate: '2026-07-20', period: 'morning', location: 'จุดรับสินค้า A', customerName: 'คุณฝน', phone: '0892223344', lineId: '@fon_line', items: [{ name: 'ลูกชิ้นเนื้อเอ็น', quantity: 5, unit: 'ไม้', unitPrice: 20 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 2, unit: 'แก้ว', unitPrice: 25 }], paymentStatus: 'จ่ายแล้ว', status: 'รอตรวจสอบ' },
-  { id: 'PO-200720-03', orderedAt: '20 ก.ค. 2569 07:41', deliveryDate: '2026-07-20', period: 'morning', location: 'จุดรับสินค้า B', customerName: 'คุณต้น', phone: '0825556677', lineId: '@ton_food', items: [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 7, unit: 'ไม้', unitPrice: 15 }, { name: 'ไส้กรอกอีสานย่าง', quantity: 4, unit: 'ไม้', unitPrice: 15 }], paymentStatus: 'จ่ายแล้ว', status: 'เตรียมสินค้า' },
+  { id: 'PO-200720-03', orderedAt: '20 ก.ค. 2569 07:41', deliveryDate: '2026-07-20', period: 'morning', location: 'จุดรับสินค้า B', customerName: 'คุณต้น', phone: '0825556677', lineId: '@ton_food', items: [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 7, unit: 'ไม้', unitPrice: 15 }, { name: 'ไส้กรอกอีสานย่าง', quantity: 4, unit: 'ไม้', unitPrice: 15 }], paymentStatus: 'จ่ายแล้ว', status: 'พร้อมส่ง' },
   { id: 'PO-200720-04', orderedAt: '20 ก.ค. 2569 10:36', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า A', customerName: 'คุณแอน', phone: '0918889900', lineId: '@ann_food', items: [{ name: 'ลูกชิ้นเนื้อเอ็น', quantity: 4, unit: 'ไม้', unitPrice: 20 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 1, unit: 'แก้ว', unitPrice: 25 }], paymentStatus: 'จ่ายแล้ว', status: 'เตรียมสินค้า' },
   { id: 'PO-200720-05', orderedAt: '20 ก.ค. 2569 11:02', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า C', customerName: 'คุณกอล์ฟ', phone: '0843334455', lineId: '@golf_golf', items: [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 6, unit: 'ไม้', unitPrice: 15 }, { name: 'ไส้กรอกอีสานย่าง', quantity: 2, unit: 'ไม้', unitPrice: 15 }], paymentStatus: 'จ่ายแล้ว', status: 'พร้อมส่ง' },
   { id: 'PO-200720-06', orderedAt: '20 ก.ค. 2569 11:18', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า B', customerName: 'คุณเมย์', phone: '0805556611', lineId: '@may_order', items: [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 4, unit: 'ไม้', unitPrice: 15 }], paymentStatus: 'รอชำระเงิน', status: 'ยกเลิก' },
@@ -41,9 +41,38 @@ export const mockOrders: AdminOrder[] = [
   { id: 'PO-200720-08', orderedAt: '20 ก.ค. 2569 11:46', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า A', customerName: 'คุณนิด', phone: '0867778899', lineId: '@nid_day', items: [{ name: 'น้ำเก๊กฮวยเย็น', quantity: 3, unit: 'แก้ว', unitPrice: 25 }, { name: 'ลูกชิ้นเนื้อเอ็น', quantity: 2, unit: 'ไม้', unitPrice: 20 }], paymentStatus: 'จ่ายแล้ว', status: 'ส่งแล้ว' },
   { id: 'PO-200720-09', orderedAt: '20 ก.ค. 2569 12:05', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า B', customerName: 'คุณจอย', phone: '0831112233', lineId: '@joy_snack', items: [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 5, unit: 'ไม้', unitPrice: 15 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 2, unit: 'แก้ว', unitPrice: 25 }], paymentStatus: 'รอชำระเงิน', status: 'รอชำระเงิน' },
   { id: 'PO-200720-10', orderedAt: '20 ก.ค. 2569 12:22', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า C', customerName: 'คุณอาร์ต', phone: '0876665544', lineId: '@art_grill', items: [{ name: 'ไส้กรอกอีสานย่าง', quantity: 6, unit: 'ไม้', unitPrice: 15 }], paymentStatus: 'จ่ายแล้ว', status: 'พร้อมส่ง' },
+  { id: 'PO-200720-31', orderedAt: '20 ก.ค. 2569 13:48', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า A', customerName: 'คุณศิริ', phone: '0815557788', lineId: '@siri_food', items: [{ name: 'ไส้กรอกอีสานย่าง', quantity: 2, unit: 'ไม้', unitPrice: 15 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 2, unit: 'แก้ว', unitPrice: 25 }], paymentStatus: 'จ่ายแล้ว', status: 'รอตรวจสอบ' },
+  { id: 'PO-200720-32', orderedAt: '20 ก.ค. 2569 13:52', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า B', customerName: 'คุณพิม', phone: '0824446677', lineId: '@pim_food', items: [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 3, unit: 'ไม้', unitPrice: 15 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 1, unit: 'แก้ว', unitPrice: 25 }], paymentStatus: 'จ่ายแล้ว', status: 'รอตรวจสอบ' },
+  { id: 'PO-200720-33', orderedAt: '20 ก.ค. 2569 13:56', deliveryDate: '2026-07-20', period: 'afternoon', location: 'จุดรับสินค้า C', customerName: 'คุณภพ', phone: '0891112233', lineId: '@phop_food', items: [{ name: 'ลูกชิ้นเนื้อเอ็น', quantity: 2, unit: 'ไม้', unitPrice: 20 }, { name: 'ไส้กรอกอีสานย่าง', quantity: 2, unit: 'ไม้', unitPrice: 15 }], paymentStatus: 'จ่ายแล้ว', status: 'รอตรวจสอบ' },
+  ...Array.from({ length: 10 }, (_, index): AdminOrder => {
+    const period: DeliveryPeriod = index % 2 === 0 ? 'morning' : 'afternoon'
+    const locations = ['จุดรับสินค้า A', 'จุดรับสินค้า B', 'จุดรับสินค้า C']
+    const location = locations[index % locations.length]
+    const customers = ['คุณแก้ว', 'คุณเนย', 'คุณบีม', 'คุณวาวา', 'คุณจิน', 'คุณปั้น', 'คุณฟิล์ม', 'คุณอิง', 'คุณไทน์', 'คุณออม']
+    const itemSets: OrderItem[][] = [
+      [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 4, unit: 'ไม้', unitPrice: 15 }],
+      [{ name: 'ไส้กรอกอีสานย่าง', quantity: 3, unit: 'ไม้', unitPrice: 15 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 1, unit: 'แก้ว', unitPrice: 25 }],
+      [{ name: 'ลูกชิ้นเนื้อเอ็น', quantity: 3, unit: 'ไม้', unitPrice: 20 }, { name: 'ลูกชิ้นหมูพรีเมียม', quantity: 2, unit: 'ไม้', unitPrice: 15 }],
+    ]
+    return {
+      id: `PO-200720-${String(index + 34).padStart(2, '0')}`,
+      orderedAt: `20 ก.ค. 2569 ${period === 'morning' ? '08' : '14'}:${String(5 + index * 4).padStart(2, '0')}`,
+      deliveryDate: '2026-07-20',
+      period,
+      location,
+      customerName: customers[index],
+      phone: `089${String(1000000 + index * 1234).padStart(7, '0')}`,
+      lineId: `@test_order_${index + 34}`,
+      items: itemSets[index % itemSets.length],
+      paymentStatus: 'จ่ายแล้ว',
+      status: period === 'morning' && location === 'จุดรับสินค้า B' ? 'พร้อมส่ง' : 'รอตรวจสอบ',
+    }
+  }),
   ...Array.from({ length: 20 }, (_, index): AdminOrder => {
     const customers = ['คุณนัท', 'คุณเมย์', 'คุณโอ๊ต', 'คุณพลอย', 'คุณก้อง', 'คุณอ้อม', 'คุณเจ', 'คุณมิ้น', 'คุณนนท์', 'คุณแพร', 'คุณวิน', 'คุณน้ำ', 'คุณฟ้า', 'คุณโต้ง', 'คุณจูน', 'คุณกิ๊ฟ', 'คุณบี', 'คุณดรีม', 'คุณอาร์ม', 'คุณบาส']
     const locations = ['จุดรับสินค้า A', 'จุดรับสินค้า B', 'จุดรับสินค้า C']
+    const period: DeliveryPeriod = index % 2 === 0 ? 'morning' : 'afternoon'
+    const location = locations[index % locations.length]
     const itemSets: OrderItem[][] = [
       [{ name: 'ลูกชิ้นหมูพรีเมียม', quantity: 3 + index % 5, unit: 'ไม้', unitPrice: 15 }],
       [{ name: 'ไส้กรอกอีสานย่าง', quantity: 2 + index % 4, unit: 'ไม้', unitPrice: 15 }, { name: 'น้ำเก๊กฮวยเย็น', quantity: 1, unit: 'แก้ว', unitPrice: 25 }],
@@ -53,14 +82,14 @@ export const mockOrders: AdminOrder[] = [
       id: `PO-200720-${String(index + 11).padStart(2, '0')}`,
       orderedAt: `20 ก.ค. 2569 13:${String(index * 3).padStart(2, '0')}`,
       deliveryDate: '2026-07-20',
-      period: index % 2 === 0 ? 'morning' : 'afternoon',
-      location: locations[index % locations.length],
+      period,
+      location,
       customerName: customers[index],
       phone: `08${String(10000000 + index * 371).padStart(8, '0')}`,
       lineId: `@customer_${index + 11}`,
       items: itemSets[index % itemSets.length],
       paymentStatus: 'จ่ายแล้ว',
-      status: 'รอตรวจสอบ',
+      status: period === 'morning' && location === 'จุดรับสินค้า B' ? 'พร้อมส่ง' : 'รอตรวจสอบ',
     }
   }),
 ]

@@ -271,6 +271,14 @@
 .preparation-ready-batch-card .preparation-customer-list li { border-color: #d4ddd5; background: #fff; }
 .preparation-delivered-button { display: inline-flex; width: 100%; min-height: 42px; align-items: center; justify-content: center; gap: 7px; padding: 0 13px; margin-top: 10px; border: 1px solid #347657; border-radius: 8px; color: #fff; background: #347657; font-size: 13px; font-weight: 800; }
 .preparation-delivered-button:hover, .preparation-delivered-button:focus-visible { border-color: #1d6140; background: #1d6140; }
+.dispatch-location-card > .dispatch-confirm-button { border-color: #347657; background: #347657; }
+.dispatch-location-card > .dispatch-confirm-button:hover, .dispatch-location-card > .dispatch-confirm-button:focus-visible { border-color: #1d6140; background: #1d6140; }
+.swal2-icon.dispatch-warning-alert-icon { border-color: #c88434; color: #c88434; background: #fff0d5; }
+.swal2-icon.dispatch-warning-alert-icon .swal2-icon-content { color: #c88434; }
+.swal2-icon.dispatch-confirm-alert-icon { border-color: #347657; color: #347657; }
+.swal2-icon.dispatch-confirm-alert-icon .swal2-success-ring { border-color: #347657; }
+.swal2-icon.dispatch-confirm-alert-icon .swal2-success-line-tip, .swal2-icon.dispatch-confirm-alert-icon .swal2-success-line-long { background-color: #347657; }
+.swal2-html-container .dispatch-warning-message-line { display: block; margin-top: 8px; }
 .dashboard-location-summary-table th:last-child, .dashboard-location-summary-table td:last-child, .dashboard-order-table th:last-child, .dashboard-order-table td:last-child { text-align: center; }
 .dashboard-location-summary-table td:last-child .admin-table-link, .dashboard-order-table td:last-child .admin-table-link { display: flex; justify-content: center; margin-inline: auto; }
 .dashboard-location-summary-table th:last-child, .dashboard-order-table th:last-child { width: auto; min-width: 132px; white-space: nowrap; }
@@ -282,6 +290,8 @@
 .swal2-icon.preparation-ready-alert-icon { border-color: #075b3c; color: #075b3c; }
 .swal2-icon.preparation-ready-alert-icon .swal2-success-ring { border-color: #075b3c; }
 .swal2-icon.preparation-ready-alert-icon .swal2-success-line-tip, .swal2-icon.preparation-ready-alert-icon .swal2-success-line-long { background-color: #075b3c; }
+.swal2-icon.preparation-multi-location-alert-icon { border-color: #c88434; color: #c88434; background: #fff0d5; }
+.swal2-icon.preparation-multi-location-alert-icon .swal2-icon-content { color: #c88434; }
 @media (max-width: 1024px) { .admin-sidebar { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: visible; }.admin-sidebar nav { min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }.admin-brand, .admin-sidebar-bottom { flex: 0 0 auto; } }
 @media (max-width: 1024px) { .admin-sidebar-close { position: absolute; top: 42px; right: -27px; display: grid; width: 54px; height: 54px; place-items: center; border: 1px solid #b9c7bd; border-radius: 50%; color: #075b3c; background: #fbfcfa; box-shadow: 0 2px 8px #18261d24; transform: translateY(-50%); }.admin-sidebar-close:hover, .admin-sidebar-close:focus-visible { background: #edf3ee; } }
 @media (max-width: 640px) { .admin-sidebar-close { right: -24px; width: 48px; height: 48px; } }
