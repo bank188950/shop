@@ -42,6 +42,7 @@ export function AppRouter() {
           <Route path="products" element={<ProductPage />} />
           <Route path="products/add" element={<ProductInsertPage />} />
           <Route path="products/:productId/edit" element={<ProductEditPage />} />
+          <Route path="products/:productId/add" element={<ProductEditPage />} />
           <Route path="product-categories" element={<ProductCategoryPage />} />
           <Route path="product-categories/add" element={<ProductCategoryFormPage />} />
           <Route path="product-categories/:categoryId/edit" element={<ProductCategoryFormPage />} />
