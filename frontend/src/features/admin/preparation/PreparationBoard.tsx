@@ -46,11 +46,11 @@ export function PreparationBoard() {
   const readyBatches = visibleBatches.filter((batch) => batch.status === 'ready')
   const readyDeliveryGroups = useMemo(() => {
     const groups = new Map<string, AdminOrder[]>()
-    readyBatches.forEach((batch) => getBatchOrders(batch, orders).filter((order) => order.status === 'พร้อมส่ง').forEach((order) => {
+    readyBatches.forEach((batch) => getBatchOrders(batch, orders).filter((order) => order.status === 'พร้อมส่ง' && (location === 'all' || order.location === location)).forEach((order) => {
       groups.set(order.location, [...(groups.get(order.location) ?? []), order])
     }))
     return Array.from(groups, ([location, batchOrders]) => ({ location, orders: batchOrders }))
-  }, [orders, readyBatches])
+  }, [location, orders, readyBatches])
   const allQueueSelected = paidQueue.length > 0 && paidQueue.every((order) => selectedOrderIds.includes(order.id))
   const selectedQueueCount = selectedOrderIds.filter((id) => paidQueue.some((order) => order.id === id)).length
 
