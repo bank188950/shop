@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderStatus } from '@/features/admin/orders/order-data'
 import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
-const dispatchStatusOptions = orderListStatuses.filter((status) => !['รอชำระเงิน', 'รอตรวจสอบ', 'เตรียมของ', 'ยกเลิก'].includes(status))
+const dispatchStatusOptions = orderListStatuses.filter((status) => !['รอชำระเงิน', 'รอตรวจสอบ', 'เตรียมสินค้า', 'ยกเลิก'].includes(status))
 
 function DispatchStatusSelect({ onValueChange }: { onValueChange: (value: string) => void }) {
   return <Select onValueChange={onValueChange}><SelectTrigger className="min-h-12 text-base" aria-label="เลือกสถานะใหม่"><SelectValue placeholder="เลือกสถานะ" /></SelectTrigger><SelectContent className="z-[1100]">{dispatchStatusOptions.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent></Select>

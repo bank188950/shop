@@ -258,9 +258,11 @@
 .preparation-queue-order { grid-template-columns: auto minmax(175px, .75fr) minmax(0, 1.5fr); }
 .preparation-period-badge { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; padding: 0 12px; border-radius: 999px; font-size: 18px; font-weight: 800; white-space: nowrap; transform: translateY(-14px); }
 .admin-shell .admin-main .admin-content span.preparation-period-badge:not(.admin-status):not(.preparation-status):not(.category-quantity-status) { font-size: 18px; }
+.admin-status.preparing { color: #62519b; background: #e9e2ff; }
 .preparation-period-badge.morning { color: #316b8a; background: #dcedf5; }
 .preparation-period-badge.afternoon { color: #9c5127; background: #fff0d5; }
 .preparation-batches > .preparation-empty { font-weight: 400; }
+.preparation-queue > .preparation-empty { font-weight: 400; }
 .preparation-batches > .preparation-section-heading .preparation-period-badge, .preparation-ready-history > .preparation-section-heading .preparation-period-badge { transform: none; }
 .preparation-ready-batch-card { border-color: #9ec6aa; background: #f7fcf8; }
 .preparation-ready-batch-card .preparation-item-summary { padding: 15px 0; border-top: 1px solid #dce8df; border-bottom: 1px solid #dce8df; }
