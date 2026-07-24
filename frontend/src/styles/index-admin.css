@@ -240,17 +240,16 @@
 .preparation-item-summary li strong { color: #65716a; }
 .preparation-item-summary li strong small { color: #347657; font-weight: 400; }
 .preparation-item-pieces { color: #347657; }
-.preparation-customer-list li { grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 10px; padding: 14px; }
+.preparation-customer-list li { position: relative; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px; padding: 14px; }
+.preparation-customer-order-detail { display: grid; min-width: 0; gap: 8px; padding-right: 96px; }
+.preparation-customer-order-status { position: absolute; top: 14px; right: 14px; }
 .preparation-customer-order-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; }
 .preparation-customer-order-header strong { color: #202722; font-weight: 700; }
 .preparation-customer-order-header .preparation-customer-order-id { color: #202722; }
 .preparation-customer-order-header span { color: #202722; font-size: 14px; font-weight: 400; }
 .preparation-customer-order-header strong:not(.preparation-customer-order-id) { font-weight: 400; }
-.preparation-customer-order-items { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 14px; }
-.preparation-customer-order-items p { display: grid; grid-column: auto; gap: 5px; margin: 0; color: #65716a; font-size: 14px; font-weight: 400; }
-.preparation-customer-order-items p > span { display: block; }
-.preparation-customer-item-pieces { color: #347657; }
-.preparation-customer-order-items button { grid-column: auto; align-self: end; }
+.preparation-customer-order-items { display: grid; gap: 5px; margin: 0; color: #65716a; font-size: 14px; font-weight: 400; }
+.preparation-customer-order-items > span { display: block; }
 .dispatch-location-heading p { color: #65716a; }
 .dispatch-location-card details a { color: #202722; }
 .admin-data-table td:nth-child(2) > strong, .dashboard-order-table td:first-child > strong, .preparation-queue-order > span > strong, .preparation-customer-order-header .preparation-customer-order-id, .dispatch-location-card details a, .admin-order-detail-id { color: #2f83d4; }
@@ -259,6 +258,7 @@
 .preparation-period-badge { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; padding: 0 12px; border-radius: 999px; font-size: 18px; font-weight: 800; white-space: nowrap; transform: translateY(-14px); }
 .admin-shell .admin-main .admin-content span.preparation-period-badge:not(.admin-status):not(.preparation-status):not(.category-quantity-status) { font-size: 18px; }
 .admin-status.preparing { color: #62519b; background: #e9e2ff; }
+.admin-status.delivering { color: #316b8a; background: #dcedf5; }
 .preparation-period-badge.morning { color: #316b8a; background: #dcedf5; }
 .preparation-period-badge.afternoon { color: #9c5127; background: #fff0d5; }
 .preparation-batches > .preparation-empty { font-weight: 400; }
