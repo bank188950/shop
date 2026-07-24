@@ -257,6 +257,8 @@
 .preparation-queue-order { grid-template-columns: auto minmax(175px, .75fr) minmax(0, 1.5fr); }
 .preparation-period-badge { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; padding: 0 12px; border-radius: 999px; font-size: 18px; font-weight: 800; white-space: nowrap; transform: translateY(-14px); }
 .admin-shell .admin-main .admin-content span.preparation-period-badge:not(.admin-status):not(.preparation-status):not(.category-quantity-status) { font-size: 18px; }
+.preparation-section-status { min-height: 34px; padding: 0 12px; font-family: var(--font-detail); font-size: 18px; font-weight: 800; }
+.admin-shell .admin-main .admin-content span.preparation-section-status.preparation-status { font-size: 18px; }
 .admin-status.preparing { color: #62519b; background: #e9e2ff; }
 .admin-status.delivering { color: #316b8a; background: #dcedf5; }
 .preparation-period-badge.morning { color: #316b8a; background: #dcedf5; }
