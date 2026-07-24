@@ -256,13 +256,19 @@
 .admin-data-table td:nth-child(2) > strong, .dashboard-order-table td:first-child > strong, .preparation-queue-order > span > strong, .preparation-customer-order-header .preparation-customer-order-id, .dispatch-location-card details a, .admin-order-detail-id { color: #2f83d4; }
 .preparation-queue-selection-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .preparation-queue-order { grid-template-columns: auto minmax(175px, .75fr) minmax(0, 1.5fr); }
-.preparation-period-badge { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; padding: 0 10px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; transform: translateY(-14px); }
+.preparation-period-badge { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; padding: 0 12px; border-radius: 999px; font-size: 18px; font-weight: 800; white-space: nowrap; transform: translateY(-14px); }
+.admin-shell .admin-main .admin-content span.preparation-period-badge:not(.admin-status):not(.preparation-status):not(.category-quantity-status) { font-size: 18px; }
 .preparation-period-badge.morning { color: #316b8a; background: #dcedf5; }
 .preparation-period-badge.afternoon { color: #9c5127; background: #fff0d5; }
 .preparation-batches > .preparation-empty { font-weight: 400; }
 .preparation-batches > .preparation-section-heading .preparation-period-badge, .preparation-ready-history > .preparation-section-heading .preparation-period-badge { transform: none; }
-.preparation-ready-batch-card { border-color: #9fc4d4; background: #f5fbfd; }
-.preparation-ready-batch-card .preparation-item-summary { border-color: #d6e6ec; }
+.preparation-ready-batch-card { border-color: #9ec6aa; background: #f7fcf8; }
+.preparation-ready-batch-card .preparation-item-summary { padding: 15px 0; border-top: 1px solid #dce8df; border-bottom: 1px solid #dce8df; }
+.preparation-ready-batch-card .preparation-item-summary ul { display: grid; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
+.preparation-ready-batch-card .preparation-item-summary li { display: flex; justify-content: space-between; gap: 10px; padding: 0; border: 0; border-radius: 0; color: #202722; background: transparent; }
+.preparation-ready-batch-card .preparation-customer-list li { border-color: #d4ddd5; background: #fff; }
+.preparation-delivered-button { display: inline-flex; width: 100%; min-height: 42px; align-items: center; justify-content: center; gap: 7px; padding: 0 13px; margin-top: 10px; border: 1px solid #347657; border-radius: 8px; color: #fff; background: #347657; font-size: 13px; font-weight: 800; }
+.preparation-delivered-button:hover, .preparation-delivered-button:focus-visible { border-color: #1d6140; background: #1d6140; }
 .dashboard-location-summary-table th:last-child, .dashboard-location-summary-table td:last-child, .dashboard-order-table th:last-child, .dashboard-order-table td:last-child { text-align: center; }
 .dashboard-location-summary-table td:last-child .admin-table-link, .dashboard-order-table td:last-child .admin-table-link { display: flex; justify-content: center; margin-inline: auto; }
 .dashboard-location-summary-table th:last-child, .dashboard-order-table th:last-child { width: auto; min-width: 132px; white-space: nowrap; }
