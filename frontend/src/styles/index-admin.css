@@ -273,7 +273,7 @@
 .preparation-delivered-button:hover, .preparation-delivered-button:focus-visible { border-color: #1d6140; background: #1d6140; }
 .dispatch-location-card > .dispatch-confirm-button { border-color: #347657; background: #347657; }
 .dispatch-location-card > .dispatch-confirm-button:hover, .dispatch-location-card > .dispatch-confirm-button:focus-visible { border-color: #1d6140; background: #1d6140; }
-.swal2-icon.dispatch-warning-alert-icon { border-color: #c88434; color: #c88434; background: #fff0d5; }
+.swal2-icon.dispatch-warning-alert-icon { border-color: #c88434; color: #c88434; background: transparent; }
 .swal2-icon.dispatch-warning-alert-icon .swal2-icon-content { color: #c88434; }
 .swal2-icon.dispatch-confirm-alert-icon { border-color: #347657; color: #347657; }
 .swal2-icon.dispatch-confirm-alert-icon .swal2-success-ring { border-color: #347657; }
@@ -290,7 +290,7 @@
 .swal2-icon.preparation-ready-alert-icon { border-color: #075b3c; color: #075b3c; }
 .swal2-icon.preparation-ready-alert-icon .swal2-success-ring { border-color: #075b3c; }
 .swal2-icon.preparation-ready-alert-icon .swal2-success-line-tip, .swal2-icon.preparation-ready-alert-icon .swal2-success-line-long { background-color: #075b3c; }
-.swal2-icon.preparation-multi-location-alert-icon { border-color: #c88434; color: #c88434; background: #fff0d5; }
+.swal2-icon.preparation-multi-location-alert-icon { border-color: #c88434; color: #c88434; background: transparent; }
 .swal2-icon.preparation-multi-location-alert-icon .swal2-icon-content { color: #c88434; }
 @media (max-width: 1024px) { .admin-sidebar { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: visible; }.admin-sidebar nav { min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }.admin-brand, .admin-sidebar-bottom { flex: 0 0 auto; } }
 @media (max-width: 1024px) { .admin-sidebar-close { position: absolute; top: 42px; right: -27px; display: grid; width: 54px; height: 54px; place-items: center; border: 1px solid #b9c7bd; border-radius: 50%; color: #075b3c; background: #fbfcfa; box-shadow: 0 2px 8px #18261d24; transform: translateY(-50%); }.admin-sidebar-close:hover, .admin-sidebar-close:focus-visible { background: #edf3ee; } }
