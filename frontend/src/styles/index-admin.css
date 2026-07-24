@@ -193,6 +193,33 @@
 .admin-shell .admin-main .admin-content .dashboard-kpi strong { font-size: 22px; }
 .admin-shell .admin-content :is(.admin-table-link, .product-edit, .product-delete, .product-display-status, .location-status) svg { width: 22px; height: 22px; }
 .admin-shell .admin-content :is(.admin-table-link, .product-edit, .product-delete, .product-display-status, .location-status) { width: 38px; height: 38px; border-radius: 50%; }
+.admin-profile { position: relative; }
+.admin-profile-control { position: relative; }
+.admin-profile-toggle { display: inline-flex; width: 44px; min-height: 44px; align-items: center; justify-content: center; padding: 0; border: 0; color: #526259; background: transparent; cursor: pointer; }
+.admin-profile-toggle:hover .admin-avatar, .admin-profile-toggle:focus-visible .admin-avatar { box-shadow: 0 0 0 3px #2e7d3233, 0 1px 4px #58705f66; }
+.admin-profile-toggle:focus-visible { outline: 2px solid #2e7d32; outline-offset: 3px; border-radius: 8px; }
+.admin-profile-menu { position: absolute; z-index: 25; top: calc(100% + 16px); right: 0; box-sizing: border-box; width: 220px; padding: 8px; border: 1px solid #d6ded8; border-radius: 8px; background: #fff; box-shadow: 0 9px 22px #18261d24; }
+.admin-profile-menu::before { position: absolute; top: -7px; right: 15px; width: 14px; height: 14px; border-top: 1px solid #d6ded8; border-left: 1px solid #d6ded8; background: #fff; content: ''; transform: rotate(45deg); }
+.admin-profile-menu a { position: relative; display: flex; min-height: 44px; align-items: center; gap: 10px; padding: 0 12px; border-radius: 6px; color: #25342b; font-size: 14px; font-weight: 800; text-decoration: none; }
+.admin-profile-menu a:hover, .admin-profile-menu a:focus-visible { color: #176344; background: #e4f2e8; }
+.admin-profile-page-heading { padding-bottom: 0; }
+.admin-profile-page-heading > div { display: flex; align-items: center; gap: 18px; }
+.admin-profile-form-avatar { display: grid; width: 50px; height: 50px; flex: 0 0 auto; place-items: center; border: 2px solid #fff; border-radius: 50%; color: #fff; background: #a8643d; box-shadow: 0 1px 4px #58705f66; }
+.admin-profile-form-avatar img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.admin-profile-form { display: grid; gap: 18px; margin-top: 22px; }
+.admin-profile-form > label, .admin-profile-icon-field { display: grid; gap: 7px; color: #33443a; font-size: 14px; font-weight: 800; }
+.admin-profile-form [data-slot='input'] { min-height: 44px; border-color: #aab6ad; background: #fff; }
+.admin-profile-form [data-slot='input']:disabled { color: #65716a; background: #edf1ee; opacity: 1; }
+.admin-profile-icon-field { align-items: start; }
+.admin-profile-form-avatar { margin-top: 3px; }
+.admin-profile-image-upload { width: 100%; box-sizing: border-box; margin-top: 0; }
+.admin-profile-image-upload [data-slot='input'] { font-weight: 400; }
+.admin-profile-avatar-preview { display: grid; justify-items: start; gap: 7px; margin-top: 14px; color: #33443a; font-size: 14px; font-weight: 800; }
+
+@media (max-width: 640px) {
+  .admin-profile-menu { top: calc(100% + 8px); width: 210px; }
+  .admin-profile-page-heading { align-items: center; }
+}
 .admin-shell .admin-content :is(.admin-table-link, .product-edit, .location-table .product-delete)::before { width: 38px; height: 38px; }
 .admin-shell .admin-main .admin-content .product-table-footer button { font-size: 18px; }
 .preparation-batch-heading h3 { font-size: 20px; }
@@ -233,7 +260,9 @@
 .preparation-period-badge.morning { color: #316b8a; background: #dcedf5; }
 .preparation-period-badge.afternoon { color: #9c5127; background: #fff0d5; }
 .preparation-batches > .preparation-empty { font-weight: 400; }
-.preparation-batches > .preparation-section-heading .preparation-period-badge { transform: none; }
+.preparation-batches > .preparation-section-heading .preparation-period-badge, .preparation-ready-history > .preparation-section-heading .preparation-period-badge { transform: none; }
+.preparation-ready-batch-card { border-color: #9fc4d4; background: #f5fbfd; }
+.preparation-ready-batch-card .preparation-item-summary { border-color: #d6e6ec; }
 .dashboard-location-summary-table th:last-child, .dashboard-location-summary-table td:last-child, .dashboard-order-table th:last-child, .dashboard-order-table td:last-child { text-align: center; }
 .dashboard-location-summary-table td:last-child .admin-table-link, .dashboard-order-table td:last-child .admin-table-link { display: flex; justify-content: center; margin-inline: auto; }
 .dashboard-location-summary-table th:last-child, .dashboard-order-table th:last-child { width: auto; min-width: 132px; white-space: nowrap; }

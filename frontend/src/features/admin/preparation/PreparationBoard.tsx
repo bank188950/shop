@@ -1,4 +1,4 @@
-import { Check, ChevronRight, ClipboardCheck, CookingPot as Flame, ListChecks, MapPin, PackageOpen, X, UsersRound } from 'lucide-react'
+import { Check, ChevronRight, ClipboardCheck, CookingPot as Flame, ListChecks, MapPin, PackageOpen, Truck, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
@@ -109,12 +109,12 @@ export function PreparationBoard() {
   }
 
   return <section className="admin-page preparation-page">
-    <div className="admin-page-heading"><div><h1 className="admin-title">เตรียมของ</h1><p className="preparation-page-intro">จัดออเดอร์ที่จ่ายแล้วเป็นรอบเตรียมของ โดยไม่หักสต็อกซ้ำ</p></div><Link to="/admin/orders" className="admin-secondary-button"><ClipboardCheck size={18} aria-hidden="true" />รายการสั่งซื้อ</Link></div>
+    <div className="admin-page-heading"><div><h1 className="admin-title">เตรียมของ</h1></div><Link to="/admin/orders" className="admin-secondary-button"><ClipboardCheck size={18} aria-hidden="true" />รายการสั่งซื้อ</Link></div>
     <section className="preparation-filter" aria-label="ตัวกรองรอบเตรียมของ"><label>วันจัดส่ง<Input type="date" value={date} onChange={(event) => { setDate(event.target.value); setSelectedOrderIds([]) }} /></label><label>รอบส่ง<Select value={period} onValueChange={(value) => changePeriod(value as DeliveryPeriod)}><SelectTrigger aria-label="เลือกรอบส่ง"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="morning">รอบเช้า</SelectItem><SelectItem value="afternoon">รอบบ่าย</SelectItem></SelectContent></Select></label><label>จุดรับสินค้า<Select value={location} onValueChange={(value) => { setLocation(value); setSelectedOrderIds([]) }}><SelectTrigger aria-label="เลือกจุดรับสินค้า"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทุกจุดรับ</SelectItem>{locations.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label></section>
 
     <section className="preparation-queue" aria-labelledby="preparation-queue-title">
       <div className="preparation-section-heading">
-        <div><h2 id="preparation-queue-title"><UsersRound size={21} aria-hidden="true" />คิวที่ชำระเงินแล้ว</h2><p>เลือกออเดอร์ที่ต้องการจัดเตรียมใน{deliveryPeriods[period].label}</p></div>
+        <div><h2 id="preparation-queue-title"><ListChecks size={21} aria-hidden="true" />คิวที่ชำระเงินแล้ว</h2><p>เลือกออเดอร์ที่ต้องการจัดเตรียมใน{deliveryPeriods[period].label}</p></div>
         <button type="button" className="preparation-create-button" disabled={!selectedQueueCount} onClick={handleCreateBatch}><Flame size={18} aria-hidden="true" />สร้างรอบเตรียมของ {selectedQueueCount ? `(${selectedQueueCount})` : ''}</button>
       </div>
       {paidQueue.length ? <div className="preparation-queue-list">
@@ -132,6 +132,20 @@ export function PreparationBoard() {
 
     <section className="preparation-batches" aria-labelledby="preparation-batches-title"><div className="preparation-section-heading"><div><h2 id="preparation-batches-title"><Flame size={21} aria-hidden="true" />รอบเตรียมของ</h2><p>เตรียมครบแล้ว กดปุ่ม “พร้อมส่ง” เพื่อยืนยัน</p></div><span className={`preparation-period-badge ${period}`}>{deliveryPeriods[period].label}</span></div>{preparingBatches.length ? <div className="preparation-batch-grid">{preparingBatches.map((batch, index) => { const batchOrders = getBatchOrders(batch, orders); const items = getOrderItems(batchOrders); return <article key={batch.id} className="preparation-batch-card"><div className="preparation-batch-heading"><div><h3>รอบเตรียมของ {index + 1}</h3><p>{batchOrders.length} คน · สร้างเมื่อ {batch.createdAt}</p></div><span className="preparation-status preparing">เตรียมของ</span></div><div className="preparation-item-summary"><h4><PackageOpen size={18} aria-hidden="true" />ของที่ต้องเตรียม</h4><ul>{items.map((item) => <li key={item.name}><span>{item.name}</span><strong>{item.quantity} {item.unit} <small>· {item.pieces} ชิ้น</small></strong></li>)}</ul></div><details><summary>ดูของที่ลูกค้าแต่ละคนสั่ง <ChevronRight size={17} aria-hidden="true" /></summary><ul className="preparation-customer-list">{batchOrders.map((order) => <li key={order.id}><div className="preparation-customer-order-header"><strong className="preparation-customer-order-id">{order.id}</strong><strong>{order.customerName}</strong><span>· {order.location}</span></div><div className="preparation-customer-order-items"><p>{order.items.map((item) => <span key={item.name}>{item.name} {item.quantity} {item.unit} · <span className="preparation-customer-item-pieces">{getItemPieceCount(item.name, item.quantity)} ชิ้น</span></span>)}</p><button type="button" aria-label={`นำ ${order.customerName} ออกจากรอบเตรียมของ`} onClick={() => removeOrderFromBatch(batch.id, order.id)}><X size={16} aria-hidden="true" />นำออก</button></div></li>)}</ul></details><button type="button" className="preparation-ready-button" onClick={() => markBatchReady(batch.id)}><Check size={18} aria-hidden="true" />เปลี่ยนสถานะ พร้อมส่ง</button></article> })}</div> : <p className="preparation-empty">ยังไม่มีรอบที่กำลังเตรียม เลือกออเดอร์จากคิวด้านบนเพื่อสร้างรอบ</p>}</section>
 
-    {readyBatches.length > 0 && <section className="preparation-ready-history" aria-labelledby="preparation-ready-title"><div className="preparation-section-heading"><div><h2 id="preparation-ready-title"><ListChecks size={21} aria-hidden="true" />รอบที่พร้อมส่ง</h2><p>รอบเหล่านี้ล็อกแล้วเพื่อป้องกันการแก้ไขรายการ</p></div></div><ul>{readyBatches.map((batch) => <li key={batch.id}><span><strong>{getBatchOrders(batch, orders).length} คน</strong><small>{deliveryPeriods[batch.period].label} · {batch.createdAt}</small></span><span className="preparation-status ready">พร้อมส่ง</span></li>)}</ul></section>}
+    {readyBatches.length > 0 && <section className="preparation-ready-history" aria-labelledby="preparation-ready-title">
+      <div className="preparation-section-heading"><div><h2 id="preparation-ready-title"><Truck size={21} aria-hidden="true" />รอบที่พร้อมส่ง</h2><p>รอบเหล่านี้ล็อกแล้วเพื่อป้องกันการแก้ไขรายการ</p></div><span className={`preparation-period-badge ${period}`}>{deliveryPeriods[period].label}</span></div>
+      <div className="preparation-batch-grid">
+        {readyBatches.map((batch, index) => {
+          const batchOrders = getBatchOrders(batch, orders)
+          const items = getOrderItems(batchOrders)
+
+          return <article key={batch.id} className="preparation-batch-card preparation-ready-batch-card">
+            <div className="preparation-batch-heading"><div><h3>รอบเตรียมของ {index + 1}</h3><p>{batchOrders.length} คน · สร้างเมื่อ {batch.createdAt}</p></div><span className="preparation-status ready">พร้อมส่ง</span></div>
+            <div className="preparation-item-summary"><h4><PackageOpen size={18} aria-hidden="true" />ของที่เตรียมแล้ว</h4><ul>{items.map((item) => <li key={item.name}><span>{item.name}</span><strong>{item.quantity} {item.unit} <small>· {item.pieces} ชิ้น</small></strong></li>)}</ul></div>
+            <details><summary>ดูของที่ลูกค้าแต่ละคนสั่ง <ChevronRight size={17} aria-hidden="true" /></summary><ul className="preparation-customer-list">{batchOrders.map((order) => <li key={order.id}><div className="preparation-customer-order-header"><strong className="preparation-customer-order-id">{order.id}</strong><strong>{order.customerName}</strong><span>· {order.location}</span></div><div className="preparation-customer-order-items"><p>{order.items.map((item) => <span key={item.name}>{item.name} {item.quantity} {item.unit} · <span className="preparation-customer-item-pieces">{getItemPieceCount(item.name, item.quantity)} ชิ้น</span></span>)}</p></div></li>)}</ul></details>
+          </article>
+        })}
+      </div>
+    </section>}
   </section>
 }
