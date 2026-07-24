@@ -133,7 +133,7 @@ export function PreparationBoard() {
   }
 
   return <section className="admin-page preparation-page">
-    <div className="admin-page-heading"><div><h1 className="admin-title">เตรียมของ</h1></div><Link to="/admin/orders" className="admin-secondary-button"><ClipboardCheck size={18} aria-hidden="true" />รายการสั่งซื้อ</Link></div>
+    <div className="admin-page-heading"><div><h1 className="admin-title">เตรียมสินค้า</h1></div><Link to="/admin/orders" className="admin-secondary-button"><ClipboardCheck size={18} aria-hidden="true" />รายการสั่งซื้อ</Link></div>
     <section className="preparation-filter" aria-label="ตัวกรองรอบเตรียมของ"><label>วันจัดส่ง<Input type="date" value={date} onChange={(event) => { setDate(event.target.value); setSelectedOrderIds([]) }} /></label><label>รอบส่ง<Select value={period} onValueChange={(value) => changePeriod(value as DeliveryPeriod)}><SelectTrigger aria-label="เลือกรอบส่ง"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="morning">รอบเช้า</SelectItem><SelectItem value="afternoon">รอบบ่าย</SelectItem></SelectContent></Select></label><label>จุดรับสินค้า<Select value={location} onValueChange={(value) => { setLocation(value); setSelectedOrderIds([]) }}><SelectTrigger aria-label="เลือกจุดรับสินค้า"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทุกจุดรับ</SelectItem>{locations.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label></section>
 
     <section className="preparation-queue" aria-labelledby="preparation-queue-title">

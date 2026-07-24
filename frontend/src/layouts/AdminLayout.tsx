@@ -7,7 +7,7 @@ import { adminProducts } from '@/features/admin/product/admin-products'
 const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
   { label: 'ผู้ใช้งาน', icon: UserRound, to: '/admin/users' },
-  { label: 'เตรียมของ', icon: CookingPot, to: '/admin/preparations' },
+  { label: 'เตรียมสินค้า', icon: CookingPot, to: '/admin/preparations' },
   { label: 'รอบส่งวันนี้', icon: Truck, to: '/admin/dispatches-today' },
   { label: 'รายการสั่งซื้อ', icon: ClipboardList, to: '/admin/orders' },
   { label: 'สินค้า', icon: Package, to: '/admin/products' },
