@@ -240,15 +240,14 @@
 .preparation-item-summary li strong { color: #65716a; }
 .preparation-item-summary li strong small { color: #347657; font-weight: 400; }
 .preparation-item-pieces { color: #347657; }
-.preparation-customer-list li { position: relative; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px; padding: 14px; }
-.preparation-customer-order-detail { display: grid; min-width: 0; gap: 8px; padding-right: 96px; }
-.preparation-customer-order-status { position: absolute; top: 14px; right: 14px; }
+.preparation-customer-list li { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px; padding: 14px; }
+.preparation-customer-order-detail { display: grid; min-width: 0; gap: 8px; }
 .preparation-customer-order-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; }
 .preparation-customer-order-header strong { color: #202722; font-weight: 700; }
 .preparation-customer-order-header .preparation-customer-order-id { color: #202722; }
 .preparation-customer-order-header span { color: #202722; font-size: 14px; font-weight: 400; }
 .preparation-customer-order-header strong:not(.preparation-customer-order-id) { font-weight: 400; }
-.preparation-customer-order-items { display: grid; gap: 5px; margin: 0; color: #65716a; font-size: 14px; font-weight: 400; }
+.preparation-customer-list .preparation-customer-order-items { display: grid; gap: 5px; margin: 0; color: #65716a; font-size: 14px; font-weight: 400; }
 .preparation-customer-order-items > span { display: block; }
 .dispatch-location-heading p { color: #65716a; }
 .dispatch-location-card details a { color: #202722; }
