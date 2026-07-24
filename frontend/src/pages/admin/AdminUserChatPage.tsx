@@ -1,4 +1,4 @@
-import { ArrowLeft, ImagePlus, MessageCircle, Send, UserRound, X } from 'lucide-react'
+import { ArrowLeft, ImagePlus, Send, UserRound, X } from 'lucide-react'
 import { type FormEvent, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Textarea } from '@/components/ui/textarea'
@@ -45,7 +45,7 @@ export function AdminUserChatPage() {
   return <section className="admin-page admin-user-chat-page">
     <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><h1 className="admin-title">ส่งข้อความถึง {selectedUser.name}</h1></div></div>
     <section className="admin-user-chat-card" aria-label={`แชทกับ ${selectedUser.name}`}>
-      <header className="admin-user-chat-header"><span className="admin-user-chat-avatar"><UserRound size={23} aria-hidden="true" /></span><div><h2>{selectedUser.name}</h2><p><MessageCircle size={16} aria-hidden="true" />แอดมินส่งข้อความถึงผู้ใช้ได้ฝ่ายเดียว</p></div></header>
+      <header className="admin-user-chat-header"><span className="admin-user-chat-avatar"><UserRound size={23} aria-hidden="true" /></span><div><h2>{selectedUser.name}</h2><p>ช่องทางที่แอดมินส่งข้อความถึงผู้ใช้</p></div></header>
       <div className="admin-user-message-list" aria-live="polite">{messages.map((message) => <article key={message.id} className="admin-user-message"><div className="admin-user-message-bubble">{message.imageUrl && <img src={message.imageUrl} alt="รูปภาพที่แอดมินแนบ" />}{message.text && <p>{message.text}</p>}</div><time dateTime={message.sentAt}>{formatMessageDate(message.sentAt)}</time></article>)}</div>
       <form className="admin-user-message-form" onSubmit={submitMessage}>
         {attachment && <div className="admin-user-attachment"><img src={attachment.url} alt="ตัวอย่างรูปภาพที่จะแนบ" /><span>{attachment.name}</span><button type="button" aria-label="ลบรูปภาพที่แนบ" onClick={() => { setAttachment(null); if (fileInputRef.current) fileInputRef.current.value = '' }}><X size={16} aria-hidden="true" /></button></div>}
