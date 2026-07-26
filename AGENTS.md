@@ -16,6 +16,7 @@
 - ทำให้หน้าลูกค้าตอบสนองตั้งแต่ความกว้าง 320px ขึ้นไป รักษาสถานะ keyboard focus, ขนาดพื้นที่กดอย่างน้อย 44px เมื่อเหมาะสม และใช้ข้อความภาษาไทยที่อ่านง่าย
 - สถานะ UI ต้องทำงานจริง ปุ่มเพิ่มสินค้าต้องอัปเดตตะกร้า และตัวเลือกช่วงส่ง/หมวดหมู่ต้องแสดงสถานะที่เลือก
 - วางฟีเจอร์ผู้ใช้ใน `frontend/src/features/user/`, ฟีเจอร์ผู้ดูแลใน `frontend/src/features/admin/`, layout ที่ใช้ร่วมกันใน `frontend/src/layouts/` และ visual token ส่วนกลางใน `frontend/src/styles/index.css`
+- จัดโค้ดของแต่ละเรื่องไว้ใน `frontend/src/features/{user|admin}/{feature}/`; เก็บ component, `types.ts`, `schema.ts`, `hooks/` และ `utils/` ที่ใช้เฉพาะเรื่องนั้นไว้ด้วยกัน และไม่สร้างไฟล์หรือโฟลเดอร์ว่างเผื่อไว้; ย้ายเฉพาะ hook หรือ utility ที่ใช้ร่วมกันจริงไป `src/hooks/` หรือ `src/utils/`
 - เก็บข้อมูล mock ที่ใช้รอการเชื่อมฐานข้อมูลไว้ใน `frontend/src/data/user/` หรือ `frontend/src/data/admin/` ตามฝั่งที่ใช้ เพื่อให้ลบหรือแทนที่ด้วย API ได้ชัดเจน
 - รวม CSS ฝั่งลูกค้าไว้ใน `frontend/src/styles/index.css` และ CSS ฝั่งผู้ดูแลไว้ใน `frontend/src/styles/index-admin.css`; ห้ามแยกไฟล์ CSS เพิ่ม เว้นแต่ผู้ใช้สั่งชัดเจน
 - ก่อนส่งมอบการเปลี่ยนแปลง frontend ให้รัน `npm run build` จาก `frontend/` และแก้ compilation error ที่เกิดขึ้นจริง
