@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use PDOException;
-
 function category_route(string $method, string $path): bool
 {
     $db = app_db();

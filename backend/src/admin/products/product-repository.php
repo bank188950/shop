@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use PDO;
-
 function product_base_query(): string
 {
     return 'SELECT p.id, p.category_id, c.name AS category_name, c.tracks_piece_quantity,

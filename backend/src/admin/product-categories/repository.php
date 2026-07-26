@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use PDO;
-
 function category_to_api(array $category): array
 {
     return [

@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use PDO;
-
 function app_db(): PDO
 {
     static $connection = null;

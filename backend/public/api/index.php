@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
 require_once dirname(__DIR__, 2) . '/src/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/src/shared/database.php';
 require_once dirname(__DIR__, 2) . '/src/shared/http.php';
@@ -18,9 +21,15 @@ require_once dirname(__DIR__, 2) . '/src/admin/product-units/routes.php';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = api_path();
 
-if ($method === 'GET' && $path === '/health') json_response(['status' => 'ok']);
-if (product_route($method, $path)) exit;
-if (category_route($method, $path)) exit;
-if (unit_route($method, $path)) exit;
+try {
+    if ($method === 'GET' && $path === '/health') json_response(['status' => 'ok']);
+    if (product_route($method, $path)) exit;
+    if (category_route($method, $path)) exit;
+    if (unit_route($method, $path)) exit;
+} catch (Throwable $exception) {
+    $message = 'ไม่สามารถเชื่อมต่อฐานข้อมูลหรือประมวลผล API ได้';
+    if (($_ENV['APP_ENV'] ?? '') === 'local') $message .= ': ' . $exception->getMessage();
+    json_response(['message' => $message], 500);
+}
 
 json_response(['message' => 'ไม่พบ API ที่เรียกใช้'], 404);

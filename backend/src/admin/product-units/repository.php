@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use PDO;
-
 function unit_to_api(array $unit): array
 {
     return ['id' => (int) $unit['id'], 'name' => $unit['name']];
