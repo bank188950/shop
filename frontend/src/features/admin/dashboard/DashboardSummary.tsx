@@ -13,6 +13,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, 
 const dashboardDate = '2026-07-20'
 const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม']
 const thaiMonthShortNames = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+const chartRangeOptions = [{ value: 'today', label: 'วันนี้' }, { value: 'week', label: 'สัปดาห์นี้' }, { value: 'month', label: 'เดือนนี้' }] as const
 const chartOptions = (metric: 'sales' | 'orders') => ({
   responsive: true,
   maintainAspectRatio: false,
@@ -58,6 +59,7 @@ export function DashboardSummary() {
   const [chartYear, setChartYear] = useState('2569')
   const [chartMonth, setChartMonth] = useState('6')
   const [chartLocation, setChartLocation] = useState('all')
+  const [chartRange, setChartRange] = useState<'today' | 'week' | 'month'>('month')
 
   const locations = useMemo(() => Array.from(new Set(adminOrders.map((order) => order.location))), [adminOrders])
   const periodSummary = period === 'all' ? 'รอบเช้าและรอบบ่าย' : deliveryPeriods[period].label
@@ -83,15 +85,23 @@ export function DashboardSummary() {
   const daysInSelectedMonth = new Date(Number(chartYear) - 543, selectedMonthIndex + 1, 0).getDate()
   const monthlyLabels = Array.from({ length: daysInSelectedMonth }, (_, index) => `${index + 1} ${thaiMonthShortNames[selectedMonthIndex]}`)
   const chartLocationOffset = chartLocation === 'all' ? 0 : locations.indexOf(chartLocation) + 1
-  const monthlyValues = Array.from({ length: daysInSelectedMonth }, (_, index) => {
-    const day = index + 1
-    const variation = (day * 37 + selectedMonthIndex * 17 + Number(chartYear) + chartLocationOffset * 23) % 41
-    return chartMetric === 'sales' ? 4200 + variation * 125 + (day % 6) * 290 - chartLocationOffset * 620 : 12 + variation % 17 + day % 5 - chartLocationOffset * 2
+  const chartLabels = chartRange === 'today'
+    ? ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00']
+    : chartRange === 'week'
+      ? ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์']
+      : monthlyLabels
+  const chartValues = Array.from({ length: chartLabels.length }, (_, index) => {
+    const variation = ((index + 1) * 37 + selectedMonthIndex * 17 + Number(chartYear) + chartLocationOffset * 23) % 41
+    const rangeMultiplier = chartRange === 'today' ? 1.2 : chartRange === 'week' ? 1.08 : 1
+    return chartMetric === 'sales'
+      ? Math.round((4200 + variation * 125 + ((index + 1) % 6) * 290 - chartLocationOffset * 620) * rangeMultiplier)
+      : Math.max(1, Math.round((12 + variation % 17 + (index + 1) % 5 - chartLocationOffset * 2) * rangeMultiplier))
   })
-  const monthlyChartData = {
-    labels: monthlyLabels,
+  const chartRangeTitle = chartRange === 'today' ? 'วันนี้' : chartRange === 'week' ? 'สัปดาห์นี้' : `เดือน${thaiMonths[selectedMonthIndex]} ${chartYear}`
+  const chartData = {
+    labels: chartLabels,
     datasets: [{
-      data: monthlyValues,
+      data: chartValues,
       borderColor: chartMetric === 'sales' ? '#267053' : '#2f83d4',
       backgroundColor: chartMetric === 'sales' ? '#26705320' : '#2f83d420',
       fill: true,
@@ -109,7 +119,7 @@ export function DashboardSummary() {
   }
 
   return <>
-    <section className="dashboard-wide-chart"><article className="dashboard-chart-card"><div className="dashboard-card-heading"><div><h2>แนวโน้ม{chartMetric === 'sales' ? 'ยอดขาย' : 'จำนวนรายการสั่งซื้อ'} เดือน{thaiMonths[selectedMonthIndex]} {chartYear}</h2><p>แสดงข้อมูลรายวันทั้งหมด {daysInSelectedMonth} วัน{chartLocation !== 'all' ? ` · ${chartLocation}` : ''}</p></div><div className="dashboard-chart-controls"><div className="dashboard-chart-filter"><Select value={chartYear} onValueChange={setChartYear}><SelectTrigger aria-label="เลือกปีของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content">{['2568', '2569', '2570'].map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select><Select value={chartMonth} onValueChange={setChartMonth}><SelectTrigger aria-label="เลือกเดือนของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content">{thaiMonths.map((item, index) => <SelectItem key={item} value={String(index)}>{item}</SelectItem>)}</SelectContent></Select><Select value={chartLocation} onValueChange={setChartLocation}><SelectTrigger aria-label="เลือกจุดรับสินค้าของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content"><SelectItem value="all">ทุกจุดรับ</SelectItem>{locations.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div><div className="dashboard-chart-toggle" role="group" aria-label="เลือกข้อมูลกราฟ"><button type="button" className={chartMetric === 'sales' ? 'active' : ''} onClick={() => setChartMetric('sales')}>ยอดขาย</button><button type="button" className={chartMetric === 'orders' ? 'active' : ''} onClick={() => setChartMetric('orders')}>รายการสั่งซื้อ</button></div></div></div><div className="dashboard-chart"><Line data={monthlyChartData} options={chartOptions(chartMetric)} aria-label={chartMetric === 'sales' ? `กราฟยอดขายเดือน${thaiMonths[selectedMonthIndex]} ${chartYear}` : `กราฟจำนวนรายการสั่งซื้อเดือน${thaiMonths[selectedMonthIndex]} ${chartYear}`} role="img" /></div></article></section>
+    <section className="dashboard-wide-chart"><article className="dashboard-chart-card"><div className="dashboard-card-heading"><div><h2>แนวโน้ม{chartMetric === 'sales' ? 'ยอดขาย' : 'จำนวนรายการสั่งซื้อ'} {chartRangeTitle}</h2><div className="dashboard-chart-range" role="group" aria-label="เลือกช่วงเวลาของกราฟ">{chartRangeOptions.map((option) => <button key={option.value} type="button" className={chartRange === option.value ? 'active' : ''} aria-pressed={chartRange === option.value} onClick={() => setChartRange(option.value)}>{option.label}</button>)}</div></div><div className="dashboard-chart-controls"><div className="dashboard-chart-filter"><Select value={chartYear} onValueChange={(value) => { setChartYear(value); setChartRange('month') }}><SelectTrigger aria-label="เลือกปีของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content">{['2568', '2569', '2570'].map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select><Select value={chartMonth} onValueChange={(value) => { setChartMonth(value); setChartRange('month') }}><SelectTrigger aria-label="เลือกเดือนของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content">{thaiMonths.map((item, index) => <SelectItem key={item} value={String(index)}>{item}</SelectItem>)}</SelectContent></Select><Select value={chartLocation} onValueChange={setChartLocation}><SelectTrigger aria-label="เลือกจุดรับสินค้าของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content"><SelectItem value="all">ทุกจุดรับ</SelectItem>{locations.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div><div className="dashboard-chart-toggle" role="group" aria-label="เลือกข้อมูลกราฟ"><button type="button" className={chartMetric === 'sales' ? 'active' : ''} onClick={() => setChartMetric('sales')}>ยอดขาย</button><button type="button" className={chartMetric === 'orders' ? 'active' : ''} onClick={() => setChartMetric('orders')}>รายการสั่งซื้อ</button></div></div></div><div className="dashboard-chart"><Line data={chartData} options={chartOptions(chartMetric)} aria-label={chartMetric === 'sales' ? `กราฟยอดขาย${chartRangeTitle}` : `กราฟจำนวนรายการสั่งซื้อ${chartRangeTitle}`} role="img" /></div></article></section>
 
     <section className="dashboard-dispatch-controls" aria-label="ตัวกรองสรุปรอบส่งและรายการสั่งซื้อที่ต้องติดตาม"><div className="dashboard-filter-card"><div className="dashboard-filter-groups"><div className="dashboard-filter-group"><p><CalendarDays size={16} aria-hidden="true" />กำหนดรอบส่ง</p><label>วันจัดส่ง<Input type="date" value={date} onChange={(event) => setDate(event.target.value)} /></label><label>รอบส่ง<Select value={period} onValueChange={(value) => setPeriod(value as 'all' | DeliveryPeriod)}><SelectTrigger aria-label="รอบส่ง"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem><SelectItem value="morning">รอบเช้า</SelectItem><SelectItem value="afternoon">รอบบ่าย</SelectItem></SelectContent></Select></label></div><div className="dashboard-filter-group"><p><MapPin size={16} aria-hidden="true" />จุดรับสินค้า</p><label>สถานที่รับสินค้า<Select value={location} onValueChange={setLocation}><SelectTrigger aria-label="จุดรับสินค้า"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem>{locations.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label></div></div><button type="button" className="dashboard-reset-button" onClick={clearFilters}><RefreshCw size={16} aria-hidden="true" />ล้างตัวกรอง</button></div></section>
 
