@@ -2,8 +2,8 @@ import { ArrowLeft, ImagePlus, Pencil, Send, SquarePen, Trash2, UserRound, X } f
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Textarea } from '@/components/ui/textarea'
-import { deleteAdminUserMessage, getAdminUserMessages, saveAdminUserMessage, updateAdminUserMessage, type AdminUserMessage } from '@/features/admin/user/admin-user-messages'
-import { getAdminUsers } from '@/features/admin/user/admin-users'
+import { deleteAdminUserMessage, getAdminUserMessages, saveAdminUserMessage, updateAdminUserMessage, type AdminUserMessage } from '@/data/admin/user-messages'
+import { getAdminUsers } from '@/data/admin/users'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 
 const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม']

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { mockOrders, type AdminOrder, type DeliveryPeriod } from '@/features/admin/orders/order-data'
+import { mockOrders, type AdminOrder, type DeliveryPeriod } from '@/data/admin/orders'
 
 export type PreparationBatchStatus = 'preparing' | 'ready'
 

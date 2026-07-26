@@ -2,7 +2,7 @@ import { ArrowLeft, CheckCircle2, Clock3, MapPin, PackageCheck, Phone, ReceiptTe
 import { Link, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { deliveryPeriods, formatPrice, getOrderTotal, orderListStatuses, statusClass, type OrderStatus, type PaymentStatus } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderTotal, orderListStatuses, statusClass, type OrderStatus, type PaymentStatus } from '@/data/admin/orders'
 import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 const unpaidStatusOptions: OrderStatus[] = ['รอชำระเงิน', 'ยกเลิก']

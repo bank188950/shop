@@ -2,7 +2,7 @@ import { Banknote, CalendarDays, Check, ChevronRight, MapPin, PackageOpen, Repea
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, statusClass, type AdminOrder, type DeliveryPeriod } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, statusClass, type AdminOrder, type DeliveryPeriod } from '@/data/admin/orders'
 import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 export function DispatchTodayPage() {

@@ -3,8 +3,8 @@ import { type FormEvent, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { getLocations } from '@/features/admin/location/admin-locations'
-import { getAdminUsers, saveAdminUsers, type AdminUser } from './admin-users'
+import { getLocations } from '@/data/admin/locations'
+import { getAdminUsers, saveAdminUsers, type AdminUser } from '@/data/admin/users'
 
 export function UserForm({ user }: { user?: AdminUser }) {
   const [name, setName] = useState(user?.name ?? '')

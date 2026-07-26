@@ -2,7 +2,7 @@ import { Check, ChevronLeft, ChevronRight, Pencil, Plus, Trash2, X } from 'lucid
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
-import { adminProducts } from './admin-products'
+import { adminProducts } from '@/data/admin/products'
 
 export function ProductTable() {
   const [products, setProducts] = useState(adminProducts)

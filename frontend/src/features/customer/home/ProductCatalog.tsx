@@ -1,7 +1,7 @@
 import { Ban, ChefHat, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useCartStore } from '@/stores/cart-store'
-import { productCategories, products } from '@/features/customer/shared/product-data'
+import { productCategories, products } from '@/data/user/products'
 
 export function ProductCatalog() {
   const [category, setCategory] = useState('ทั้งหมด')

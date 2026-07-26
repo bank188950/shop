@@ -1,7 +1,7 @@
 import { ChevronLeft, MessageCircle, UserRound } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getAdminUserMessages, type AdminUserMessage } from '@/features/admin/user/admin-user-messages'
+import { getAdminUserMessages, type AdminUserMessage } from '@/data/admin/user-messages'
 import { StorefrontFooter } from '@/features/customer/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/customer/shared/StorefrontHeader'
 

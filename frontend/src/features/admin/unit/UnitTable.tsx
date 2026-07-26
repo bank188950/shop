@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { getProductUnits, saveProductUnits } from './admin-units'
+import { getProductUnits, saveProductUnits } from '@/data/admin/product-units'
 
 export function UnitTable() {
   const [units, setUnits] = useState(getProductUnits)

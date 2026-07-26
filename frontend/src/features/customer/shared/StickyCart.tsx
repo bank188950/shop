@@ -2,7 +2,7 @@ import { ArrowRight, ShoppingCart } from 'lucide-react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '@/stores/cart-store'
-import { products } from './product-data'
+import { products } from '@/data/user/products'
 
 export function StickyCart() {
   const navigate = useNavigate()

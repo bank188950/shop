@@ -2,7 +2,7 @@ import { ArrowLeft, ImagePlus, Save } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
-import type { AdminBanner } from './admin-banners'
+import type { AdminBanner } from '@/data/admin/banners'
 
 export function BannerForm({ banner }: { banner?: AdminBanner }) {
   const [title, setTitle] = useState(banner?.title ?? '')

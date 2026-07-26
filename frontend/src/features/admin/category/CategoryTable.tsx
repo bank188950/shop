@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { getProductCategories, saveProductCategories } from './admin-categories'
+import { getProductCategories, saveProductCategories } from '@/data/admin/product-categories'
 
 export function CategoryTable() {
   const [categories, setCategories] = useState(getProductCategories)

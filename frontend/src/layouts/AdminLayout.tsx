@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { ChevronLeft, ClipboardList, ClipboardPlus, CookingPot, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Truck, UserRound } from 'lucide-react'
-import { mockOrders } from '@/features/admin/orders/order-data'
-import { adminProducts } from '@/features/admin/product/admin-products'
+import { mockOrders } from '@/data/admin/orders'
+import { adminProducts } from '@/data/admin/products'
 
 const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },

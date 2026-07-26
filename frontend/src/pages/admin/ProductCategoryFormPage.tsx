@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { CategoryForm } from '@/features/admin/category/CategoryForm'
-import { getProductCategories } from '@/features/admin/category/admin-categories'
+import { getProductCategories } from '@/data/admin/product-categories'
 
 export function ProductCategoryFormPage() {
   const { categoryId } = useParams()

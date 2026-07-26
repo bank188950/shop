@@ -2,7 +2,7 @@ import { ArrowLeft, Save } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
-import { getProductUnits, saveProductUnits, type AdminProductUnit } from './admin-units'
+import { getProductUnits, saveProductUnits, type AdminProductUnit } from '@/data/admin/product-units'
 
 export function UnitForm({ unit }: { unit?: AdminProductUnit }) {
   const [name, setName] = useState(unit?.name ?? '')

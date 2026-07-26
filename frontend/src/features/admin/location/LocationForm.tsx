@@ -2,7 +2,7 @@ import { ArrowLeft, Save } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
-import { getLocations, saveLocations, type AdminLocation } from './admin-locations'
+import { getLocations, saveLocations, type AdminLocation } from '@/data/admin/locations'
 
 export function LocationForm({ location }: { location?: AdminLocation }) {
   const [name, setName] = useState(location?.name ?? '')

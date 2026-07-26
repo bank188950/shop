@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { adminProducts } from '@/features/admin/product/admin-products'
-import { deliveryPeriods, formatPrice, getOrderTotal, type AdminOrder, type DeliveryPeriod } from '@/features/admin/orders/order-data'
+import { adminProducts } from '@/data/admin/products'
+import { deliveryPeriods, formatPrice, getOrderTotal, type AdminOrder, type DeliveryPeriod } from '@/data/admin/orders'
 import { usePreparationStore, type PreparationBatch } from './preparation-store'
 
 function getItemPieceCount(name: string, quantity: number) {

@@ -5,7 +5,7 @@ import { ArrowRight, Banknote, CalendarDays, CircleAlert, ClipboardList, Eye, Ma
 import { Link } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, statusClass, type DeliveryPeriod } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, statusClass, type DeliveryPeriod } from '@/data/admin/orders'
 import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)

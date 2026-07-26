@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { getLocations, saveLocations } from './admin-locations'
+import { getLocations, saveLocations } from '@/data/admin/locations'
 
 export function LocationTable() {
   const [locations, setLocations] = useState(getLocations)

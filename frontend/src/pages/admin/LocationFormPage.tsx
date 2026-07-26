@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { LocationForm } from '@/features/admin/location/LocationForm'
-import { getLocations } from '@/features/admin/location/admin-locations'
+import { getLocations } from '@/data/admin/locations'
 
 export function LocationFormPage() {
   const { locationId } = useParams()

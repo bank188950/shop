@@ -2,7 +2,7 @@ import { ArrowLeft, Save } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
-import { getProductCategories, saveProductCategories, type AdminProductCategory } from './admin-categories'
+import { getProductCategories, saveProductCategories, type AdminProductCategory } from '@/data/admin/product-categories'
 
 export function CategoryForm({ category }: { category?: AdminProductCategory }) {
   const [name, setName] = useState(category?.name ?? '')

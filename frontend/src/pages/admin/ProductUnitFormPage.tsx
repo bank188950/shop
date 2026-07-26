@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { UnitForm } from '@/features/admin/unit/UnitForm'
-import { getProductUnits } from '@/features/admin/unit/admin-units'
+import { getProductUnits } from '@/data/admin/product-units'
 
 export function ProductUnitFormPage() {
   const { unitId } = useParams()

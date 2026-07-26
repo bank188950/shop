@@ -1,7 +1,7 @@
 import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { adminBanners } from '@/features/admin/banner/admin-banners'
+import { adminBanners } from '@/data/admin/banners'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
 

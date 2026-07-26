@@ -5,8 +5,8 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { getProductUnits } from '@/features/admin/unit/admin-units'
-import type { AdminProduct } from './admin-products'
+import { getProductUnits } from '@/data/admin/product-units'
+import type { AdminProduct } from '@/data/admin/products'
 
 type StockAction = 'add' | 'reduce' | 'clear' | null
 

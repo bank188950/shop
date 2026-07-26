@@ -6,7 +6,7 @@ import Swal from 'sweetalert2'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderListStatus, type OrderStatus } from '@/features/admin/orders/order-data'
+import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderListStatus, type OrderStatus } from '@/data/admin/orders'
 import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 const bulkStatusOptions = orderListStatuses.filter((item) => item !== 'รอชำระเงิน')

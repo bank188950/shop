@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { UserForm } from '@/features/admin/user/UserForm'
-import { getAdminUsers } from '@/features/admin/user/admin-users'
+import { getAdminUsers } from '@/data/admin/users'
 
 export function UserFormPage() {
   const { userId } = useParams()

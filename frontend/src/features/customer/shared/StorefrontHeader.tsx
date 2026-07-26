@@ -2,7 +2,7 @@ import { ClipboardList, MessageCircle, ShoppingCart, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthDialogs } from '@/features/customer/shared/AuthDialogs'
-import { products } from '@/features/customer/shared/product-data'
+import { products } from '@/data/user/products'
 import { useCartStore } from '@/stores/cart-store'
 
 export function StorefrontHeader() {

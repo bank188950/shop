@@ -5,7 +5,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { getLocations } from '@/features/admin/location/admin-locations'
+import { getLocations } from '@/data/admin/locations'
 
 type FormErrors = Record<string, string>
 

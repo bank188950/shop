@@ -1,12 +1,6 @@
 import { Megaphone } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
-const recentOrders = [
-  'คุณอร สั่งลูกชิ้นหมูพริกขี้หนู 5 ไม้',
-  'คุณเอก สั่งลูกชิ้นเนื้อเอ็น 2 ไม้',
-  'คุณฝน สั่งน้ำเก๊กฮวยเย็น 3 แก้ว',
-]
-const promotion = 'โปรโมชั่น ซื้อลูกชิ้น 10 ไม้ แถมฟรี 1 ไม้'
+import { announcementOrders, promotionMessage } from '@/data/user/orders'
 
 export function AnnouncementBar() {
   const [showPromotion, setShowPromotion] = useState(false)
@@ -23,15 +17,15 @@ export function AnnouncementBar() {
         <div className="min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]">
           {showPromotion ? (
             <div className="announcement-track announcement-promotion-track flex w-max" aria-hidden="true">
-              <span className="inline-flex items-center gap-6 px-7 py-1 text-lg font-extrabold whitespace-nowrap text-[#fff5c6]"><span className="size-[5px] rounded-full bg-[#fff5c6]" aria-hidden="true" />{promotion}<span className="size-[5px] rounded-full bg-[#fff5c6]" aria-hidden="true" /></span>
+              <span className="inline-flex items-center gap-6 px-7 py-1 text-lg font-extrabold whitespace-nowrap text-[#fff5c6]"><span className="size-[5px] rounded-full bg-[#fff5c6]" aria-hidden="true" />{promotionMessage}<span className="size-[5px] rounded-full bg-[#fff5c6]" aria-hidden="true" /></span>
             </div>
           ) : (
             <div className="announcement-track announcement-orders-track flex w-max" aria-hidden="true">
-              {recentOrders.map((order) => <span className="inline-flex items-center gap-6 px-7 text-lg font-bold whitespace-nowrap text-white after:size-[5px] after:rounded-full after:bg-[#b6dfaa] after:content-['']" key={order}>{order}</span>)}
+              {announcementOrders.map((order) => <span className="inline-flex items-center gap-6 px-7 text-lg font-bold whitespace-nowrap text-white after:size-[5px] after:rounded-full after:bg-[#b6dfaa] after:content-['']" key={order}>{order}</span>)}
             </div>
           )}
         </div>
-        <span className="sr-only">{showPromotion ? promotion : `รายการสั่งซื้อล่าสุด: ${recentOrders.join(', ')}`}</span>
+        <span className="sr-only">{showPromotion ? promotionMessage : `รายการสั่งซื้อล่าสุด: ${announcementOrders.join(', ')}`}</span>
       </div>
     </section>
   )

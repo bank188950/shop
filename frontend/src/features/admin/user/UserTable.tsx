@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
-import { getAdminUsers, saveAdminUsers } from './admin-users'
+import { getAdminUsers, saveAdminUsers } from '@/data/admin/users'
 
 export function UserTable() {
   const [users, setUsers] = useState(getAdminUsers)

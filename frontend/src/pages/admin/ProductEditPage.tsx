@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { ProductForm } from '@/features/admin/product/ProductForm'
-import { adminProducts } from '@/features/admin/product/admin-products'
+import { adminProducts } from '@/data/admin/products'
 
 export function ProductEditPage() {
   const { productId } = useParams()
