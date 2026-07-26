@@ -1,13 +1,13 @@
 import { Check, ChevronLeft, ChevronRight, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
+import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { adminProducts } from './admin-products'
 
 export function ProductTable() {
   const [products, setProducts] = useState(adminProducts)
   async function deleteProduct(productId: number, productName: string) {
-    if (await confirmAdminDelete(productName)) setProducts((items) => items.filter((product) => product.id !== productId))
+    if (await confirmDelete(productName)) setProducts((items) => items.filter((product) => product.id !== productId))
   }
 
   return <section className="admin-page product-page">

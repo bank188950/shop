@@ -2,7 +2,7 @@ import { Check, MessageCircle, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
+import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { getAdminUsers, saveAdminUsers } from './admin-users'
 
 export function UserTable() {
@@ -12,7 +12,7 @@ export function UserTable() {
   const visibleUsers = users.slice((page - 1) * pageSize, page * pageSize)
 
   async function deleteUser(userId: number, userName: string) {
-    if (!await confirmAdminDelete(`ผู้ใช้งาน “${userName}”`)) return
+    if (!await confirmDelete(`ผู้ใช้งาน “${userName}”`)) return
 
     const nextUsers = users.filter((user) => user.id !== userId)
     setUsers(nextUsers)

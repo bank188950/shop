@@ -1,7 +1,7 @@
 import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
+import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
 import { getLocations, saveLocations } from './admin-locations'
 
@@ -12,7 +12,7 @@ export function LocationTable() {
   const visibleLocations = locations.slice((page - 1) * pageSize, page * pageSize)
 
   async function deleteLocation(locationId: number, locationName: string) {
-    if (!await confirmAdminDelete(locationName)) return
+    if (!await confirmDelete(locationName)) return
 
     const nextLocations = locations.filter((location) => location.id !== locationId)
     setLocations(nextLocations)

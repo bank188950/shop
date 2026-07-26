@@ -2,7 +2,7 @@ import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { adminBanners } from '@/features/admin/banner/admin-banners'
-import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
+import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
 
 export function BannerPage() {
@@ -12,7 +12,7 @@ export function BannerPage() {
   const visibleBanners = banners.slice((page - 1) * pageSize, page * pageSize)
 
   async function deleteBanner(bannerId: number, bannerTitle: string) {
-    if (await confirmAdminDelete(`แบนเนอร์ “${bannerTitle}”`)) setBanners((items) => {
+    if (await confirmDelete(`แบนเนอร์ “${bannerTitle}”`)) setBanners((items) => {
       const nextBanners = items.filter((banner) => banner.id !== bannerId)
       setPage((currentPage) => Math.min(currentPage, Math.max(1, Math.ceil(nextBanners.length / pageSize))))
       return nextBanners

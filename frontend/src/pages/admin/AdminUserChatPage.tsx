@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Textarea } from '@/components/ui/textarea'
 import { deleteAdminUserMessage, getAdminUserMessages, saveAdminUserMessage, updateAdminUserMessage, type AdminUserMessage } from '@/features/admin/user/admin-user-messages'
 import { getAdminUsers } from '@/features/admin/user/admin-users'
-import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
+import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 
 const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม']
 
@@ -74,7 +74,7 @@ export function AdminUserChatPage() {
   }
 
   async function removeMessage(message: AdminUserMessage) {
-    if (!await confirmAdminDelete('ข้อความนี้')) return
+    if (!await confirmDelete('ข้อความนี้')) return
     setMessages((current) => current.filter((item) => item.id !== message.id))
     deleteAdminUserMessage(message.id)
     if (editingMessage?.id === message.id) resetEditing()

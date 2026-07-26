@@ -1,7 +1,7 @@
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
+import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
 import { getProductUnits, saveProductUnits } from './admin-units'
 
@@ -12,7 +12,7 @@ export function UnitTable() {
   const visibleUnits = units.slice((page - 1) * pageSize, page * pageSize)
 
   async function deleteUnit(unitId: number, unitName: string) {
-    if (!await confirmAdminDelete(unitName)) return
+    if (!await confirmDelete(unitName)) return
 
     const nextUnits = units.filter((unit) => unit.id !== unitId)
     setUnits(nextUnits)

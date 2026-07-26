@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2'
 
-export async function confirmAdminDelete(itemName: string) {
+export async function confirmDelete(itemName: string) {
   const result = await Swal.fire({
     title: 'ยืนยันการลบ?',
     text: `ต้องการลบ ${itemName} หรือไม่`,
@@ -13,7 +13,7 @@ export async function confirmAdminDelete(itemName: string) {
     cancelButtonColor: '#607168',
     reverseButtons: true,
     focusCancel: true,
-    customClass: { icon: 'admin-delete-alert-icon' },
+    customClass: { icon: 'delete-alert-icon' },
   })
 
   return result.isConfirmed

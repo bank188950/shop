@@ -1,7 +1,7 @@
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { confirmAdminDelete } from '@/lib/confirm-admin-delete'
+import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
 import { getProductCategories, saveProductCategories } from './admin-categories'
 
@@ -13,7 +13,7 @@ export function CategoryTable() {
   const visibleCategories = categories.slice((page - 1) * pageSize, page * pageSize)
 
   async function deleteCategory(categoryId: number, categoryName: string) {
-    if (!await confirmAdminDelete(categoryName)) return
+    if (!await confirmDelete(categoryName)) return
 
     const nextCategories = categories.filter((category) => category.id !== categoryId)
     setCategories(nextCategories)
