@@ -61,7 +61,9 @@ CREATE TABLE IF NOT EXISTS product_categories (
   KEY idx_product_categories_active (is_active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- สินค้าและสต็อกปัจจุบัน: stock_quantity คือจำนวนตามหน่วยขาย ส่วน stock_piece_count คือจำนวนชิ้นย่อย เก็บแยกกันและแก้ไขได้อิสระ
+-- สินค้าและสต็อกปัจจุบัน: stock_quantity คือจำนวนตามหน่วยขาย
+-- หมวดที่ระบุจำนวนชิ้นต่อ 1 สินค้า จะคำนวณ stock_quantity จาก stock_piece_count หารด้วย pieces_per_sale แบบปัดเศษทิ้ง
+-- หมวดที่ไม่ระบุ จะกรอก stock_quantity ตรง ๆ และเก็บ stock_piece_count กับ pieces_per_sale เป็น 0
 CREATE TABLE IF NOT EXISTS products (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   category_id BIGINT UNSIGNED NOT NULL,
@@ -72,7 +74,7 @@ CREATE TABLE IF NOT EXISTS products (
   sale_price DECIMAL(10,2) NOT NULL,
   stock_quantity INT UNSIGNED NOT NULL DEFAULT 0,
   stock_piece_count INT UNSIGNED NOT NULL DEFAULT 0,
-  pieces_per_sale INT UNSIGNED NOT NULL DEFAULT 1,
+  pieces_per_sale INT UNSIGNED NOT NULL DEFAULT 0,
   low_stock_threshold INT UNSIGNED NOT NULL DEFAULT 5,
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -86,7 +88,7 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY (unit_id) REFERENCES product_units(id)
     ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT chk_products_price CHECK (sale_price >= 0),
-  CONSTRAINT chk_products_pieces_per_sale CHECK (pieces_per_sale > 0)
+  CONSTRAINT chk_products_pieces_per_sale CHECK (pieces_per_sale >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- กลุ่มออเดอร์ที่แอดมินเลือกเพื่อเตรียมสินค้าเป็นชุดเดียวกัน

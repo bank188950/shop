@@ -11,7 +11,7 @@ function product_validate_input(array $input): array
     $salePrice = filter_var($input['sale_price'] ?? null, FILTER_VALIDATE_FLOAT);
     $stockQuantity = filter_var($input['stock_quantity'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
     $stockPieceCount = filter_var($input['stock_piece_count'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
-    $piecesPerSale = filter_var($input['pieces_per_sale'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    $piecesPerSale = filter_var($input['pieces_per_sale'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
     $lowStockThreshold = filter_var($input['low_stock_threshold'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
 
     if ($name === '') $errors['name'] = 'กรุณาระบุชื่อสินค้า';
@@ -22,7 +22,7 @@ function product_validate_input(array $input): array
     if ($salePrice === false || $salePrice < 0) $errors['sale_price'] = 'ราคาต้องเป็นตัวเลขตั้งแต่ 0 บาท';
     if ($stockQuantity === false) $errors['stock_quantity'] = 'จำนวนสินค้าต้องเป็นจำนวนเต็มตั้งแต่ 0';
     if ($stockPieceCount === false) $errors['stock_piece_count'] = 'จำนวนชิ้นต้องเป็นจำนวนเต็มตั้งแต่ 0';
-    if ($piecesPerSale === false) $errors['pieces_per_sale'] = 'จำนวนชิ้นต่อสินค้าต้องมากกว่า 0';
+    if ($piecesPerSale === false) $errors['pieces_per_sale'] = 'จำนวนชิ้นต่อสินค้าต้องเป็นจำนวนเต็มตั้งแต่ 0';
     if ($lowStockThreshold === false) $errors['low_stock_threshold'] = 'จุดแจ้งเตือนต้องเป็นจำนวนเต็มตั้งแต่ 0';
 
     return [[

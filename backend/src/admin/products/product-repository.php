@@ -83,6 +83,21 @@ function product_references_exist(PDO $db, array $data): array
     return $errors;
 }
 
+function product_apply_category_stock_rule(PDO $db, array $data): array
+{
+    $statement = $db->prepare('SELECT tracks_piece_quantity FROM product_categories WHERE id = :id');
+    $statement->execute(['id' => $data['category_id']]);
+
+    if (!(bool) $statement->fetchColumn()) {
+        $data['stock_piece_count'] = 0;
+        $data['pieces_per_sale'] = 0;
+        return $data;
+    }
+
+    $data['stock_quantity'] = $data['pieces_per_sale'] > 0 ? intdiv($data['stock_piece_count'], $data['pieces_per_sale']) : 0;
+    return $data;
+}
+
 function product_insert(PDO $db, array $data): int
 {
     $statement = $db->prepare('INSERT INTO products (category_id, unit_id, name, description, image_path, sale_price, stock_quantity, stock_piece_count, pieces_per_sale, low_stock_threshold, is_active)

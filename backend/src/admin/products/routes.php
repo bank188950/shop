@@ -42,6 +42,7 @@ function product_route(string $method, string $path): bool
     if (!$errors) $errors = product_references_exist($db, $data);
     if ($errors) json_response(['message' => 'ข้อมูลสินค้าไม่ถูกต้อง', 'errors' => $errors], 422);
 
+    $data = product_apply_category_stock_rule($db, $data);
     $newImagePath = product_upload_image($_FILES['image'] ?? null);
     $data['image_path'] = $newImagePath ?? $current['image_path'] ?? null;
 

@@ -307,6 +307,7 @@ th.table-display-column, td.table-display-column { width: 1%; white-space: nowra
 .product-stock-control { display: flex; align-items: center; gap: 10px; }
 .product-form-card .product-stock-input { width: auto; min-width: 0; flex: 1 1 auto; }
 .product-form-card .product-stock-input:disabled { color: #27362e; background: #edf1ee; opacity: 1; cursor: not-allowed; }
+.product-form-card [data-slot='input']:read-only { color: #27362e; background: #edf1ee; }
 .product-stock-open-button { display: grid; width: 46px; height: 46px; flex: 0 0 auto; place-items: center; border: 1px solid #8ec09a; border-radius: 8px; color: #176344; background: #fff; }
 .product-stock-open-button:hover, .product-stock-open-button:focus-visible { border-color: #347657; background: #edf7ef; }
 .product-stock-mode-actions { display: flex; flex-wrap: wrap; gap: 12px; }
