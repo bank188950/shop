@@ -37,7 +37,7 @@ export function OrderPage() {
   const selectedChangeableOrderIds = selectedOrderIds.filter((id) => changeableOrders.some((order) => order.id === id))
   const allChangeableSelected = changeableOrders.length > 0 && changeableOrders.every((order) => selectedOrderIds.includes(order.id))
   const hasPartialSelection = selectedChangeableOrderIds.length > 0 && !allChangeableSelected
-  const pageSize = 5
+  const pageSize = 10
   const pageCount = Math.max(1, Math.ceil(orders.length / pageSize))
   const visibleOrders = orders.slice((page - 1) * pageSize, page * pageSize)
 

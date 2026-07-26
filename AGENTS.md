@@ -14,6 +14,7 @@
 - ห้ามใช้ `!important` ใน CSS; แก้ลำดับการประกาศหรือ specificity ของ selector ให้ถูกต้องแทน เช่น เติมชื่อ element หน้า class เพื่อให้ specificity เท่ากับกฎที่ชนกัน ยกเว้น 2 กรณี คือ (1) การบังคับปิด animation ใน `prefers-reduced-motion` เพื่อ accessibility และ (2) การ override style ภายในของ third-party component ที่ไม่เปิด prop ให้ปรับ; สำหรับ component ของ `shadcn/ui` ให้ส่ง class ผ่าน prop `className` ก่อนเสมอ เพราะ `cn()` จะตัด class ที่ขัดแย้งกันออกให้
 - ฟอร์มกรอกข้อมูลในส่วนผู้ดูแลระบบ (back office) ให้ใช้ component ของ `shadcn/ui` เช่น `Input`, `Select` และ `Textarea` เป็นค่าเริ่มต้น; ใช้ HTML native เฉพาะเมื่อ component ไม่รองรับความต้องการนั้นจริง
 - ทำให้หน้าลูกค้าตอบสนองตั้งแต่ความกว้าง 320px ขึ้นไป รักษาสถานะ keyboard focus, ขนาดพื้นที่กดอย่างน้อย 44px เมื่อเหมาะสม และใช้ข้อความภาษาไทยที่อ่านง่าย
+- ตารางหรือรายการที่มี pagination ให้ใช้ 10 รายการต่อหน้าเป็นค่าเริ่มต้นเสมอ จนกว่าผู้ใช้จะสั่งเป็นจำนวนอื่นสำหรับหน้านั้นโดยเฉพาะ
 - สถานะ UI ต้องทำงานจริง ปุ่มเพิ่มสินค้าต้องอัปเดตตะกร้า และตัวเลือกช่วงส่ง/หมวดหมู่ต้องแสดงสถานะที่เลือก
 - วางฟีเจอร์ผู้ใช้ใน `frontend/src/features/user/`, ฟีเจอร์ผู้ดูแลใน `frontend/src/features/admin/`, layout ที่ใช้ร่วมกันใน `frontend/src/layouts/` และ visual token ส่วนกลางใน `frontend/src/styles/index.css`
 - จัดโค้ดของแต่ละเรื่องไว้ใน `frontend/src/features/{user|admin}/{feature}/`; เก็บ component, `types.ts`, `schema.ts`, `hooks/` และ `utils/` ที่ใช้เฉพาะเรื่องนั้นไว้ด้วยกัน และไม่สร้างไฟล์หรือโฟลเดอร์ว่างเผื่อไว้; ย้ายเฉพาะ hook หรือ utility ที่ใช้ร่วมกันจริงไป `src/hooks/` หรือ `src/utils/`
