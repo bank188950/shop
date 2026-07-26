@@ -1,28 +1,30 @@
-import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { getProductCategories, saveProductCategories } from '@/data/admin/product-categories'
+import { useCategories, useDeleteCategory } from './hooks/useCategories'
 
 export function CategoryTable() {
-  const [categories, setCategories] = useState(getProductCategories)
+  const categoriesQuery = useCategories()
+  const deleteMutation = useDeleteCategory()
   const [page, setPage] = useState(1)
   const pageSize = 10
-  const pageCount = Math.max(1, Math.ceil(categories.length / pageSize))
+  const categories = categoriesQuery.data ?? []
   const visibleCategories = categories.slice((page - 1) * pageSize, page * pageSize)
 
   async function deleteCategory(categoryId: number, categoryName: string) {
     if (!await confirmDelete(categoryName)) return
-
-    const nextCategories = categories.filter((category) => category.id !== categoryId)
-    setCategories(nextCategories)
-    setPage((currentPage) => Math.min(currentPage, Math.max(1, Math.ceil(nextCategories.length / pageSize))))
-    saveProductCategories(nextCategories)
+    try {
+      await deleteMutation.mutateAsync(categoryId)
+      if (visibleCategories.length === 1 && page > 1) setPage((current) => current - 1)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'ไม่สามารถลบหมวดสินค้าได้')
+    }
   }
 
   return <section className="admin-page product-page">
     <div className="admin-page-heading"><div><h1 className="admin-title">หมวดสินค้า</h1></div><Link to="/admin/product-categories/add" className="admin-primary-button"><Plus size={19} />เพิ่มหมวดสินค้า</Link></div>
-    <div className="product-table-wrap category-table-wrap"><div className="product-table-scroll"><table className="product-table category-table"><thead><tr><th className="table-row-number">ลำดับ</th><th>ชื่อหมวดสินค้า</th><th>ระบุจำนวนสินค้า</th><th>จัดการ</th></tr></thead><tbody>{visibleCategories.map((category, index) => <tr key={category.id}><td className="table-row-number">{(page - 1) * pageSize + index + 1}</td><td><strong>{category.name}</strong></td><td><span className={`category-quantity-status ${category.tracksQuantity ? 'is-enabled' : 'is-disabled'}`}>{category.tracksQuantity ? 'ระบุ' : 'ไม่ระบุ'}</span></td><td><div className="product-actions"><Link className="product-edit" to={`/admin/product-categories/${category.id}/edit`} aria-label={`แก้ไข ${category.name}`}><Pencil size={17} /></Link><button className="product-delete" type="button" aria-label={`ลบ ${category.name} ถาวร`} onClick={() => deleteCategory(category.id, category.name)}><Trash2 size={17} /></button></div></td></tr>)}</tbody></table></div><AdminTablePagination currentPage={page} totalItems={categories.length} pageSize={pageSize} onPageChange={setPage} label="หมวดสินค้า" /></div>
+    <div className="product-table-wrap category-table-wrap"><div className="product-table-scroll"><table className="product-table category-table"><thead><tr><th className="table-row-number">ลำดับ</th><th>ชื่อหมวดสินค้า</th><th>ระบุจำนวนสินค้า</th><th>แสดง</th><th>จัดการ</th></tr></thead><tbody>{categoriesQuery.isLoading && <tr><td colSpan={5}>กำลังโหลดหมวดสินค้า...</td></tr>}{categoriesQuery.isError && <tr><td colSpan={5}>ไม่สามารถโหลดหมวดสินค้าได้: {categoriesQuery.error.message}</td></tr>}{!categoriesQuery.isLoading && !categoriesQuery.isError && visibleCategories.length === 0 && <tr><td colSpan={5}>ยังไม่มีหมวดสินค้า</td></tr>}{visibleCategories.map((category, index) => <tr key={category.id}><td className="table-row-number">{(page - 1) * pageSize + index + 1}</td><td><strong>{category.name}</strong></td><td><span className={`category-quantity-status ${category.tracksQuantity ? 'is-enabled' : 'is-disabled'}`}>{category.tracksQuantity ? 'ระบุ' : 'ไม่ระบุ'}</span></td><td><span className={`product-display-status ${category.isActive ? 'is-active' : 'is-inactive'}`} aria-label={category.isActive ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}>{category.isActive ? <Check size={19} aria-hidden="true" /> : <X size={19} aria-hidden="true" />}</span></td><td><div className="product-actions"><Link className="product-edit" to={`/admin/product-categories/${category.id}/edit`} aria-label={`แก้ไข ${category.name}`}><Pencil size={17} /></Link><button className="product-delete" type="button" disabled={deleteMutation.isPending} aria-label={`ลบ ${category.name} ถาวร`} onClick={() => deleteCategory(category.id, category.name)}><Trash2 size={17} /></button></div></td></tr>)}</tbody></table></div><AdminTablePagination currentPage={page} totalItems={categories.length} pageSize={pageSize} onPageChange={setPage} label="หมวดสินค้า" /></div>
   </section>
 }

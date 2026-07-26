@@ -21,6 +21,8 @@ backend/storage/slips/*
 !backend/storage/slips/.gitkeep
 backend/storage/products/*
 !backend/storage/products/.gitkeep
+backend/public/uploads/products/*
+!backend/public/uploads/products/.gitkeep
 
 # Logs, caches, and temporary files
 *.log

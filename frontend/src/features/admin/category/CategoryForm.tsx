@@ -1,42 +1,51 @@
 import { ArrowLeft, Save } from 'lucide-react'
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
-import { getProductCategories, saveProductCategories, type AdminProductCategory } from '@/data/admin/product-categories'
+import { useCategory, useSaveCategory } from './hooks/useCategories'
 
-export function CategoryForm({ category }: { category?: AdminProductCategory }) {
-  const [name, setName] = useState(category?.name ?? '')
-  const [tracksQuantity, setTracksQuantity] = useState(category?.tracksQuantity ?? false)
+export function CategoryForm({ categoryId }: { categoryId?: number }) {
+  const categoryQuery = useCategory(categoryId)
+  const saveMutation = useSaveCategory()
+  const [name, setName] = useState('')
+  const [tracksQuantity, setTracksQuantity] = useState(false)
+  const [isActive, setIsActive] = useState(true)
   const [error, setError] = useState('')
-  const [saved, setSaved] = useState(false)
   const navigate = useNavigate()
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const nextName = name.trim()
-    const categories = getProductCategories()
-    const hasDuplicateName = categories.some((item) => item.id !== category?.id && item.name === nextName)
+  useEffect(() => {
+    if (!categoryQuery.data) return
+    setName(categoryQuery.data.name)
+    setTracksQuantity(categoryQuery.data.tracksQuantity)
+    setIsActive(categoryQuery.data.isActive)
+  }, [categoryQuery.data])
 
-    if (hasDuplicateName) {
-      setError('มีชื่อหมวดสินค้านี้แล้ว')
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!name.trim()) {
+      setError('กรุณาระบุชื่อหมวดสินค้า')
       return
     }
-
-    const nextCategories = category
-      ? categories.map((item) => item.id === category.id ? { ...item, name: nextName, tracksQuantity } : item)
-      : [...categories, { id: Date.now(), name: nextName, tracksQuantity }]
-    saveProductCategories(nextCategories)
-    setSaved(true)
-    window.setTimeout(() => navigate('/admin/product-categories'), 400)
+    try {
+      setError('')
+      await saveMutation.mutateAsync({ categoryId, input: { name, tracksQuantity, isActive } })
+      navigate('/admin/product-categories')
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'ไม่สามารถบันทึกหมวดสินค้าได้')
+    }
   }
 
+  if (categoryId && categoryQuery.isLoading) return <div className="page-message">กำลังโหลดหมวดสินค้า...</div>
+  if (categoryId && categoryQuery.isError) return <div className="page-message">ไม่สามารถโหลดหมวดสินค้าได้: {categoryQuery.error.message}</div>
+
   return <section className="admin-page product-form-page">
-    <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/product-categories"><ArrowLeft size={18} />กลับไปหน้าหมวดสินค้า</Link><h1 className="admin-title">{category ? 'แก้ไขหมวดสินค้า' : 'เพิ่มหมวดสินค้า'}</h1></div></div>
+    <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/product-categories"><ArrowLeft size={18} />กลับไปหน้าหมวดสินค้า</Link><h1 className="admin-title">{categoryId ? 'แก้ไขหมวดสินค้า' : 'เพิ่มหมวดสินค้า'}</h1></div></div>
     <form className="product-form-card category-form-card" onSubmit={submit}>
       <label htmlFor="category-name">ชื่อหมวดสินค้า<Input id="category-name" required value={name} onChange={(event) => { setName(event.target.value); setError('') }} placeholder="เช่น ลูกชิ้น" aria-describedby={error ? 'category-name-error' : undefined} /></label>
       {error && <p id="category-name-error" className="location-form-error" role="alert">{error}</p>}
       <label className="category-quantity-toggle"><input type="checkbox" checked={tracksQuantity} onChange={(event) => setTracksQuantity(event.target.checked)} /><span>ระบุจำนวนชิ้นต่อ (1 สินค้า)</span></label>
-      <div className="product-form-actions"><Link to="/admin/product-categories" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saved} aria-busy={saved}><Save size={18} aria-hidden="true" />{saved ? 'บันทึกแล้ว' : 'บันทึก'}</button></div>
+      <label className="product-active-toggle"><input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} /><span>เปิดการใช้งาน</span></label>
+      <div className="product-form-actions"><Link to="/admin/product-categories" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saveMutation.isPending} aria-busy={saveMutation.isPending}><Save size={18} aria-hidden="true" />{saveMutation.isPending ? 'กำลังบันทึก' : 'บันทึก'}</button></div>
     </form>
   </section>
 }
