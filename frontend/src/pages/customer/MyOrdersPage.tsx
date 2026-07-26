@@ -1,7 +1,7 @@
 import { CheckCircle2, ChevronLeft, Clock3, MapPin, PackageCheck, ReceiptText } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { StorefrontHeader } from '@/features/customer/shared/StorefrontHeader'
-import { StorefrontFooter } from '@/features/customer/shared/StorefrontFooter'
+import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
+import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 
 const orders = [
   { id: 'PO-200720-02', date: '20 ก.ค. 2569', period: 'รอบเช้า 09:00–10:00', location: 'จุดรับสินค้า A', total: '150 บาท', status: 'เตรียมสินค้า', items: 'ลูกชิ้นเนื้อเอ็น 5 ไม้, น้ำเก๊กฮวยเย็น 2 แก้ว' },

@@ -1,10 +1,10 @@
-import { HeroBanner } from '@/features/customer/home/HeroBanner'
-import { ProductCatalog } from '@/features/customer/home/ProductCatalog'
-import { RecentOrders } from '@/features/customer/home/RecentOrders'
-import { AnnouncementBar } from '@/features/customer/shared/AnnouncementBar'
-import { StickyCart } from '@/features/customer/shared/StickyCart'
-import { StorefrontFooter } from '@/features/customer/shared/StorefrontFooter'
-import { StorefrontHeader } from '@/features/customer/shared/StorefrontHeader'
+import { HeroBanner } from '@/features/user/home/HeroBanner'
+import { ProductCatalog } from '@/features/user/home/ProductCatalog'
+import { RecentOrders } from '@/features/user/home/RecentOrders'
+import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
+import { StickyCart } from '@/features/user/shared/StickyCart'
+import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
+import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 
 export function HomePage() {
   return (

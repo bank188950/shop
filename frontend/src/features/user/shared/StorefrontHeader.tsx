@@ -1,7 +1,7 @@
 import { ClipboardList, MessageCircle, ShoppingCart, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AuthDialogs } from '@/features/customer/shared/AuthDialogs'
+import { AuthDialogs } from '@/features/user/shared/AuthDialogs'
 import { products } from '@/data/user/products'
 import { useCartStore } from '@/stores/cart-store'
 
