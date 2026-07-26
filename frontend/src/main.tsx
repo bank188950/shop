@@ -5,7 +5,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AppRouter } from '@/app/router'
 import '@/styles/index.css'
 import '@/styles/index-admin.css'
-import '@/styles/order-actions.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
