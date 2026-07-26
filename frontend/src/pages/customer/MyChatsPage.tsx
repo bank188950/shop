@@ -26,7 +26,7 @@ export function MyChatsPage() {
     }
   }, [])
 
-  return <section className="flex min-h-screen flex-col overflow-hidden"><StorefrontHeader /><main className="mx-auto w-full max-w-[760px] flex-1 px-6 py-8 max-md:px-3.5 max-md:py-5">
+  return <section className="flex min-h-screen flex-col overflow-hidden"><StorefrontHeader /><main className="mx-auto w-full max-w-[960px] flex-1 px-6 py-8 max-md:px-3.5 max-md:py-5">
     <Link to="/" className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[#76503a] px-5 text-xl font-extrabold text-white no-underline shadow-md shadow-[#76503a]/20 transition hover:bg-[#5f3d2b]"><ChevronLeft size={22} strokeWidth={2.75} aria-hidden="true" />กลับหน้าหลัก</Link>
     <header className="mt-5"><h1 className="m-0 font-heading text-[clamp(2rem,5vw,3rem)] leading-tight text-ink">ข้อความจากแอดมิน</h1></header>
     <section className="mt-5 grid gap-4" aria-label="ข้อความจากแอดมิน" aria-live="polite">

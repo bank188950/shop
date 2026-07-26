@@ -76,17 +76,17 @@ function RegisterForm() {
       </div>
       <div>
         <Label htmlFor="register-phone" className="text-base font-bold text-ink">เบอร์โทรศัพท์</Label>
-        <Input id="register-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="0812345678" aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'register-phone-error' : undefined} className={fieldClassName(Boolean(errors.phone))} />
+        <Input id="register-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="ตย. 0812345678" maxLength={10} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'register-phone-error' : undefined} className={fieldClassName(Boolean(errors.phone))} />
         <FieldError id="register-phone-error" message={errors.phone} />
       </div>
       <div>
         <Label htmlFor="register-password" className="text-base font-bold text-ink">รหัสผ่าน</Label>
-        <Input id="register-password" name="password" type="password" autoComplete="new-password" aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'register-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} />
+        <Input id="register-password" name="password" type="password" autoComplete="new-password" maxLength={10} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'register-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} />
         <FieldError id="register-password-error" message={errors.password} />
       </div>
       <div>
         <Label htmlFor="register-confirm-password" className="text-base font-bold text-ink">ยืนยันรหัสผ่าน</Label>
-        <Input id="register-confirm-password" name="confirmPassword" type="password" autoComplete="new-password" aria-invalid={Boolean(errors.confirmPassword)} aria-describedby={errors.confirmPassword ? 'register-confirm-password-error' : undefined} className={fieldClassName(Boolean(errors.confirmPassword))} />
+        <Input id="register-confirm-password" name="confirmPassword" type="password" autoComplete="new-password" maxLength={10} aria-invalid={Boolean(errors.confirmPassword)} aria-describedby={errors.confirmPassword ? 'register-confirm-password-error' : undefined} className={fieldClassName(Boolean(errors.confirmPassword))} />
         <FieldError id="register-confirm-password-error" message={errors.confirmPassword} />
       </div>
       <div>
@@ -129,12 +129,12 @@ function LoginForm() {
   return <form className="grid gap-4" noValidate onSubmit={validate}>
     <div>
       <Label htmlFor="login-phone" className="text-base font-bold text-ink">เบอร์โทรศัพท์</Label>
-      <Input id="login-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="0812345678" aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'login-phone-error' : undefined} className={fieldClassName(Boolean(errors.phone))} />
+      <Input id="login-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="ตย. 0812345678" maxLength={10} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'login-phone-error' : undefined} className={fieldClassName(Boolean(errors.phone))} />
       <FieldError id="login-phone-error" message={errors.phone} />
     </div>
     <div>
       <Label htmlFor="login-password" className="text-base font-bold text-ink">รหัสผ่าน</Label>
-      <Input id="login-password" name="password" type="password" autoComplete="current-password" aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'login-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} />
+      <Input id="login-password" name="password" type="password" autoComplete="current-password" maxLength={10} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'login-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} />
       <FieldError id="login-password-error" message={errors.password} />
     </div>
     <Button type="submit" className={actionButtonClassName}>เข้าสู่ระบบ</Button>
