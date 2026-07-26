@@ -16,6 +16,7 @@ import { BannerPage } from '@/pages/admin/BannerPage'
 import { BannerInsertPage } from '@/pages/admin/BannerInsertPage'
 import { BannerEditPage } from '@/pages/admin/BannerEditPage'
 import { MyOrdersPage } from '@/pages/customer/MyOrdersPage'
+import { MyChatsPage } from '@/pages/customer/MyChatsPage'
 import { LocationPage } from '@/pages/admin/LocationPage'
 import { LocationFormPage } from '@/pages/admin/LocationFormPage'
 import { ProductCategoryPage } from '@/pages/admin/ProductCategoryPage'
@@ -36,6 +37,7 @@ export function AppRouter() {
           <Route path="/" element={<HomePage />} />
           <Route path="/order-summary" element={<OrderSummaryPage />} />
           <Route path="/my-orders" element={<MyOrdersPage />} />
+          <Route path="/my-chats" element={<MyChatsPage />} />
         </Route>
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminLayout />}>
