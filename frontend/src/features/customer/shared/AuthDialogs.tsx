@@ -76,7 +76,7 @@ function RegisterForm() {
       </div>
       <div>
         <Label htmlFor="register-phone" className="text-base font-bold text-ink">เบอร์โทรศัพท์</Label>
-        <Input id="register-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="ตย. 0812345678" maxLength={10} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'register-phone-error' : undefined} className={fieldClassName(Boolean(errors.phone))} />
+        <Input id="register-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="พิมพ์เฉพาะตัวเลข 10 หลัก" maxLength={10} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'register-phone-error' : undefined} className={fieldClassName(Boolean(errors.phone))} />
         <FieldError id="register-phone-error" message={errors.phone} />
       </div>
       <div>
@@ -104,7 +104,7 @@ function RegisterForm() {
       </div>
       <div>
         <Label htmlFor="register-line-id" className="text-base font-bold text-ink">LINE ID</Label>
-        <Input id="register-line-id" name="lineId" placeholder="ชื่อผู้ใช้ LINE" aria-invalid={Boolean(errors.lineId)} aria-describedby={errors.lineId ? 'register-line-id-error' : undefined} className={fieldClassName(Boolean(errors.lineId))} />
+        <Input id="register-line-id" name="lineId" placeholder="ชื่อแอคเคาท์ LINE" aria-invalid={Boolean(errors.lineId)} aria-describedby={errors.lineId ? 'register-line-id-error' : undefined} className={fieldClassName(Boolean(errors.lineId))} />
         <FieldError id="register-line-id-error" message={errors.lineId} />
       </div>
     </div>
@@ -129,7 +129,7 @@ function LoginForm() {
   return <form className="grid gap-4" noValidate onSubmit={validate}>
     <div>
       <Label htmlFor="login-phone" className="text-base font-bold text-ink">เบอร์โทรศัพท์</Label>
-      <Input id="login-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="ตย. 0812345678" maxLength={10} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'login-phone-error' : undefined} className={fieldClassName(Boolean(errors.phone))} />
+      <Input id="login-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="พิมพ์เฉพาะตัวเลข 10 หลัก" maxLength={10} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'login-phone-error' : undefined} className={fieldClassName(Boolean(errors.phone))} />
       <FieldError id="login-phone-error" message={errors.phone} />
     </div>
     <div>
