@@ -8,11 +8,14 @@ export function UnitForm({ unitId }: { unitId?: number }) {
   const unitQuery = useUnit(unitId)
   const saveMutation = useSaveUnit()
   const [name, setName] = useState('')
+  const [isActive, setIsActive] = useState(true)
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (unitQuery.data) setName(unitQuery.data.name)
+    if (!unitQuery.data) return
+    setName(unitQuery.data.name)
+    setIsActive(unitQuery.data.isActive)
   }, [unitQuery.data])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -23,7 +26,7 @@ export function UnitForm({ unitId }: { unitId?: number }) {
     }
     try {
       setError('')
-      await saveMutation.mutateAsync({ unitId, name })
+      await saveMutation.mutateAsync({ unitId, input: { name, isActive } })
       navigate('/admin/product-units')
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : 'ไม่สามารถบันทึกหน่วยสินค้าได้')
@@ -38,6 +41,7 @@ export function UnitForm({ unitId }: { unitId?: number }) {
     <form className="product-form-card category-form-card" onSubmit={submit}>
       <label htmlFor="product-unit-name">ชื่อหน่วยสินค้า<Input id="product-unit-name" required value={name} onChange={(event) => { setName(event.target.value); setError('') }} placeholder="เช่น ไม้" aria-describedby={error ? 'product-unit-name-error' : undefined} /></label>
       {error && <p id="product-unit-name-error" className="location-form-error" role="alert">{error}</p>}
+      <label className="product-active-toggle"><input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} /><span>เปิดการใช้งาน</span></label>
       <div className="product-form-actions"><Link to="/admin/product-units" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saveMutation.isPending} aria-busy={saveMutation.isPending}><Save size={18} aria-hidden="true" />{saveMutation.isPending ? 'กำลังบันทึก' : 'บันทึก'}</button></div>
     </form>
   </section>

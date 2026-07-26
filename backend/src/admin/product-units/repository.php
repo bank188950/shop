@@ -3,17 +3,19 @@ declare(strict_types=1);
 
 function unit_to_api(array $unit): array
 {
-    return ['id' => (int) $unit['id'], 'name' => $unit['name']];
+    return ['id' => (int) $unit['id'], 'name' => $unit['name'], 'isActive' => (bool) $unit['is_active']];
 }
 
-function unit_list(PDO $db): array
+function unit_list(PDO $db, bool $activeOnly = false): array
 {
-    return $db->query('SELECT id, name FROM product_units ORDER BY name')->fetchAll();
+    $sql = 'SELECT id, name, is_active FROM product_units';
+    if ($activeOnly) $sql .= ' WHERE is_active = 1';
+    return $db->query($sql . ' ORDER BY name')->fetchAll();
 }
 
 function unit_find(PDO $db, int $id): ?array
 {
-    $statement = $db->prepare('SELECT id, name FROM product_units WHERE id = :id');
+    $statement = $db->prepare('SELECT id, name, is_active FROM product_units WHERE id = :id');
     $statement->execute(['id' => $id]);
     return $statement->fetch() ?: null;
 }
@@ -33,14 +35,14 @@ function unit_name_is_taken(PDO $db, string $name, ?int $exceptId): bool
 
 function unit_insert(PDO $db, array $data): int
 {
-    $statement = $db->prepare('INSERT INTO product_units (name) VALUES (:name)');
+    $statement = $db->prepare('INSERT INTO product_units (name, is_active) VALUES (:name, :is_active)');
     $statement->execute($data);
     return (int) $db->lastInsertId();
 }
 
 function unit_update(PDO $db, int $id, array $data): void
 {
-    $statement = $db->prepare('UPDATE product_units SET name = :name WHERE id = :id');
+    $statement = $db->prepare('UPDATE product_units SET name = :name, is_active = :is_active WHERE id = :id');
     $statement->execute(['id' => $id, ...$data]);
 }
 

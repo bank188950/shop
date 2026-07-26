@@ -7,5 +7,9 @@ function unit_validate_input(array $input): array
     $errors = [];
     if ($name === '') $errors['name'] = 'กรุณาระบุชื่อหน่วยสินค้า';
     if (mb_strlen($name) > 100) $errors['name'] = 'ชื่อหน่วยสินค้ายาวเกิน 100 ตัวอักษร';
-    return [['name' => $name], $errors];
+
+    return [[
+        'name' => $name,
+        'is_active' => ($input['is_active'] ?? '1') === '1' ? 1 : 0,
+    ], $errors];
 }

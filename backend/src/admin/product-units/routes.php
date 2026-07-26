@@ -5,7 +5,8 @@ function unit_route(string $method, string $path): bool
 {
     $db = app_db();
     if ($method === 'GET' && $path === '/admin/product-units') {
-        json_response(['data' => array_map('unit_to_api', unit_list($db))]);
+        $activeOnly = ($_GET['active'] ?? '') === '1';
+        json_response(['data' => array_map('unit_to_api', unit_list($db, $activeOnly))]);
     }
 
     if (!preg_match('#^/admin/product-units/(\d+)$#', $path, $matches) && !($method === 'POST' && $path === '/admin/product-units')) return false;

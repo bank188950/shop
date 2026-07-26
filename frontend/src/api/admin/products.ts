@@ -48,6 +48,6 @@ export async function getProductCategories() {
 }
 
 export async function getProductUnits() {
-  const response = await api.get<{ data: ProductUnitOption[] }>('/admin/product-units')
+  const response = await api.get<{ data: ProductUnitOption[] }>('/admin/product-units', { params: { active: 1 } })
   return response.data.data
 }

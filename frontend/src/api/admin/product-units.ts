@@ -1,9 +1,12 @@
 import api from '@/lib/axios'
 
-export type AdminProductUnit = { id: number, name: string }
+export type AdminProductUnit = { id: number, name: string, isActive: boolean }
 
-function unitBody(name: string) {
-  return new URLSearchParams({ name: name.trim() })
+function unitBody(input: Omit<AdminProductUnit, 'id'>) {
+  return new URLSearchParams({
+    name: input.name.trim(),
+    is_active: input.isActive ? '1' : '0',
+  })
 }
 
 export async function getAdminProductUnits() {
@@ -16,13 +19,13 @@ export async function getAdminProductUnit(unitId: number) {
   return response.data.data
 }
 
-export async function createAdminProductUnit(name: string) {
-  const response = await api.post<{ data: AdminProductUnit }>('/admin/product-units', unitBody(name))
+export async function createAdminProductUnit(input: Omit<AdminProductUnit, 'id'>) {
+  const response = await api.post<{ data: AdminProductUnit }>('/admin/product-units', unitBody(input))
   return response.data.data
 }
 
-export async function updateAdminProductUnit(unitId: number, name: string) {
-  const response = await api.post<{ data: AdminProductUnit }>(`/admin/product-units/${unitId}`, unitBody(name))
+export async function updateAdminProductUnit(unitId: number, input: Omit<AdminProductUnit, 'id'>) {
+  const response = await api.post<{ data: AdminProductUnit }>(`/admin/product-units/${unitId}`, unitBody(input))
   return response.data.data
 }
 

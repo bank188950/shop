@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createAdminProductUnit, deleteAdminProductUnit, getAdminProductUnit, getAdminProductUnits, updateAdminProductUnit } from '@/api/admin/product-units'
+import type { AdminProductUnit } from '@/api/admin/product-units'
 
 const unitKeys = {
   all: ['admin', 'product-units'] as const,
@@ -18,7 +19,7 @@ export function useUnit(unitId?: number) {
 export function useSaveUnit() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ unitId, name }: { unitId?: number, name: string }) => unitId ? updateAdminProductUnit(unitId, name) : createAdminProductUnit(name),
+    mutationFn: ({ unitId, input }: { unitId?: number, input: Omit<AdminProductUnit, 'id'> }) => unitId ? updateAdminProductUnit(unitId, input) : createAdminProductUnit(input),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: unitKeys.all }),
   })
 }
