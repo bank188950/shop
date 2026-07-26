@@ -11,7 +11,7 @@ export function CategoryTable() {
   const deleteMutation = useDeleteCategory()
   const saveMutation = useSaveCategory()
   const [page, setPage] = useState(1)
-  const pageSize = 10
+  const pageSize = 1
   const categories = categoriesQuery.data ?? []
   const visibleCategories = categories.slice((page - 1) * pageSize, page * pageSize)
 
