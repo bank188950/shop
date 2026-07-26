@@ -12,7 +12,7 @@ import type { ProductFormValues } from './types'
 type StockAction = 'add' | 'reduce' | 'clear' | null
 
 const emptyValues: ProductFormValues = {
-  name: '', description: '', categoryId: null, unitId: null, salePrice: '', stockPieceCount: '0', piecesPerSale: '1', lowStockThreshold: '5', isActive: true,
+  name: '', description: '', categoryId: null, unitId: null, salePrice: '', stockQuantity: '0', stockPieceCount: '0', piecesPerSale: '1', lowStockThreshold: '5', isActive: true,
 }
 
 export function ProductForm({ productId }: { productId?: number }) {
@@ -30,8 +30,7 @@ export function ProductForm({ productId }: { productId?: number }) {
   const [isStockDialogOpen, setIsStockDialogOpen] = useState(false)
   const navigate = useNavigate()
   const isSaving = createMutation.isPending || updateMutation.isPending
-  const piecesPerSale = Math.max(1, Number(values.piecesPerSale) || 1)
-  const stockQuantityValue = Math.floor((Number(values.stockPieceCount) || 0) / piecesPerSale)
+  const stockQuantityValue = Number(values.stockQuantity) || 0
   const selectedUnit = unitsQuery.data?.find((unit) => unit.id === values.unitId)?.name ?? ''
 
   useEffect(() => {
@@ -43,6 +42,7 @@ export function ProductForm({ productId }: { productId?: number }) {
       categoryId: product.categoryId,
       unitId: product.unitId,
       salePrice: String(product.salePrice),
+      stockQuantity: String(product.stockQuantity),
       stockPieceCount: String(product.stockPieceCount),
       piecesPerSale: String(product.piecesPerSale),
       lowStockThreshold: String(product.lowStockThreshold),
@@ -76,16 +76,16 @@ export function ProductForm({ productId }: { productId?: number }) {
   function confirmStockAction() {
     if (!stockAction) return
     if (stockAction === 'clear') {
-      setValues((current) => ({ ...current, stockPieceCount: '0' }))
+      setValues((current) => ({ ...current, stockQuantity: '0' }))
       closeStockDialog()
       return
     }
     const quantity = Number(stockQuantity)
     if (!Number.isInteger(quantity) || quantity <= 0) return
     setValues((current) => {
-      const currentPieces = Number(current.stockPieceCount) || 0
-      const nextPieces = stockAction === 'add' ? currentPieces + quantity * piecesPerSale : Math.max(0, currentPieces - quantity * piecesPerSale)
-      return { ...current, stockPieceCount: String(nextPieces) }
+      const currentQuantity = Number(current.stockQuantity) || 0
+      const nextQuantity = stockAction === 'add' ? currentQuantity + quantity : Math.max(0, currentQuantity - quantity)
+      return { ...current, stockQuantity: String(nextQuantity) }
     })
     closeStockDialog()
   }
@@ -115,7 +115,7 @@ export function ProductForm({ productId }: { productId?: number }) {
     <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/products"><ArrowLeft size={18} />กลับไปหน้าสินค้า</Link><h1 className="admin-title">{productId ? 'แก้ไขสินค้า' : 'เพิ่มสินค้า'}</h1></div></div>
     <form className="product-form-card" onSubmit={submit}>
       <div className="product-form-grid"><label>ชื่อสินค้า<Input required value={values.name} onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))} placeholder="เช่น ลูกชิ้นหมูพรีเมียม" /></label><label>หมวดหมู่<Select value={values.categoryId ? String(values.categoryId) : undefined} onValueChange={(value) => setValues((current) => ({ ...current, categoryId: Number(value) }))} disabled={categoriesQuery.isLoading || categoriesQuery.isError}><SelectTrigger aria-label="หมวดหมู่สินค้า" aria-required="true"><SelectValue placeholder={categoriesQuery.isLoading ? 'กำลังโหลดหมวดสินค้า' : 'เลือกหมวดหมู่'} /></SelectTrigger><SelectContent>{categoriesQuery.data?.map((category) => <SelectItem key={category.id} value={String(category.id)}>{category.name}</SelectItem>)}</SelectContent></Select></label></div>
-      <div className="product-pricing-grid"><label>ราคา (บาท)<Input type="number" min="0" required value={values.salePrice} onChange={(event) => setValues((current) => ({ ...current, salePrice: event.target.value }))} placeholder="0" /></label><label>จำนวนสินค้า<div className="product-stock-control"><Input className="product-stock-input" type="number" value={stockQuantityValue} disabled aria-label="จำนวนสินค้าปัจจุบัน" /><button type="button" className="product-stock-open-button" onClick={() => setIsStockDialogOpen(true)} aria-label="จัดการจำนวนสินค้า"><Settings2 size={20} aria-hidden="true" /></button></div></label><label>จำนวนชิ้น<Input type="number" min="0" required value={values.stockPieceCount} onChange={(event) => setValues((current) => ({ ...current, stockPieceCount: event.target.value }))} placeholder="0" /></label><label>จำนวนชิ้นต่อ (1 สินค้า)<Input type="number" min="1" required value={values.piecesPerSale} onChange={(event) => setValues((current) => ({ ...current, piecesPerSale: event.target.value }))} placeholder="1" /></label><label>หน่วยสินค้า<Select value={values.unitId ? String(values.unitId) : undefined} onValueChange={(value) => setValues((current) => ({ ...current, unitId: Number(value) }))} disabled={unitsQuery.isLoading || unitsQuery.isError}><SelectTrigger aria-label="หน่วยสินค้า" aria-required="true"><SelectValue placeholder={unitsQuery.isLoading ? 'กำลังโหลดหน่วยสินค้า' : 'เลือกหน่วยสินค้า'} /></SelectTrigger><SelectContent>{unitsQuery.data?.map((unit) => <SelectItem key={unit.id} value={String(unit.id)}>{unit.name}</SelectItem>)}</SelectContent></Select></label><label>แจ้งเตือนสต็อกต่ำ<Input type="number" min="0" required value={values.lowStockThreshold} onChange={(event) => setValues((current) => ({ ...current, lowStockThreshold: event.target.value }))} placeholder="5" /></label></div>
+      <div className="product-pricing-grid"><label>ราคา (บาท)<Input type="number" min="0" required value={values.salePrice} onChange={(event) => setValues((current) => ({ ...current, salePrice: event.target.value }))} placeholder="0" /></label><label>จำนวนสินค้า<div className="product-stock-control"><Input className="product-stock-input" type="number" min="0" required value={values.stockQuantity} onChange={(event) => setValues((current) => ({ ...current, stockQuantity: event.target.value }))} aria-label="จำนวนสินค้า" /><button type="button" className="product-stock-open-button" onClick={() => setIsStockDialogOpen(true)} aria-label="จัดการจำนวนสินค้า"><Settings2 size={20} aria-hidden="true" /></button></div></label><label>จำนวนชิ้น<Input type="number" min="0" required value={values.stockPieceCount} onChange={(event) => setValues((current) => ({ ...current, stockPieceCount: event.target.value }))} placeholder="0" /></label><label>จำนวนชิ้นต่อ (1 สินค้า)<Input type="number" min="1" required value={values.piecesPerSale} onChange={(event) => setValues((current) => ({ ...current, piecesPerSale: event.target.value }))} placeholder="1" /></label><label>หน่วยสินค้า<Select value={values.unitId ? String(values.unitId) : undefined} onValueChange={(value) => setValues((current) => ({ ...current, unitId: Number(value) }))} disabled={unitsQuery.isLoading || unitsQuery.isError}><SelectTrigger aria-label="หน่วยสินค้า" aria-required="true"><SelectValue placeholder={unitsQuery.isLoading ? 'กำลังโหลดหน่วยสินค้า' : 'เลือกหน่วยสินค้า'} /></SelectTrigger><SelectContent>{unitsQuery.data?.map((unit) => <SelectItem key={unit.id} value={String(unit.id)}>{unit.name}</SelectItem>)}</SelectContent></Select></label><label>แจ้งเตือนสต็อกต่ำ<Input type="number" min="0" required value={values.lowStockThreshold} onChange={(event) => setValues((current) => ({ ...current, lowStockThreshold: event.target.value }))} placeholder="5" /></label></div>
       <label className="product-form-full">รายละเอียดสินค้า<Textarea rows={4} value={values.description} onChange={(event) => setValues((current) => ({ ...current, description: event.target.value }))} placeholder="ระบุขนาด หรือจำนวนต่อไม้" /></label>
       <div className="product-image-upload"><ImagePlus size={27} /><div><strong>อัปโหลดรูปสินค้า</strong><span>รองรับ JPG, PNG, WebP ขนาดไม่เกิน 5 MB</span></div><Input type="file" accept="image/png,image/jpeg,image/webp" aria-label="อัปโหลดรูปสินค้า" onChange={(event) => selectImage(event.target.files?.[0])} /></div>
       {imagePreview && <div className="product-image-preview"><strong>ตัวอย่างรูปสินค้า</strong><img src={imagePreview} alt="ตัวอย่างรูปสินค้า" /></div>}

@@ -5,7 +5,7 @@ function product_base_query(): string
 {
     return 'SELECT p.id, p.category_id, c.name AS category_name, c.tracks_piece_quantity,
         p.unit_id, u.name AS unit_name, p.name, p.description, p.image_path, p.sale_price,
-        p.stock_piece_count, p.pieces_per_sale, p.low_stock_threshold, p.is_active,
+        p.stock_quantity, p.stock_piece_count, p.pieces_per_sale, p.low_stock_threshold, p.is_active,
         p.created_at, p.updated_at
         FROM products p
         INNER JOIN product_categories c ON c.id = p.category_id
@@ -14,9 +14,7 @@ function product_base_query(): string
 
 function product_to_api(array $product): array
 {
-    $piecesPerSale = (int) $product['pieces_per_sale'];
-    $stockPieceCount = (int) $product['stock_piece_count'];
-    $stockQuantity = intdiv($stockPieceCount, $piecesPerSale);
+    $stockQuantity = (int) $product['stock_quantity'];
 
     return [
         'id' => (int) $product['id'],
@@ -29,13 +27,18 @@ function product_to_api(array $product): array
         'unitId' => (int) $product['unit_id'],
         'unitName' => $product['unit_name'],
         'salePrice' => (float) $product['sale_price'],
-        'stockPieceCount' => $stockPieceCount,
+        'stockPieceCount' => (int) $product['stock_piece_count'],
         'stockQuantity' => $stockQuantity,
-        'piecesPerSale' => $piecesPerSale,
+        'piecesPerSale' => (int) $product['pieces_per_sale'],
         'lowStockThreshold' => (int) $product['low_stock_threshold'],
         'isActive' => (bool) $product['is_active'],
         'stockStatus' => $stockQuantity <= (int) $product['low_stock_threshold'] ? 'low' : 'available',
     ];
+}
+
+function product_low_stock_count(PDO $db): int
+{
+    return (int) $db->query('SELECT COUNT(*) FROM products WHERE stock_quantity <= low_stock_threshold')->fetchColumn();
 }
 
 function product_list(PDO $db, int $page, int $perPage): array
@@ -53,6 +56,7 @@ function product_list(PDO $db, int $page, int $perPage): array
             'perPage' => $perPage,
             'total' => $total,
             'totalPages' => max(1, (int) ceil($total / $perPage)),
+            'lowStock' => product_low_stock_count($db),
         ],
     ];
 }
@@ -81,8 +85,8 @@ function product_references_exist(PDO $db, array $data): array
 
 function product_insert(PDO $db, array $data): int
 {
-    $statement = $db->prepare('INSERT INTO products (category_id, unit_id, name, description, image_path, sale_price, stock_piece_count, pieces_per_sale, low_stock_threshold, is_active)
-        VALUES (:category_id, :unit_id, :name, :description, :image_path, :sale_price, :stock_piece_count, :pieces_per_sale, :low_stock_threshold, :is_active)');
+    $statement = $db->prepare('INSERT INTO products (category_id, unit_id, name, description, image_path, sale_price, stock_quantity, stock_piece_count, pieces_per_sale, low_stock_threshold, is_active)
+        VALUES (:category_id, :unit_id, :name, :description, :image_path, :sale_price, :stock_quantity, :stock_piece_count, :pieces_per_sale, :low_stock_threshold, :is_active)');
     $statement->execute($data);
     return (int) $db->lastInsertId();
 }
@@ -90,7 +94,7 @@ function product_insert(PDO $db, array $data): int
 function product_update(PDO $db, int $id, array $data): void
 {
     $data['id'] = $id;
-    $statement = $db->prepare('UPDATE products SET category_id = :category_id, unit_id = :unit_id, name = :name, description = :description, image_path = :image_path, sale_price = :sale_price, stock_piece_count = :stock_piece_count, pieces_per_sale = :pieces_per_sale, low_stock_threshold = :low_stock_threshold, is_active = :is_active WHERE id = :id');
+    $statement = $db->prepare('UPDATE products SET category_id = :category_id, unit_id = :unit_id, name = :name, description = :description, image_path = :image_path, sale_price = :sale_price, stock_quantity = :stock_quantity, stock_piece_count = :stock_piece_count, pieces_per_sale = :pieces_per_sale, low_stock_threshold = :low_stock_threshold, is_active = :is_active WHERE id = :id');
     $statement->execute($data);
 }
 
@@ -98,14 +102,4 @@ function product_remove(PDO $db, int $id): void
 {
     $statement = $db->prepare('DELETE FROM products WHERE id = :id');
     $statement->execute(['id' => $id]);
-}
-
-function product_categories(PDO $db): array
-{
-    return $db->query('SELECT id, name, tracks_piece_quantity FROM product_categories WHERE is_active = 1 ORDER BY name')->fetchAll();
-}
-
-function product_units(PDO $db): array
-{
-    return $db->query('SELECT id, name FROM product_units ORDER BY name')->fetchAll();
 }

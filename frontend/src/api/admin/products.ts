@@ -10,6 +10,7 @@ function productFormData(input: ProductSaveInput) {
   formData.append('category_id', String(input.categoryId))
   formData.append('unit_id', String(input.unitId))
   formData.append('sale_price', input.salePrice)
+  formData.append('stock_quantity', input.stockQuantity)
   formData.append('stock_piece_count', input.stockPieceCount)
   formData.append('pieces_per_sale', input.piecesPerSale)
   formData.append('low_stock_threshold', input.lowStockThreshold)

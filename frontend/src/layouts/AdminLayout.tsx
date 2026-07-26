@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { ChevronLeft, ClipboardList, ClipboardPlus, CookingPot, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Truck, UserRound } from 'lucide-react'
 import { mockOrders } from '@/data/admin/orders'
-import { adminProducts } from '@/data/admin/products'
+import { useProducts } from '@/features/admin/product/hooks/useProducts'
 
 const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
@@ -19,9 +19,9 @@ const items = [
 ]
 
 const newOrderCount = mockOrders.filter((order) => order.status === 'รอตรวจสอบ').length
-const lowStockCount = adminProducts.filter((product) => product.status === 'สต็อกต่ำ').length
 
 export function AdminLayout() {
+  const lowStockCount = useProducts(1, 1).data?.meta.lowStock ?? 0
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const profileMenuRef = useRef<HTMLDivElement>(null)

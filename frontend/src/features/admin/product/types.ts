@@ -34,6 +34,7 @@ export type ProductFormValues = {
   categoryId: number | null
   unitId: number | null
   salePrice: string
+  stockQuantity: string
   stockPieceCount: string
   piecesPerSale: string
   lowStockThreshold: string
@@ -51,5 +52,6 @@ export type ProductListResponse = {
     perPage: number
     total: number
     totalPages: number
+    lowStock: number
   }
 }
