@@ -27,6 +27,10 @@ require_once dirname(__DIR__, 2) . '/src/admin/banners/routes.php';
 require_once dirname(__DIR__, 2) . '/src/admin/settings/validation.php';
 require_once dirname(__DIR__, 2) . '/src/admin/settings/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/settings/routes.php';
+require_once dirname(__DIR__, 2) . '/src/admin/profile/validation.php';
+require_once dirname(__DIR__, 2) . '/src/admin/profile/upload.php';
+require_once dirname(__DIR__, 2) . '/src/admin/profile/repository.php';
+require_once dirname(__DIR__, 2) . '/src/admin/profile/routes.php';
 require_once dirname(__DIR__, 2) . '/src/admin/users/validation.php';
 require_once dirname(__DIR__, 2) . '/src/admin/users/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/users/routes.php';
@@ -46,6 +50,7 @@ try {
     if (location_route($method, $path)) exit;
     if (banner_route($method, $path)) exit;
     if (settings_route($method, $path)) exit;
+    if (admin_profile_route($method, $path)) exit;
     if (customer_message_route($method, $path)) exit;
     if (user_route($method, $path)) exit;
 } catch (Throwable $exception) {
