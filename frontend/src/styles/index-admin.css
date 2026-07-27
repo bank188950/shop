@@ -615,57 +615,6 @@ th.table-display-column, td.table-display-column { width: 1%; white-space: nowra
   background: #fffafa;
 }
 
-.schedule-grid .schedule-card {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  padding: 17px;
-  border: 1px solid #d2ddd4;
-  border-radius: 10px;
-}
-
-.schedule-grid .schedule-card h3 {
-  grid-column: 1 / -1;
-  margin: 0;
-  color: #1d5231;
-  font: 800 18px var(--font-heading);
-}
-
-.schedule-grid .schedule-card label.schedule-field {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-  padding-bottom: 4px;
-}
-
-.settings-form input[aria-invalid='true'] {
-  border-color: #c43c3c;
-  outline-color: #c43c3c;
-  background: #fffafa;
-}
-
-.admin-shell .admin-main .admin-content .settings-form span.settings-field-error {
-  position: absolute;
-  top: calc(100% - 4px);
-  left: 0;
-  color: #c43c3c;
-  font-size: 14px;
-  font-weight: 400;
-}
-
-.settings-form-error {
-  margin: 16px 0 0;
-  color: #c43c3c;
-  font-size: 14px;
-  font-weight: 400;
-}
-
-@media (max-width: 600px) {
-  .schedule-grid .schedule-card {
-    grid-template-columns: 1fr;
-  }
-}
 
 .admin-shell .admin-main .admin-content .product-form-page .product-form-card label span.product-field-error {
   position: absolute;
