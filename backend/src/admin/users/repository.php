@@ -3,17 +3,17 @@ declare(strict_types=1);
 
 function user_to_api(array $user): array
 {
-    return ['id' => (int) $user['id'], 'name' => $user['full_name'], 'phone' => $user['phone'], 'lineId' => $user['line_account'] ?? '', 'locationId' => $user['default_location_id'] ? (int) $user['default_location_id'] : null, 'locationName' => $user['location_name'] ?? '', 'isActive' => (bool) $user['is_active']];
+    return ['id' => (int) $user['id'], 'name' => $user['full_name'], 'phone' => $user['phone'], 'lineId' => $user['line_account'] ?? '', 'locationId' => $user['default_location_id'] ? (int) $user['default_location_id'] : null, 'locationName' => $user['location_name'] ?? '', 'isActive' => (bool) $user['is_active'], 'messageCount' => (int) ($user['message_count'] ?? 0)];
 }
 
 function user_list(PDO $db): array
 {
-    return $db->query("SELECT u.id, u.full_name, u.phone, u.line_account, u.default_location_id, u.is_active, l.name AS location_name FROM users u LEFT JOIN locations l ON l.id = u.default_location_id WHERE u.role = 'customer' ORDER BY u.full_name, u.id")->fetchAll();
+    return $db->query("SELECT u.id, u.full_name, u.phone, u.line_account, u.default_location_id, u.is_active, l.name AS location_name, (SELECT COUNT(*) FROM customer_messages cm WHERE cm.recipient_user_id = u.id) AS message_count FROM users u LEFT JOIN locations l ON l.id = u.default_location_id WHERE u.role = 'customer' ORDER BY u.full_name, u.id")->fetchAll();
 }
 
 function user_find(PDO $db, int $id): ?array
 {
-    $statement = $db->prepare("SELECT u.id, u.full_name, u.phone, u.line_account, u.default_location_id, u.is_active, l.name AS location_name FROM users u LEFT JOIN locations l ON l.id = u.default_location_id WHERE u.id = :id AND u.role = 'customer'");
+    $statement = $db->prepare("SELECT u.id, u.full_name, u.phone, u.line_account, u.default_location_id, u.is_active, l.name AS location_name, (SELECT COUNT(*) FROM customer_messages cm WHERE cm.recipient_user_id = u.id) AS message_count FROM users u LEFT JOIN locations l ON l.id = u.default_location_id WHERE u.id = :id AND u.role = 'customer'");
     $statement->execute(['id' => $id]);
     return $statement->fetch() ?: null;
 }
