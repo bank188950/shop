@@ -15,7 +15,10 @@ export function useSaveUserMessage() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ userId, messageId, input }: { userId: number, messageId?: number, input: UserMessageSaveInput }) => messageId ? updateAdminUserMessage(userId, messageId, input) : createAdminUserMessage(userId, input),
-    onSuccess: (_, { userId }) => queryClient.invalidateQueries({ queryKey: userMessageKeys.list(userId) }),
+    onSuccess: (_, { userId }) => {
+      queryClient.invalidateQueries({ queryKey: userMessageKeys.list(userId) })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    },
   })
 }
 
@@ -23,6 +26,9 @@ export function useDeleteUserMessage() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ userId, messageId }: { userId: number, messageId: number }) => deleteAdminUserMessage(userId, messageId),
-    onSuccess: (_, { userId }) => queryClient.invalidateQueries({ queryKey: userMessageKeys.list(userId) }),
+    onSuccess: (_, { userId }) => {
+      queryClient.invalidateQueries({ queryKey: userMessageKeys.list(userId) })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    },
   })
 }

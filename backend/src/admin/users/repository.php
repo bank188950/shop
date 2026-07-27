@@ -53,6 +53,7 @@ function user_update(PDO $db, int $id, array $data): void
 
 function user_remove(PDO $db, int $id): void
 {
+    customer_message_delete_user_images($db, $id);
     $statement = $db->prepare("DELETE FROM users WHERE id = :id AND role = 'customer'");
     $statement->execute(['id' => $id]);
 }

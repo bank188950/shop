@@ -44,3 +44,10 @@ function customer_message_remove(PDO $db, int $messageId): void
     $statement = $db->prepare('DELETE FROM customer_messages WHERE id = :id');
     $statement->execute(['id' => $messageId]);
 }
+
+function customer_message_delete_user_images(PDO $db, int $userId): void
+{
+    $statement = $db->prepare('SELECT image_path FROM customer_messages WHERE recipient_user_id = :user_id AND image_path IS NOT NULL');
+    $statement->execute(['user_id' => $userId]);
+    foreach ($statement->fetchAll() as $message) customer_message_delete_image($message['image_path']);
+}
