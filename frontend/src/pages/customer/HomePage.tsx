@@ -13,8 +13,8 @@ export function HomePage() {
       <AnnouncementBar />
       <main id="top" className="mx-auto mt-7 w-full max-w-[1488px] px-6 max-md:mt-3.5 max-md:px-3.5">
         <HeroBanner />
-        <RecentOrders />
         <ProductCatalog />
+        <RecentOrders />
       </main>
       <StorefrontFooter />
       <StickyCart />
