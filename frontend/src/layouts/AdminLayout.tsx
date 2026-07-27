@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { ChevronLeft, ClipboardList, ClipboardPlus, CookingPot, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Truck, UserRound } from 'lucide-react'
+import { ChevronLeft, ClipboardList, ClipboardPlus, CookingPot, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Trash2, Truck, UserRound } from 'lucide-react'
 import { mockOrders } from '@/data/admin/orders'
 import { useProducts } from '@/features/admin/product/hooks/useProducts'
 
@@ -15,6 +15,7 @@ const items = [
   { label: 'หน่วยสินค้า', icon: Ruler, to: '/admin/product-units' },
   { label: 'สถานที่รับสินค้า', icon: MapPin, to: '/admin/locations' },
   { label: 'แบนเนอร์', icon: Image, to: '/admin/banners' },
+  { label: 'ล้างรายการสั่งซื้อ', icon: Trash2, to: '/admin/order-cleanup' },
   { label: 'ตั้งค่า', icon: Settings, to: '/admin/settings' },
 ]
 

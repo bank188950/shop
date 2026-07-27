@@ -28,6 +28,7 @@ import { UserPage } from '@/pages/admin/UserPage'
 import { PreparationPage } from '@/pages/admin/PreparationPage'
 import { AdminProfilePage } from '@/pages/admin/AdminProfilePage'
 import { AdminUserChatPage } from '@/pages/admin/AdminUserChatPage'
+import { OrderCleanupPage } from '@/pages/admin/OrderCleanupPage'
 
 export function AppRouter() {
   return (
@@ -66,6 +67,7 @@ export function AppRouter() {
           <Route path="banners" element={<BannerPage />} />
           <Route path="banners/add" element={<BannerInsertPage />} />
           <Route path="banners/:bannerId/edit" element={<BannerEditPage />} />
+          <Route path="order-cleanup" element={<OrderCleanupPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="profile" element={<AdminProfilePage />} />
           <Route path="*" element={<div className="page-message">กำลังเตรียมหน้านี้</div>} />
