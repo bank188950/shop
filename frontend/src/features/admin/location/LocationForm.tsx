@@ -1,42 +1,49 @@
 import { ArrowLeft, Save } from 'lucide-react'
-import { type FormEvent, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
-import { getLocations, saveLocations, type AdminLocation } from '@/data/admin/locations'
+import { locationFormSchema, type LocationFormValues } from './schema'
+import { useLocation, useSaveLocation } from './hooks/useLocations'
 
-export function LocationForm({ location }: { location?: AdminLocation }) {
-  const [name, setName] = useState(location?.name ?? '')
-  const [isActive, setIsActive] = useState(location?.isActive ?? true)
+export function LocationForm({ locationId }: { locationId?: number }) {
+  const locationQuery = useLocation(locationId)
+  const saveMutation = useSaveLocation()
   const [error, setError] = useState('')
-  const [saved, setSaved] = useState(false)
   const navigate = useNavigate()
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<LocationFormValues>({
+    resolver: zodResolver(locationFormSchema),
+    defaultValues: { name: '', isActive: true },
+  })
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const nextName = name.trim()
-    const locations = getLocations()
-    const hasDuplicateName = locations.some((item) => item.id !== location?.id && item.name === nextName)
+  useEffect(() => {
+    if (!locationQuery.data) return
+    reset({ name: locationQuery.data.name, isActive: locationQuery.data.isActive })
+  }, [locationQuery.data, reset])
 
-    if (hasDuplicateName) {
-      setError('มีชื่อสถานที่นี้แล้ว')
-      return
+  async function submit(values: LocationFormValues) {
+    try {
+      setError('')
+      await saveMutation.mutateAsync({ locationId, input: values })
+      navigate('/admin/locations')
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'ไม่สามารถบันทึกสถานที่รับสินค้าได้')
     }
-
-    const nextLocations = location
-      ? locations.map((item) => item.id === location.id ? { ...item, name: nextName, isActive } : item)
-      : [...locations, { id: Date.now(), name: nextName, isActive }]
-    saveLocations(nextLocations)
-    setSaved(true)
-    window.setTimeout(() => navigate('/admin/locations'), 400)
   }
 
+  if (locationId && locationQuery.isLoading) return <div className="page-message">กำลังโหลดสถานที่รับสินค้า...</div>
+  if (locationId && locationQuery.isError) return <div className="page-message">ไม่สามารถโหลดสถานที่รับสินค้าได้: {locationQuery.error.message}</div>
+
   return <section className="admin-page product-form-page">
-    <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/locations"><ArrowLeft size={18} />กลับไปหน้าสถานที่รับสินค้า</Link><h1 className="admin-title">{location ? 'แก้ไขสถานที่รับสินค้า' : 'เพิ่มสถานที่รับสินค้า'}</h1></div></div>
-    <form className="product-form-card location-form-card" onSubmit={submit}>
-      <label htmlFor="location-name">ชื่อสถานที่รับสินค้า<Input id="location-name" required value={name} onChange={(event) => { setName(event.target.value); setError('') }} placeholder="เช่น หน้าโรงเรียนชุมชน" aria-describedby={error ? 'location-name-error' : undefined} /></label>
-      {error && <p id="location-name-error" className="location-form-error" role="alert">{error}</p>}
-      <label className="location-active-toggle"><input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} /><span>เปิดการใช้งาน</span></label>
-      <div className="product-form-actions"><Link to="/admin/locations" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saved} aria-busy={saved}><Save size={18} aria-hidden="true" />{saved ? 'บันทึกแล้ว' : 'บันทึก'}</button></div>
+    <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/locations"><ArrowLeft size={18} />กลับไปหน้าสถานที่รับสินค้า</Link><h1 className="admin-title">{locationId ? 'แก้ไขสถานที่รับสินค้า' : 'เพิ่มสถานที่รับสินค้า'}</h1></div></div>
+    <form className="product-form-card location-form-card" noValidate onSubmit={handleSubmit(submit)}>
+      <label className="location-form-field" htmlFor="location-name">ชื่อสถานที่รับสินค้า
+        <Input id="location-name" {...register('name', { onChange: () => setError('') })} placeholder="เช่น หน้าโรงเรียนชุมชน" aria-invalid={Boolean(errors.name || error)} aria-describedby={errors.name || error ? 'location-name-error' : undefined} className={errors.name || error ? 'product-field-invalid' : undefined} />
+        {(errors.name || error) && <span id="location-name-error" className="product-field-error" role="alert">{errors.name?.message ?? error}</span>}
+      </label>
+      <label className="location-active-toggle"><input type="checkbox" {...register('isActive')} /><span>เปิดการใช้งาน</span></label>
+      <div className="product-form-actions"><Link to="/admin/locations" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saveMutation.isPending} aria-busy={saveMutation.isPending}><Save size={18} aria-hidden="true" />{saveMutation.isPending ? 'กำลังบันทึก' : 'บันทึก'}</button></div>
     </form>
   </section>
 }

@@ -586,6 +586,16 @@ th.table-display-column, td.table-display-column { width: 1%; white-space: nowra
   padding-bottom: 4px;
 }
 
+.product-form-card > label.location-form-field {
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.location-table button.location-status {
+  border: 0;
+  background: transparent;
+}
+
 .admin-shell .admin-main .admin-content .product-form-page .product-form-card label span.product-field-error {
   position: absolute;
   top: calc(100% - 4px);

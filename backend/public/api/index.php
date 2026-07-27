@@ -17,6 +17,9 @@ require_once dirname(__DIR__, 2) . '/src/admin/product-categories/routes.php';
 require_once dirname(__DIR__, 2) . '/src/admin/product-units/validation.php';
 require_once dirname(__DIR__, 2) . '/src/admin/product-units/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/product-units/routes.php';
+require_once dirname(__DIR__, 2) . '/src/admin/locations/validation.php';
+require_once dirname(__DIR__, 2) . '/src/admin/locations/repository.php';
+require_once dirname(__DIR__, 2) . '/src/admin/locations/routes.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = api_path();
@@ -26,6 +29,7 @@ try {
     if (product_route($method, $path)) exit;
     if (category_route($method, $path)) exit;
     if (unit_route($method, $path)) exit;
+    if (location_route($method, $path)) exit;
 } catch (Throwable $exception) {
     $message = 'ไม่สามารถเชื่อมต่อฐานข้อมูลหรือประมวลผล API ได้';
     if (($_ENV['APP_ENV'] ?? '') === 'local') $message .= ': ' . $exception->getMessage();
