@@ -1,9 +1,10 @@
 import { BellRing, CircleAlert, Clock3, Megaphone, Plus, Save, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { TimePicker } from '@/components/ui/time-picker'
 import { settingsFormSchema, type SettingsFormValues } from '@/features/admin/settings/schema'
 import { useSaveSettings, useSettings } from '@/features/admin/settings/hooks/useSettings'
 
@@ -29,8 +30,8 @@ export function SettingsPage() {
     <form className="admin-detail-card" noValidate onSubmit={handleSubmit(saveSettings)}>
       <div className="admin-section-heading"><div><h2><Clock3 size={21} aria-hidden="true" />ตั้งค่ารอบส่ง</h2><p>เวลานี้มีผลกับทุกสถานที่ ลูกค้าจะสั่งได้เฉพาะรอบที่ยังไม่ปิดรับ</p></div></div>
       <div className="schedule-grid">
-        <label><strong>รอบเช้า</strong><span>ปิดรับรายการสั่งซื้อ</span><Input type="time" {...register('morningCutoff')} /><span>เวลาจัดส่ง</span><Input {...register('morningDelivery')} /></label>
-        <label><strong>รอบบ่าย</strong><span>ปิดรับรายการสั่งซื้อ</span><Input type="time" {...register('afternoonCutoff')} /><span>เวลาจัดส่ง</span><Input {...register('afternoonDelivery')} /></label>
+        <label><strong>รอบเช้า</strong><span>ปิดรับรายการสั่งซื้อ</span><Controller control={control} name="morningCutoff" render={({ field }) => <TimePicker value={field.value} onValueChange={field.onChange} ariaLabel="เลือกเวลาปิดรับรอบเช้า" />} /><span>เวลาจัดส่ง</span><Input {...register('morningDelivery')} /></label>
+        <label><strong>รอบบ่าย</strong><span>ปิดรับรายการสั่งซื้อ</span><Controller control={control} name="afternoonCutoff" render={({ field }) => <TimePicker value={field.value} onValueChange={field.onChange} ariaLabel="เลือกเวลาปิดรับรอบบ่าย" />} /><span>เวลาจัดส่ง</span><Input {...register('afternoonDelivery')} /></label>
       </div>
       <div className="notice-settings">
         <div className="admin-section-heading"><div><h2><BellRing size={21} aria-hidden="true" />ตั้งค่าการแจ้งข้อมูลเตือน</h2><p>เตรียมข้อความและสถานะ popup สำหรับใช้บนหน้าร้านในอนาคต</p></div></div>

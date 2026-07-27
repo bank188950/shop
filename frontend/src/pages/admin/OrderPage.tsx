@@ -5,6 +5,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import Swal from 'sweetalert2'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ThaiDatePicker } from '@/components/ui/thai-date-picker'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
 import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderListStatus, type OrderStatus } from '@/data/admin/orders'
 import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
@@ -95,7 +96,7 @@ export function OrderPage() {
   return <section className="admin-page">
     <div className="admin-page-heading"><div><h1 className="admin-title">รายการสั่งซื้อ</h1></div><Link to="/admin/dispatches-today" className="admin-secondary-button"><Repeat2 size={18} aria-hidden="true" />ดูสรุปรอบส่งวันนี้</Link></div>
     <section className="admin-filter-card" aria-label="ตัวกรองรายการสั่งซื้อ">
-      <label className="admin-filter-date">วันจัดส่ง<Input type="date" value={date} onChange={(event) => setDate(event.target.value)} /></label>
+      <label className="admin-filter-date">วันจัดส่ง<ThaiDatePicker value={date} onValueChange={setDate} ariaLabel="เลือกวันจัดส่ง" /></label>
       <label className="admin-search"><Search size={18} aria-hidden="true" /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ค้นหาชื่อลูกค้า หรือเลขที่รายการสั่งซื้อ" /></label>
       <label className="admin-filter-select">รอบส่ง<Select value={period} onValueChange={(value) => setPeriod(value as 'all' | DeliveryPeriod)}><SelectTrigger aria-label="รอบส่ง"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem><SelectItem value="morning">รอบเช้า</SelectItem><SelectItem value="afternoon">รอบบ่าย</SelectItem></SelectContent></Select></label>
       <label className="admin-filter-select">จุดนัด<Select value={location} onValueChange={setLocation}><SelectTrigger aria-label="จุดนัด"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem>{locations.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label>
