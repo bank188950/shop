@@ -596,6 +596,25 @@ th.table-display-column, td.table-display-column { width: 1%; white-space: nowra
   background: transparent;
 }
 
+.banner-form-card > label.banner-form-field, .banner-image-field {
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.admin-shell .admin-main .admin-content .banner-form-card span.banner-field-error {
+  position: absolute;
+  top: calc(100% - 4px);
+  left: 0;
+  color: #c43c3c;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.banner-image-upload.is-invalid {
+  border-color: #c43c3c;
+  background: #fffafa;
+}
+
 .admin-shell .admin-main .admin-content .product-form-page .product-form-card label span.product-field-error {
   position: absolute;
   top: calc(100% - 4px);
