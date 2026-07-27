@@ -29,6 +29,7 @@ import { PreparationPage } from '@/pages/admin/PreparationPage'
 import { AdminProfilePage } from '@/pages/admin/AdminProfilePage'
 import { AdminUserChatPage } from '@/pages/admin/AdminUserChatPage'
 import { OrderCleanupPage } from '@/pages/admin/OrderCleanupPage'
+import { AdminAuthGuard } from '@/features/admin/auth/AdminAuthGuard'
 
 export function AppRouter() {
   return (
@@ -41,36 +42,38 @@ export function AppRouter() {
           <Route path="/my-chats" element={<MyChatsPage />} />
         </Route>
         <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="products" element={<ProductPage />} />
-          <Route path="products/add" element={<ProductInsertPage />} />
-          <Route path="products/:productId/edit" element={<ProductEditPage />} />
-          <Route path="products/:productId/add" element={<ProductEditPage />} />
-          <Route path="product-categories" element={<ProductCategoryPage />} />
-          <Route path="product-categories/add" element={<ProductCategoryFormPage />} />
-          <Route path="product-categories/:categoryId/edit" element={<ProductCategoryFormPage />} />
-          <Route path="product-units" element={<ProductUnitPage />} />
-          <Route path="product-units/add" element={<ProductUnitFormPage />} />
-          <Route path="product-units/:unitId/edit" element={<ProductUnitFormPage />} />
-          <Route path="locations" element={<LocationPage />} />
-          <Route path="locations/add" element={<LocationFormPage />} />
-          <Route path="locations/:locationId/edit" element={<LocationFormPage />} />
-          <Route path="orders" element={<OrderPage />} />
-          <Route path="orders/:orderId" element={<OrderDetailPage />} />
-          <Route path="preparations" element={<PreparationPage />} />
-          <Route path="users" element={<UserPage />} />
-          <Route path="users/add" element={<UserFormPage />} />
-          <Route path="users/:userId/edit" element={<UserFormPage />} />
-          <Route path="users/:userId/chat" element={<AdminUserChatPage />} />
-          <Route path="dispatches-today" element={<DispatchTodayPage />} />
-          <Route path="banners" element={<BannerPage />} />
-          <Route path="banners/add" element={<BannerInsertPage />} />
-          <Route path="banners/:bannerId/edit" element={<BannerEditPage />} />
-          <Route path="order-cleanup" element={<OrderCleanupPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="profile" element={<AdminProfilePage />} />
-          <Route path="*" element={<div className="page-message">กำลังเตรียมหน้านี้</div>} />
+        <Route element={<AdminAuthGuard />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<DashboardPage />} />
+            <Route path="products" element={<ProductPage />} />
+            <Route path="products/add" element={<ProductInsertPage />} />
+            <Route path="products/:productId/edit" element={<ProductEditPage />} />
+            <Route path="products/:productId/add" element={<ProductEditPage />} />
+            <Route path="product-categories" element={<ProductCategoryPage />} />
+            <Route path="product-categories/add" element={<ProductCategoryFormPage />} />
+            <Route path="product-categories/:categoryId/edit" element={<ProductCategoryFormPage />} />
+            <Route path="product-units" element={<ProductUnitPage />} />
+            <Route path="product-units/add" element={<ProductUnitFormPage />} />
+            <Route path="product-units/:unitId/edit" element={<ProductUnitFormPage />} />
+            <Route path="locations" element={<LocationPage />} />
+            <Route path="locations/add" element={<LocationFormPage />} />
+            <Route path="locations/:locationId/edit" element={<LocationFormPage />} />
+            <Route path="orders" element={<OrderPage />} />
+            <Route path="orders/:orderId" element={<OrderDetailPage />} />
+            <Route path="preparations" element={<PreparationPage />} />
+            <Route path="users" element={<UserPage />} />
+            <Route path="users/add" element={<UserFormPage />} />
+            <Route path="users/:userId/edit" element={<UserFormPage />} />
+            <Route path="users/:userId/chat" element={<AdminUserChatPage />} />
+            <Route path="dispatches-today" element={<DispatchTodayPage />} />
+            <Route path="banners" element={<BannerPage />} />
+            <Route path="banners/add" element={<BannerInsertPage />} />
+            <Route path="banners/:bannerId/edit" element={<BannerEditPage />} />
+            <Route path="order-cleanup" element={<OrderCleanupPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="profile" element={<AdminProfilePage />} />
+            <Route path="*" element={<div className="page-message">กำลังเตรียมหน้านี้</div>} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -27,6 +27,9 @@ require_once dirname(__DIR__, 2) . '/src/admin/banners/routes.php';
 require_once dirname(__DIR__, 2) . '/src/admin/settings/validation.php';
 require_once dirname(__DIR__, 2) . '/src/admin/settings/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/settings/routes.php';
+require_once dirname(__DIR__, 2) . '/src/admin/auth/repository.php';
+require_once dirname(__DIR__, 2) . '/src/admin/auth/session.php';
+require_once dirname(__DIR__, 2) . '/src/admin/auth/routes.php';
 require_once dirname(__DIR__, 2) . '/src/admin/profile/validation.php';
 require_once dirname(__DIR__, 2) . '/src/admin/profile/upload.php';
 require_once dirname(__DIR__, 2) . '/src/admin/profile/repository.php';
@@ -44,6 +47,8 @@ $path = api_path();
 
 try {
     if ($method === 'GET' && $path === '/health') json_response(['status' => 'ok']);
+    if (admin_auth_route($method, $path)) exit;
+    if (str_starts_with($path, '/admin/') && !admin_auth_current(app_db())) json_response(['message' => 'กรุณาเข้าสู่ระบบ'], 401);
     if (product_route($method, $path)) exit;
     if (category_route($method, $path)) exit;
     if (unit_route($method, $path)) exit;
