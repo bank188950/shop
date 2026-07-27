@@ -2,7 +2,8 @@ import { ArrowLeft, ImagePlus, Pencil, Send, SquarePen, Trash2, UserRound, X } f
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Textarea } from '@/components/ui/textarea'
-import { deleteAdminUserMessage, getAdminUserMessages, saveAdminUserMessage, updateAdminUserMessage, type AdminUserMessage } from '@/data/admin/user-messages'
+import type { AdminUserMessage } from '@/api/admin/user-messages'
+import { useDeleteUserMessage, useSaveUserMessage, useUserMessages } from '@/features/admin/user/hooks/useUserMessages'
 import { useUser } from '@/features/admin/user/hooks/useUsers'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 
@@ -18,25 +19,28 @@ function getMessageMinute(value: string) {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}`
 }
 
+type Attachment = { name: string, url: string, file: File | null }
+
 export function AdminUserChatPage() {
   const { userId } = useParams()
   const numericUserId = Number(userId)
   const userQuery = useUser(numericUserId)
+  const messagesQuery = useUserMessages(numericUserId)
+  const saveMessageMutation = useSaveUserMessage()
+  const deleteMessageMutation = useDeleteUserMessage()
   const user = userQuery.data
-  const [messages, setMessages] = useState<AdminUserMessage[]>(() => getAdminUserMessages(numericUserId))
+  const messages = messagesQuery.data ?? []
   const [text, setText] = useState('')
-  const [attachment, setAttachment] = useState<{ name: string; url: string } | null>(null)
+  const [attachment, setAttachment] = useState<Attachment | null>(null)
   const [isEditMode, setIsEditMode] = useState(false)
   const [editingMessage, setEditingMessage] = useState<AdminUserMessage | null>(null)
+  const [submitError, setSubmitError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messageListRef = useRef<HTMLDivElement>(null)
   const messageGroups = useMemo(() => messages.reduce<{ sentAt: string; messages: AdminUserMessage[] }[]>((groups, message) => {
     const currentGroup = groups.at(-1)
-    if (currentGroup && getMessageMinute(currentGroup.sentAt) === getMessageMinute(message.sentAt)) {
-      currentGroup.messages.push(message)
-    } else {
-      groups.push({ sentAt: message.sentAt, messages: [message] })
-    }
+    if (currentGroup && getMessageMinute(currentGroup.sentAt) === getMessageMinute(message.sentAt)) currentGroup.messages.push(message)
+    else groups.push({ sentAt: message.sentAt, messages: [message] })
     return groups
   }, []), [messages])
 
@@ -47,20 +51,30 @@ export function AdminUserChatPage() {
     messageList.scrollTo({ top: messageList.scrollHeight, behavior: prefersReducedMotion ? 'auto' : 'smooth' })
   }, [messages])
 
+  useEffect(() => () => {
+    if (attachment?.file) URL.revokeObjectURL(attachment.url)
+  }, [attachment])
+
   if (userQuery.isLoading) return <section className="admin-page"><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><p className="page-message">กำลังโหลดผู้ใช้งาน...</p></section>
   if (!user) return <section className="admin-page"><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><p className="page-message">ไม่พบผู้ใช้งาน</p></section>
-  const selectedUser = user
+
+  function clearAttachment() {
+    if (attachment?.file) URL.revokeObjectURL(attachment.url)
+    setAttachment(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   function selectAttachment(file: File | undefined) {
     if (!file) return
-    setAttachment({ name: file.name, url: URL.createObjectURL(file) })
+    if (attachment?.file) URL.revokeObjectURL(attachment.url)
+    setAttachment({ name: file.name, url: URL.createObjectURL(file), file })
   }
 
   function resetEditing() {
     setEditingMessage(null)
     setText('')
-    setAttachment(null)
-    if (fileInputRef.current) fileInputRef.current.value = ''
+    clearAttachment()
+    setSubmitError('')
   }
 
   function toggleEditMode() {
@@ -69,47 +83,54 @@ export function AdminUserChatPage() {
   }
 
   function startEditing(message: AdminUserMessage) {
+    resetEditing()
     setEditingMessage(message)
     setText(message.text)
-    setAttachment(message.imageUrl ? { name: 'รูปภาพที่แนบ', url: message.imageUrl } : null)
-    if (fileInputRef.current) fileInputRef.current.value = ''
+    if (message.imageUrl) setAttachment({ name: 'รูปภาพที่แนบ', url: message.imageUrl, file: null })
   }
 
   async function removeMessage(message: AdminUserMessage) {
     if (!await confirmDelete('ข้อความนี้')) return
-    setMessages((current) => current.filter((item) => item.id !== message.id))
-    deleteAdminUserMessage(message.id)
-    if (editingMessage?.id === message.id) resetEditing()
+    try {
+      await deleteMessageMutation.mutateAsync({ userId: numericUserId, messageId: message.id })
+      if (editingMessage?.id === message.id) resetEditing()
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'ไม่สามารถลบข้อความได้')
+    }
   }
 
-  function submitMessage(event: FormEvent<HTMLFormElement>) {
+  async function submitMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const messageText = text.trim()
     if (!messageText && !attachment) return
-
-    if (editingMessage) {
-      const updatedMessage = { ...editingMessage, text: messageText, imageUrl: attachment?.url }
-      setMessages((current) => current.map((message) => message.id === updatedMessage.id ? updatedMessage : message))
-      updateAdminUserMessage(updatedMessage)
+    setSubmitError('')
+    try {
+      await saveMessageMutation.mutateAsync({
+        userId: numericUserId,
+        messageId: editingMessage?.id,
+        input: { text: messageText, image: attachment?.file ?? null, removeImage: Boolean(editingMessage?.imageUrl && !attachment) },
+      })
       resetEditing()
-      return
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'ไม่สามารถบันทึกข้อความได้')
     }
-
-    const message: AdminUserMessage = { id: String(Date.now()), userId: selectedUser.id, text: messageText, imageUrl: attachment?.url, sentAt: new Date().toISOString() }
-    setMessages((current) => [...current, message])
-    saveAdminUserMessage(message)
-    resetEditing()
   }
 
+  const isSaving = saveMessageMutation.isPending || deleteMessageMutation.isPending
   return <section className="admin-page admin-user-chat-page">
-    <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><h1 className="admin-title">ส่งข้อความถึง {selectedUser.name}</h1></div></div>
-    <section className="admin-user-chat-card" aria-label={`แชทกับ ${selectedUser.name}`}>
-      <header className="admin-user-chat-header"><div className="admin-user-chat-user"><span className="admin-user-chat-avatar"><UserRound size={23} aria-hidden="true" /></span><div><h2>{selectedUser.name}</h2><p>ช่องทางที่แอดมินส่งข้อความถึงผู้ใช้</p></div></div><button type="button" className={`admin-user-chat-edit-mode${isEditMode ? ' is-active' : ''}`} onClick={toggleEditMode} aria-label={isEditMode ? 'ปิดโหมดแก้ไขข้อความ' : 'เปิดโหมดแก้ไขข้อความ'} aria-pressed={isEditMode} title={isEditMode ? 'ปิดโหมดแก้ไข' : 'แก้ไขข้อความ'}><SquarePen size={19} aria-hidden="true" /></button></header>
-      <div ref={messageListRef} className="admin-user-message-list" aria-live="polite">{messageGroups.map((group) => <article key={`${group.sentAt}-${group.messages[0].id}`} className="admin-user-message">{group.messages.map((message) => <div key={message.id} className="admin-user-message-entry">{isEditMode && <div className="admin-user-message-item-actions"><button type="button" onClick={() => startEditing(message)} aria-label="แก้ไขข้อความ" title="แก้ไขข้อความ"><Pencil size={14} aria-hidden="true" /></button><button type="button" onClick={() => removeMessage(message)} aria-label="ลบข้อความ" title="ลบข้อความ"><Trash2 size={14} aria-hidden="true" /></button></div>}<div className="admin-user-message-bubble">{message.imageUrl && <img src={message.imageUrl} alt="รูปภาพที่แอดมินแนบ" />}{message.text && <p>{message.text}</p>}</div></div>)}<time dateTime={group.sentAt}>{formatMessageDate(group.sentAt)}</time></article>)}</div>
+    <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><h1 className="admin-title">ส่งข้อความถึง {user.name}</h1></div></div>
+    <section className="admin-user-chat-card" aria-label={`แชทกับ ${user.name}`}>
+      <header className="admin-user-chat-header"><div className="admin-user-chat-user"><span className="admin-user-chat-avatar"><UserRound size={23} aria-hidden="true" /></span><div><h2>{user.name}</h2><p>ช่องทางที่แอดมินส่งข้อความถึงผู้ใช้</p></div></div><button type="button" className={`admin-user-chat-edit-mode${isEditMode ? ' is-active' : ''}`} onClick={toggleEditMode} aria-label={isEditMode ? 'ปิดโหมดแก้ไขข้อความ' : 'เปิดโหมดแก้ไขข้อความ'} aria-pressed={isEditMode} title={isEditMode ? 'ปิดโหมดแก้ไข' : 'แก้ไขข้อความ'}><SquarePen size={19} aria-hidden="true" /></button></header>
+      <div ref={messageListRef} className="admin-user-message-list" aria-live="polite">
+        {messagesQuery.isLoading && <p className="page-message">กำลังโหลดข้อความ...</p>}
+        {messagesQuery.isError && <p className="page-message">ไม่สามารถโหลดข้อความได้: {messagesQuery.error.message}</p>}
+        {messageGroups.map((group) => <article key={`${group.sentAt}-${group.messages[0].id}`} className="admin-user-message">{group.messages.map((message) => <div key={message.id} className="admin-user-message-entry">{isEditMode && <div className="admin-user-message-item-actions"><button type="button" onClick={() => startEditing(message)} aria-label="แก้ไขข้อความ" title="แก้ไขข้อความ"><Pencil size={14} aria-hidden="true" /></button><button type="button" disabled={isSaving} onClick={() => removeMessage(message)} aria-label="ลบข้อความ" title="ลบข้อความ"><Trash2 size={14} aria-hidden="true" /></button></div>}<div className="admin-user-message-bubble">{message.imageUrl && <img src={message.imageUrl} alt="รูปภาพที่แอดมินแนบ" />}{message.text && <p>{message.text}</p>}</div></div>)}<time dateTime={group.sentAt}>{formatMessageDate(group.sentAt)}</time></article>)}
+      </div>
       <form className="admin-user-message-form" onSubmit={submitMessage}>
-        {attachment && <div className="admin-user-attachment"><img src={attachment.url} alt="ตัวอย่างรูปภาพที่จะแนบ" /><span>{attachment.name}</span><button type="button" aria-label="ลบรูปภาพที่แนบ" onClick={() => { setAttachment(null); if (fileInputRef.current) fileInputRef.current.value = '' }}><X size={16} aria-hidden="true" /></button></div>}
-        <Textarea value={text} onChange={(event) => setText(event.target.value)} placeholder={editingMessage ? 'แก้ไขข้อความ' : `พิมพ์ข้อความถึง ${selectedUser.name}`} aria-label={editingMessage ? 'แก้ไขข้อความ' : `ข้อความถึง ${selectedUser.name}`} rows={3} />
-        <div className="admin-user-message-actions"><input ref={fileInputRef} id="admin-message-image" className="sr-only" type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => selectAttachment(event.target.files?.[0])} /><label htmlFor="admin-message-image" className="admin-user-attach-button"><ImagePlus size={19} aria-hidden="true" />แนบรูป</label>{editingMessage && <button type="button" className="admin-user-cancel-edit-button" onClick={resetEditing}>ยกเลิก</button>}<button type="submit" className="admin-user-send-button" disabled={!text.trim() && !attachment}>{editingMessage ? <Pencil size={18} aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}{editingMessage ? 'แก้ไข' : 'ส่งข้อความ'}</button></div>
+        {attachment && <div className="admin-user-attachment"><img src={attachment.url} alt="ตัวอย่างรูปภาพที่จะแนบ" /><span>{attachment.name}</span><button type="button" aria-label="ลบรูปภาพที่แนบ" onClick={clearAttachment}><X size={16} aria-hidden="true" /></button></div>}
+        {submitError && <p className="admin-user-message-error" role="alert">{submitError}</p>}
+        <Textarea value={text} onChange={(event) => setText(event.target.value)} placeholder={editingMessage ? 'แก้ไขข้อความ' : `พิมพ์ข้อความถึง ${user.name}`} aria-label={editingMessage ? 'แก้ไขข้อความ' : `ข้อความถึง ${user.name}`} rows={3} />
+        <div className="admin-user-message-actions"><input ref={fileInputRef} id="admin-message-image" className="sr-only" type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => selectAttachment(event.target.files?.[0])} /><label htmlFor="admin-message-image" className="admin-user-attach-button"><ImagePlus size={19} aria-hidden="true" />แนบรูป</label>{editingMessage && <button type="button" className="admin-user-cancel-edit-button" onClick={resetEditing}>ยกเลิก</button>}<button type="submit" className="admin-user-send-button" disabled={isSaving || (!text.trim() && !attachment)}>{editingMessage ? <Pencil size={18} aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}{editingMessage ? 'แก้ไข' : 'ส่งข้อความ'}</button></div>
       </form>
     </section>
   </section>

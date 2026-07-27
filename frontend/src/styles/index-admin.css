@@ -360,16 +360,17 @@ th.table-display-column, td.table-display-column { width: 1%; white-space: nowra
 .admin-user-attach-button, .admin-user-send-button, .admin-user-cancel-edit-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 7px; padding: 0 14px; border: 1px solid; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; }
 .admin-user-attach-button { border-color: #347657; color: #fff; background: #347657; }
 .admin-user-attach-button:hover, .admin-user-attach-button:focus-within { border-color: #1d6140; background: #1d6140; }
-.admin-user-send-button { margin-left: auto; border-color: #347657; color: #fff; background: #347657; }
+.admin-user-send-button { border-color: #347657; color: #fff; background: #347657; }
 .admin-user-send-button:hover:not(:disabled), .admin-user-send-button:focus-visible:not(:disabled) { border-color: #1d6140; background: #1d6140; }
 .admin-user-send-button:disabled { cursor: not-allowed; border-color: #c4cec6; color: #718078; background: #edf1ee; }
-.admin-user-cancel-edit-button { border-color: #aab6ad; color: #4f5e54; background: #fff; }
+.admin-user-cancel-edit-button { margin-left: auto; border-color: #aab6ad; color: #4f5e54; background: #fff; }
 .admin-user-cancel-edit-button:hover, .admin-user-cancel-edit-button:focus-visible { border-color: #718078; background: #edf1ee; }
 .admin-user-attachment { display: flex; width: fit-content; max-width: 100%; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid #cfe1d4; border-radius: 8px; background: #f3faf5; color: #31463a; font-size: 13px; font-weight: 700; }
 .admin-user-attachment img { width: 42px; height: 42px; border-radius: 5px; object-fit: cover; }
 .admin-user-attachment span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .admin-user-attachment button { display: grid; width: 30px; height: 30px; flex: 0 0 auto; place-items: center; border: 0; border-radius: 50%; color: #65716a; background: transparent; }
 .admin-user-attachment button:hover, .admin-user-attachment button:focus-visible { color: #8f3939; background: #f8dddd; }
+.admin-user-message-error { margin: 0; color: #bd3b35; font-size: 14px; font-weight: 700; }
 @media (max-width: 600px) { .admin-user-message-list { max-height: 52vh; min-height: 240px; padding: 16px; }.admin-user-message-form { padding: 15px 16px 16px; }.admin-user-message-bubble { max-width: 92%; }.admin-user-message-actions { align-items: stretch; flex-direction: column; }.admin-user-attach-button, .admin-user-send-button, .admin-user-cancel-edit-button { width: 100%; margin: 0; }.admin-user-message-entry { gap: 5px; }.admin-user-message-item-actions { gap: 3px; }.admin-user-message-item-actions button { width: 30px; height: 30px; } }
 
 .admin-table-link {
