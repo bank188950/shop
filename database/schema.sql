@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY (default_location_id) REFERENCES locations(id)
     ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT chk_users_phone
-    CHECK (phone REGEXP '^0[0-9]{9}$')
+    CHECK (phone REGEXP '^[0-9]{10}$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- หน่วยขาย เช่น ไม้, แก้ว, กล่อง

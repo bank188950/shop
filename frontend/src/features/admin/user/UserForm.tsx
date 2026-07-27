@@ -1,45 +1,23 @@
 import { ArrowLeft, Save } from 'lucide-react'
-import { type FormEvent, useMemo, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { getLocations } from '@/data/admin/locations'
-import { getAdminUsers, saveAdminUsers, type AdminUser } from '@/data/admin/users'
+import { useLocations } from '@/features/admin/location/hooks/useLocations'
+import { createUserFormSchema, type UserFormInput, type UserFormValues, updateUserFormSchema } from './schema'
+import { useSaveUser, useUser } from './hooks/useUsers'
 
-export function UserForm({ user }: { user?: AdminUser }) {
-  const [name, setName] = useState(user?.name ?? '')
-  const [phone, setPhone] = useState(user?.phone ?? '')
-  const [lineId, setLineId] = useState(user?.lineId ?? '')
-  const [location, setLocation] = useState(user?.location ?? '')
-  const [isActive, setIsActive] = useState(user?.isActive ?? true)
-  const [error, setError] = useState('')
-  const [saved, setSaved] = useState(false)
-  const navigate = useNavigate()
-  const locations = useMemo(() => getLocations().filter((item) => item.isActive || item.name === user?.location), [user?.location])
-
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const nextPhone = phone.trim()
-    const users = getAdminUsers()
-    if (users.some((item) => item.id !== user?.id && item.phone === nextPhone)) {
-      setError('มีผู้ใช้งานที่ใช้เบอร์โทรศัพท์นี้แล้ว')
-      return
-    }
-
-    const nextUser: AdminUser = { id: user?.id ?? Date.now(), name: name.trim(), phone: nextPhone, lineId: lineId.trim(), location, isActive }
-    const nextUsers = user ? users.map((item) => item.id === user.id ? nextUser : item) : [...users, nextUser]
-    saveAdminUsers(nextUsers)
-    setSaved(true)
-    window.setTimeout(() => navigate('/admin/users'), 400)
-  }
-
-  return <section className="admin-page product-form-page">
-    <div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><h1 className="admin-title">{user ? 'แก้ไขผู้ใช้งาน' : 'เพิ่มผู้ใช้งาน'}</h1></div></div>
-    <form className="product-form-card user-form-card" onSubmit={submit}>
-      <div className="product-form-grid"><label>ชื่อลูกค้า<Input required value={name} onChange={(event) => { setName(event.target.value); setError('') }} placeholder="เช่น คุณบอม" /></label><label>เบอร์โทรศัพท์<Input required type="tel" inputMode="tel" value={phone} onChange={(event) => { setPhone(event.target.value); setError('') }} placeholder="0812345678" aria-describedby={error ? 'user-phone-error' : undefined} /></label><label>LINE ID<Input required value={lineId} onChange={(event) => setLineId(event.target.value)} placeholder="เช่น @bom_eats" /></label><label>จุดรับสินค้า<Select value={location || undefined} onValueChange={setLocation}><SelectTrigger aria-label="จุดรับสินค้า" aria-required="true"><SelectValue placeholder="เลือกจุดรับสินค้า" /></SelectTrigger><SelectContent>{locations.map((item) => <SelectItem key={item.id} value={item.name}>{item.name}</SelectItem>)}</SelectContent></Select></label></div>
-      {error && <p id="user-phone-error" className="location-form-error" role="alert">{error}</p>}
-      <label className="product-active-toggle"><input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} /><span>เปิดการใช้งาน</span></label>
-      <div className="product-form-actions"><Link to="/admin/users" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saved} aria-busy={saved}><Save size={18} aria-hidden="true" />{saved ? 'บันทึกแล้ว' : 'บันทึก'}</button></div>
-    </form>
-  </section>
+function FieldError({ message }: { message?: string }) { return message ? <span className="product-field-error" role="alert">{message}</span> : null }
+export function UserForm({ userId }: { userId?: number }) {
+  const userQuery = useUser(userId); const locationsQuery = useLocations(); const saveMutation = useSaveUser(); const [error, setError] = useState(''); const navigate = useNavigate()
+  const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<UserFormInput, unknown, UserFormValues>({ resolver: zodResolver(userId ? updateUserFormSchema : createUserFormSchema), defaultValues: { name: '', phone: '', lineId: '', locationId: null, isActive: true, password: '', confirmPassword: '' } })
+  useEffect(() => { if (userQuery.data) { reset({ name: userQuery.data.name, phone: userQuery.data.phone, lineId: userQuery.data.lineId, locationId: userQuery.data.locationId, isActive: userQuery.data.isActive, password: '', confirmPassword: '' }); if (userQuery.data.locationId) setValue('locationId', userQuery.data.locationId) } }, [reset, setValue, userQuery.data])
+  async function submit(values: UserFormValues) { try { setError(''); await saveMutation.mutateAsync({ userId, input: values }); navigate('/admin/users') } catch (submitError) { setError(submitError instanceof Error ? submitError.message : 'ไม่สามารถบันทึกผู้ใช้งานได้') } }
+  if (userId && userQuery.isLoading) return <div className="page-message">กำลังโหลดผู้ใช้งาน...</div>
+  if (userId && userQuery.isError) return <div className="page-message">ไม่สามารถโหลดผู้ใช้งานได้: {userQuery.error.message}</div>
+  const locations = locationsQuery.data ?? []
+  const selectedLocationName = locations.find((location) => location.id === userQuery.data?.locationId)?.name ?? userQuery.data?.locationName
+  return <section className="admin-page product-form-page"><div className="admin-page-heading"><div><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><h1 className="admin-title">{userId ? 'แก้ไขผู้ใช้งาน' : 'เพิ่มผู้ใช้งาน'}</h1></div></div><form className="product-form-card user-form-card" noValidate onSubmit={handleSubmit(submit)}><div className="product-form-grid"><label>ชื่อลูกค้า<Input {...register('name')} placeholder="เช่น คุณบอม" aria-invalid={Boolean(errors.name)} className={errors.name ? 'product-field-invalid' : undefined} /><FieldError message={errors.name?.message} /></label><label>เบอร์โทรศัพท์<Input type="tel" inputMode="tel" maxLength={10} {...register('phone')} placeholder="0812345678" aria-invalid={Boolean(errors.phone)} className={errors.phone ? 'product-field-invalid' : undefined} /><FieldError message={errors.phone?.message} /></label><label>รหัสผ่าน<Input type="password" maxLength={10} {...register('password')} placeholder={userId ? 'เว้นว่างหากไม่เปลี่ยน' : 'ระบุรหัสผ่าน'} aria-invalid={Boolean(errors.password)} className={errors.password ? 'product-field-invalid' : undefined} /><FieldError message={errors.password?.message} /></label><label>ยืนยันรหัสผ่าน<Input type="password" maxLength={10} {...register('confirmPassword')} placeholder="ยืนยันรหัสผ่าน" aria-invalid={Boolean(errors.confirmPassword)} className={errors.confirmPassword ? 'product-field-invalid' : undefined} /><FieldError message={errors.confirmPassword?.message} /></label><label>LINE ID<Input {...register('lineId')} placeholder="เช่น @bom_eats" /></label><label>จุดรับสินค้า<Controller control={control} name="locationId" render={({ field }) => { const locationId = field.value ?? userQuery.data?.locationId ?? null; const locationName = locations.find((location) => location.id === locationId)?.name ?? (locationId === userQuery.data?.locationId ? selectedLocationName : undefined) ?? (locationId ? `จุดรับสินค้า #${locationId}` : 'เลือกจุดรับสินค้า'); return <Select value={locationId ? String(locationId) : ''} onValueChange={(value) => field.onChange(Number(value))}><SelectTrigger aria-label="จุดรับสินค้า" aria-invalid={Boolean(errors.locationId)} className={errors.locationId ? 'product-field-invalid' : undefined}><span>{locationName}</span></SelectTrigger><SelectContent>{locations.filter((location) => location.isActive || location.id === locationId).map((location) => <SelectItem key={location.id} value={String(location.id)}>{location.name}</SelectItem>)}</SelectContent></Select> }} /><FieldError message={errors.locationId?.message} /></label></div>{error && <p className="location-form-error" role="alert">{error}</p>}<label className="product-active-toggle"><input type="checkbox" {...register('isActive')} /><span>เปิดการใช้งาน</span></label><div className="product-form-actions"><Link to="/admin/users" className="admin-secondary-button">ยกเลิก</Link><button className="admin-primary-button" type="submit" disabled={saveMutation.isPending || locationsQuery.isLoading} aria-busy={saveMutation.isPending}><Save size={18} aria-hidden="true" />{saveMutation.isPending ? 'กำลังบันทึก' : 'บันทึก'}</button></div></form></section>
 }

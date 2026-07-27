@@ -3,7 +3,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Textarea } from '@/components/ui/textarea'
 import { deleteAdminUserMessage, getAdminUserMessages, saveAdminUserMessage, updateAdminUserMessage, type AdminUserMessage } from '@/data/admin/user-messages'
-import { getAdminUsers } from '@/data/admin/users'
+import { useUser } from '@/features/admin/user/hooks/useUsers'
 import { confirmDelete } from '@/components/sweetalert2/confirm-delete'
 
 const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม']
@@ -20,8 +20,9 @@ function getMessageMinute(value: string) {
 
 export function AdminUserChatPage() {
   const { userId } = useParams()
-  const user = getAdminUsers().find((item) => item.id === Number(userId))
   const numericUserId = Number(userId)
+  const userQuery = useUser(numericUserId)
+  const user = userQuery.data
   const [messages, setMessages] = useState<AdminUserMessage[]>(() => getAdminUserMessages(numericUserId))
   const [text, setText] = useState('')
   const [attachment, setAttachment] = useState<{ name: string; url: string } | null>(null)
@@ -46,6 +47,7 @@ export function AdminUserChatPage() {
     messageList.scrollTo({ top: messageList.scrollHeight, behavior: prefersReducedMotion ? 'auto' : 'smooth' })
   }, [messages])
 
+  if (userQuery.isLoading) return <section className="admin-page"><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><p className="page-message">กำลังโหลดผู้ใช้งาน...</p></section>
   if (!user) return <section className="admin-page"><Link className="admin-back-link" to="/admin/users"><ArrowLeft size={18} aria-hidden="true" />กลับไปหน้าผู้ใช้งาน</Link><p className="page-message">ไม่พบผู้ใช้งาน</p></section>
   const selectedUser = user
 
