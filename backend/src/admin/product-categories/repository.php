@@ -15,7 +15,7 @@ function category_list(PDO $db, bool $activeOnly = false): array
 {
     $sql = 'SELECT id, name, tracks_piece_quantity, is_active FROM product_categories';
     if ($activeOnly) $sql .= ' WHERE is_active = 1';
-    return $db->query($sql . ' ORDER BY name')->fetchAll();
+    return $db->query($sql . ' ORDER BY created_at DESC, id DESC')->fetchAll();
 }
 
 function category_find(PDO $db, int $id): ?array

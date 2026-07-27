@@ -10,7 +10,7 @@ function unit_list(PDO $db, bool $activeOnly = false): array
 {
     $sql = 'SELECT id, name, is_active FROM product_units';
     if ($activeOnly) $sql .= ' WHERE is_active = 1';
-    return $db->query($sql . ' ORDER BY name')->fetchAll();
+    return $db->query($sql . ' ORDER BY created_at DESC, id DESC')->fetchAll();
 }
 
 function unit_find(PDO $db, int $id): ?array

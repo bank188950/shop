@@ -12,7 +12,7 @@ function location_to_api(array $location): array
 
 function location_list(PDO $db): array
 {
-    return $db->query('SELECT id, name, is_active FROM locations ORDER BY name')->fetchAll();
+    return $db->query('SELECT id, name, is_active FROM locations ORDER BY created_at DESC, id DESC')->fetchAll();
 }
 
 function location_find(PDO $db, int $id): ?array

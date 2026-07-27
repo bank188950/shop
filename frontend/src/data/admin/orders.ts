@@ -102,6 +102,35 @@ export function getOrderListStatus(order: AdminOrder): OrderListStatus {
   return order.status
 }
 
+const thaiMonthIndexes: Record<string, number> = {
+  'ม.ค.': 0,
+  'ก.พ.': 1,
+  'มี.ค.': 2,
+  'เม.ย.': 3,
+  'พ.ค.': 4,
+  'มิ.ย.': 5,
+  'ก.ค.': 6,
+  'ส.ค.': 7,
+  'ก.ย.': 8,
+  'ต.ค.': 9,
+  'พ.ย.': 10,
+  'ธ.ค.': 11,
+}
+
+function orderCreatedAtTimestamp(orderedAt: string) {
+  const parts = orderedAt.match(/^(\d{1,2})\s+([^\s]+)\s+(\d{4})\s+(\d{1,2}):(\d{2})$/)
+  if (!parts) return 0
+
+  const [, day, thaiMonth, buddhistYear, hour, minute] = parts
+  const month = thaiMonthIndexes[thaiMonth]
+  if (month === undefined) return 0
+  return Date.UTC(Number(buddhistYear) - 543, month, Number(day), Number(hour), Number(minute))
+}
+
+export function sortOrdersNewestFirst(orders: AdminOrder[]) {
+  return [...orders].sort((first, second) => orderCreatedAtTimestamp(second.orderedAt) - orderCreatedAtTimestamp(first.orderedAt) || second.id.localeCompare(first.id))
+}
+
 export function formatPrice(amount: number) {
   return `${amount.toLocaleString('th-TH')} บาท`
 }

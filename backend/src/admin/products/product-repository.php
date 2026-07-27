@@ -45,7 +45,7 @@ function product_low_stock_count(PDO $db): int
 function product_list(PDO $db, int $page, int $perPage): array
 {
     $total = (int) $db->query('SELECT COUNT(*) FROM products')->fetchColumn();
-    $statement = $db->prepare(product_base_query() . ' ORDER BY p.id DESC LIMIT :limit OFFSET :offset');
+    $statement = $db->prepare(product_base_query() . ' ORDER BY p.created_at DESC, p.id DESC LIMIT :limit OFFSET :offset');
     $statement->bindValue(':limit', $perPage, PDO::PARAM_INT);
     $statement->bindValue(':offset', ($page - 1) * $perPage, PDO::PARAM_INT);
     $statement->execute();

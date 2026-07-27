@@ -13,7 +13,7 @@ function banner_to_api(array $banner): array
 
 function banner_list(PDO $db): array
 {
-    return $db->query('SELECT id, title, image_path, is_active FROM banners ORDER BY display_order, id')->fetchAll();
+    return $db->query('SELECT id, title, image_path, is_active FROM banners ORDER BY created_at DESC, id DESC')->fetchAll();
 }
 
 function banner_find(PDO $db, int $id): ?array

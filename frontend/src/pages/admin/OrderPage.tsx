@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ThaiDatePicker } from '@/components/ui/thai-date-picker'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, orderListStatuses, statusClass, type AdminOrder, type DeliveryPeriod, type OrderListStatus, type OrderStatus } from '@/data/admin/orders'
+import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, orderListStatuses, sortOrdersNewestFirst, statusClass, type AdminOrder, type DeliveryPeriod, type OrderListStatus, type OrderStatus } from '@/data/admin/orders'
 import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 const bulkStatusOptions = orderListStatuses.filter((item) => item !== 'รอชำระเงิน')
@@ -27,13 +27,13 @@ export function OrderPage() {
   const [page, setPage] = useState(1)
   const selectAllRef = useRef<HTMLInputElement>(null)
   const locations = [...new Set(ordersData.map((order) => order.location))]
-  const orders = useMemo(() => ordersData.filter((order) => (
+  const orders = useMemo(() => sortOrdersNewestFirst(ordersData.filter((order) => (
     order.deliveryDate === date
     && (period === 'all' || order.period === period)
     && (location === 'all' || order.location === location)
     && (status === 'all' || getOrderListStatus(order) === status)
     && `${order.id} ${order.customerName}`.toLowerCase().includes(query.toLowerCase())
-  )), [date, location, ordersData, period, query, status])
+  ))), [date, location, ordersData, period, query, status])
   const changeableOrders = orders.filter((order) => order.paymentStatus !== 'รอชำระเงิน')
   const selectedChangeableOrderIds = selectedOrderIds.filter((id) => changeableOrders.some((order) => order.id === id))
   const allChangeableSelected = changeableOrders.length > 0 && changeableOrders.every((order) => selectedOrderIds.includes(order.id))

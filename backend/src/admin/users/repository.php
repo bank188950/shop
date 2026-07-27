@@ -8,7 +8,7 @@ function user_to_api(array $user): array
 
 function user_list(PDO $db): array
 {
-    return $db->query("SELECT u.id, u.full_name, u.phone, u.line_account, u.default_location_id, u.is_active, l.name AS location_name, (SELECT COUNT(*) FROM customer_messages cm WHERE cm.recipient_user_id = u.id) AS message_count FROM users u LEFT JOIN locations l ON l.id = u.default_location_id WHERE u.role = 'customer' ORDER BY u.full_name, u.id")->fetchAll();
+    return $db->query("SELECT u.id, u.full_name, u.phone, u.line_account, u.default_location_id, u.is_active, l.name AS location_name, (SELECT COUNT(*) FROM customer_messages cm WHERE cm.recipient_user_id = u.id) AS message_count FROM users u LEFT JOIN locations l ON l.id = u.default_location_id WHERE u.role = 'customer' ORDER BY u.created_at DESC, u.id DESC")->fetchAll();
 }
 
 function user_find(PDO $db, int $id): ?array

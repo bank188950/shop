@@ -5,7 +5,7 @@ import { ArrowRight, Banknote, CalendarDays, CircleAlert, ClipboardList, Eye, Ma
 import { Link } from 'react-router-dom'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ThaiDatePicker } from '@/components/ui/thai-date-picker'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, statusClass, type DeliveryPeriod } from '@/data/admin/orders'
+import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, sortOrdersNewestFirst, statusClass, type DeliveryPeriod } from '@/data/admin/orders'
 import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
@@ -70,8 +70,8 @@ export function DashboardSummary() {
   )), [adminOrders, date, location, period])
   const paidOrders = filteredOrders.filter((order) => order.paymentStatus === 'จ่ายแล้ว')
   const activeOrders = filteredOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'พร้อมส่ง'].includes(order.status))
-  const pendingOrders = filteredOrders
-    .filter((order) => order.paymentStatus === 'รอชำระเงิน' || order.status === 'ยกเลิก')
+  const pendingOrders = sortOrdersNewestFirst(filteredOrders
+    .filter((order) => order.paymentStatus === 'รอชำระเงิน' || order.status === 'ยกเลิก'))
     .slice(0, 5)
   const locationSummary = locations.map((item) => {
     const orders = filteredOrders.filter((order) => order.location === item)
