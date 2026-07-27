@@ -6,7 +6,6 @@ function category_validate_input(array $input): array
     $name = trim((string) ($input['name'] ?? ''));
     $errors = [];
     if ($name === '') $errors['name'] = 'กรุณาระบุชื่อหมวดสินค้า';
-    if (mb_strlen($name) > 150) $errors['name'] = 'ชื่อหมวดสินค้ายาวเกิน 150 ตัวอักษร';
 
     return [[
         'name' => $name,

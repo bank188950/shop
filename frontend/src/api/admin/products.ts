@@ -14,6 +14,7 @@ function productFormData(input: ProductSaveInput) {
   formData.append('stock_piece_count', input.stockPieceCount)
   formData.append('pieces_per_sale', input.piecesPerSale)
   formData.append('low_stock_threshold', input.lowStockThreshold)
+  formData.append('is_recommended', input.isRecommended ? '1' : '0')
   formData.append('is_active', input.isActive ? '1' : '0')
   if (input.image) formData.append('image', input.image)
   return formData

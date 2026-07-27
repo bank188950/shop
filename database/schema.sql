@@ -76,10 +76,12 @@ CREATE TABLE IF NOT EXISTS products (
   stock_piece_count INT UNSIGNED NOT NULL DEFAULT 0,
   pieces_per_sale INT UNSIGNED NOT NULL DEFAULT 0,
   low_stock_threshold INT UNSIGNED NOT NULL DEFAULT 5,
+  is_recommended TINYINT(1) NOT NULL DEFAULT 0,
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY idx_products_category_active (category_id, is_active),
+  KEY idx_products_recommended (is_active, is_recommended),
   KEY idx_products_low_stock (is_active, stock_quantity),
   CONSTRAINT fk_products_category
     FOREIGN KEY (category_id) REFERENCES product_categories(id)

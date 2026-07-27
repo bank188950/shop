@@ -15,7 +15,6 @@ function product_validate_input(array $input): array
     $lowStockThreshold = filter_var($input['low_stock_threshold'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
 
     if ($name === '') $errors['name'] = 'กรุณาระบุชื่อสินค้า';
-    if (mb_strlen($name) > 150) $errors['name'] = 'ชื่อสินค้ายาวเกิน 150 ตัวอักษร';
     if (mb_strlen($description) > 10000) $errors['description'] = 'รายละเอียดสินค้ายาวเกินกำหนด';
     if ($categoryId === false) $errors['category_id'] = 'กรุณาเลือกหมวดสินค้า';
     if ($unitId === false) $errors['unit_id'] = 'กรุณาเลือกหน่วยสินค้า';
@@ -35,6 +34,7 @@ function product_validate_input(array $input): array
         'stock_piece_count' => $stockPieceCount,
         'pieces_per_sale' => $piecesPerSale,
         'low_stock_threshold' => $lowStockThreshold,
+        'is_recommended' => ($input['is_recommended'] ?? '0') === '1' ? 1 : 0,
         'is_active' => ($input['is_active'] ?? '1') === '1' ? 1 : 0,
     ], $errors];
 }

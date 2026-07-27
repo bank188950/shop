@@ -13,6 +13,7 @@ export type AdminProduct = {
   stockQuantity: number
   piecesPerSale: number
   lowStockThreshold: number
+  isRecommended: boolean
   isActive: boolean
   stockStatus: 'available' | 'low'
 }
@@ -38,6 +39,7 @@ export type ProductFormValues = {
   stockPieceCount: string
   piecesPerSale: string
   lowStockThreshold: string
+  isRecommended: boolean
   isActive: boolean
 }
 

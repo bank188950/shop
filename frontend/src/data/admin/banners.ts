@@ -1,7 +1,7 @@
 export type AdminBanner = {
   id: number
   title: string
-  image: string
+  image?: string
   isActive: boolean
 }
 
