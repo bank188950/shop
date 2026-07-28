@@ -320,7 +320,7 @@ p.admin-profile-field-error { margin: -2px 0 0; color: #c43c3c; font-size: 14px;
 .product-form-card [data-slot='input']:read-only { color: #27362e; background: #edf1ee; }
 .product-stock-open-button { display: grid; width: 46px; height: 46px; flex: 0 0 auto; place-items: center; border: 1px solid #8ec09a; border-radius: 8px; color: #176344; background: #fff; }
 .product-stock-open-button:hover, .product-stock-open-button:focus-visible { border-color: #347657; background: #edf7ef; }
-.product-stock-mode-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.product-stock-input[readonly] { color: #4d5a51; background: #f2f5f2; cursor: not-allowed; }.product-stock-mode-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .product-stock-mode-actions button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 7px; padding: 0 14px; border: 1px solid #718078; border-radius: 8px; color: #fff; background: #718078; font-size: 14px; font-weight: 800; }
 .product-stock-mode-actions button:hover, .product-stock-mode-actions button:focus-visible { border-color: #596960; background: #596960; }
 .product-stock-mode-actions button.is-selected { border-color: #1f2822; background: #1f2822; }

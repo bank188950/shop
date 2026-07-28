@@ -128,6 +128,7 @@ function ProductFormFields({ productId, product, categories, units, categoriesEr
   function confirmStockAction() {
     if (!stockAction) return
     const field = stockField === 'pieces' ? 'stockPieceCount' : 'stockQuantity'
+    clearFieldError(field)
     if (stockAction === 'clear') {
       setValues((current) => ({ ...current, [field]: '0' }))
       closeStockDialog()
@@ -191,8 +192,7 @@ function ProductFormFields({ productId, product, categories, units, categoriesEr
           <ProductFieldError message={fieldErrors.salePrice} />
         </label>
         <label>จำนวนสินค้า
-          {tracksPieceQuantity ? <Input type="number" value={stockQuantityValue} readOnly aria-label="จำนวนสินค้า" /> : <div className="product-stock-control"><Input className={`product-stock-input ${fieldErrors.stockQuantity ? 'product-field-invalid' : ''}`} type="number" min="0" value={values.stockQuantity} onChange={(event) => { setValues((current) => ({ ...current, stockQuantity: event.target.value })); clearFieldError('stockQuantity') }} aria-label="จำนวนสินค้า" aria-invalid={Boolean(fieldErrors.stockQuantity)} /><button type="button" className="product-stock-open-button" onClick={() => openStockDialog('quantity')} aria-label="จัดการจำนวนสินค้า"><Settings2 size={20} aria-hidden="true" /></button></div>}
-          <ProductFieldError message={fieldErrors.stockQuantity} />
+          {tracksPieceQuantity ? <Input type="number" value={stockQuantityValue} readOnly aria-label="จำนวนสินค้า" /> : <div className="product-stock-control"><Input className={`product-stock-input ${fieldErrors.stockQuantity ? 'product-field-invalid' : ''}`} type="number" value={values.stockQuantity} readOnly aria-label="จำนวนสินค้า" aria-invalid={Boolean(fieldErrors.stockQuantity)} /><button type="button" className="product-stock-open-button" onClick={() => openStockDialog('quantity')} aria-label="จัดการจำนวนสินค้า"><Settings2 size={20} aria-hidden="true" /></button></div>}          <ProductFieldError message={fieldErrors.stockQuantity} />
         </label>
         {tracksPieceQuantity && <>
           <label>จำนวนชิ้น
