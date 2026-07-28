@@ -16,3 +16,6 @@ if (is_file($envFile)) {
         $_ENV[trim($key)] = trim($value);
     }
 }
+
+// PHP ตั้งต้นเป็น UTC ทำให้เวลาปิดรับรอบและการนับเวลาหมดอายุคำสั่งซื้อคลาดไป 7 ชั่วโมง
+date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'Asia/Bangkok');
