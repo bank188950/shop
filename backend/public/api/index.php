@@ -41,6 +41,11 @@ require_once dirname(__DIR__, 2) . '/src/admin/user-messages/validation.php';
 require_once dirname(__DIR__, 2) . '/src/admin/user-messages/upload.php';
 require_once dirname(__DIR__, 2) . '/src/admin/user-messages/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/user-messages/routes.php';
+require_once dirname(__DIR__, 2) . '/src/user/auth/validation.php';
+require_once dirname(__DIR__, 2) . '/src/user/auth/repository.php';
+require_once dirname(__DIR__, 2) . '/src/user/auth/session.php';
+require_once dirname(__DIR__, 2) . '/src/user/auth/routes.php';
+require_once dirname(__DIR__, 2) . '/src/user/locations/routes.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = api_path();
@@ -48,6 +53,8 @@ $path = api_path();
 try {
     if ($method === 'GET' && $path === '/health') json_response(['status' => 'ok']);
     if (admin_auth_route($method, $path)) exit;
+    if (customer_auth_route($method, $path)) exit;
+    if (customer_location_route($method, $path)) exit;
     if (str_starts_with($path, '/admin/') && !admin_auth_current(app_db())) json_response(['message' => 'กรุณาเข้าสู่ระบบ'], 401);
     if (product_route($method, $path)) exit;
     if (category_route($method, $path)) exit;
