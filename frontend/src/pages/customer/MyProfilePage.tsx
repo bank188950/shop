@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 import { useCustomerAuth } from '@/features/user/auth/hooks/useCustomerAuth'
+import { ProfileForm } from '@/features/user/profile/ProfileForm'
 
 export function MyProfilePage() {
   const authQuery = useCustomerAuth()
@@ -21,12 +22,7 @@ export function MyProfilePage() {
           </h1>
           {authQuery.isLoading && <p className="mt-5 mb-0 text-lg font-bold text-muted">กำลังโหลดข้อมูลผู้ใช้...</p>}
           {!authQuery.isLoading && !customer && <p className="mt-5 mb-0 text-lg font-bold text-muted">กรุณาเข้าสู่ระบบเพื่อดูข้อมูลผู้ใช้</p>}
-          {customer && <dl className="mt-5 grid grid-cols-2 gap-x-8 gap-y-5 max-md:grid-cols-1 max-md:gap-y-4">
-            <div><dt className="text-xl font-bold text-ink">ชื่อลูกค้า</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer.name}</dd></div>
-            <div><dt className="text-xl font-bold text-ink">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer.phone}</dd></div>
-            <div><dt className="text-xl font-bold text-ink">สถานที่ส่งของ</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer.locationName || 'ยังไม่ได้เลือก'}</dd></div>
-            <div><dt className="text-xl font-bold text-ink">LINE ID</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer.lineId || 'ยังไม่ได้ระบุ'}</dd></div>
-          </dl>}
+          {customer && <ProfileForm customer={customer} />}
         </section>
       </main>
       <StorefrontFooter />

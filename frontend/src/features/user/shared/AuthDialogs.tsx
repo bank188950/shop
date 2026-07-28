@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCustomerAuth, useCustomerLogin, useCustomerLogout, useCustomerRegister } from '@/features/user/auth/hooks/useCustomerAuth'
-import { useCustomerLocations } from '@/features/user/auth/hooks/useCustomerLocations'
+import { useCustomerLocations } from '@/features/user/shared/hooks/useCustomerLocations'
 import { loginFormSchema, registerFormSchema, type LoginFormValues, type RegisterFormValues } from '@/features/user/auth/schema'
 
 const inputClassName = 'mt-1.5 h-12 border-[#b9cbbf] bg-white px-3 text-base text-ink placeholder:text-[#728077] focus-visible:border-brand focus-visible:ring-brand/25'
