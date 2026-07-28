@@ -25,7 +25,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 }
 
 function FormError({ message }: { message?: string }) {
-  return message ? <p className="m-0 mt-8 rounded-xl bg-[#fbeaea] px-3 py-3.5 text-center text-base font-semibold text-[#c84646]" role="alert">{message}</p> : null
+  return message ? <p className="m-0 rounded-xl bg-[#fbeaea] px-3 py-3.5 text-center text-base font-semibold text-[#c84646]" role="alert">{message}</p> : null
 }
 
 function DialogCloseButton() {
@@ -92,6 +92,7 @@ function RegisterForm({ registerMutation, onSuccess }: { registerMutation: Retur
         <FieldError id="register-line-id-error" message={errors.lineId?.message} />
       </div>
     </div>
+    <FormError message={registerMutation.isError ? registerMutation.error.message : undefined} />
     <Button type="submit" className={actionButtonClassName} disabled={registerMutation.isPending} aria-busy={registerMutation.isPending}>{registerMutation.isPending ? 'กำลังสมัครสมาชิก' : 'สมัครสมาชิก'}</Button>
   </form>
 }
@@ -122,6 +123,7 @@ function LoginForm({ loginMutation, onSuccess }: { loginMutation: ReturnType<typ
       <Input id="login-password" type="password" autoComplete="current-password" maxLength={10} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'login-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} {...register('password')} />
       <FieldError id="login-password-error" message={errors.password?.message} />
     </div>
+    <FormError message={loginMutation.isError ? loginMutation.error.message : undefined} />
     <Button type="submit" className={actionButtonClassName} disabled={loginMutation.isPending} aria-busy={loginMutation.isPending}>{loginMutation.isPending ? 'กำลังเข้าสู่ระบบ' : 'เข้าสู่ระบบ'}</Button>
   </form>
 }
@@ -155,7 +157,6 @@ export function AuthDialogs() {
       </DialogTrigger>
       <DialogContent showCloseButton={false} className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border-[#b9cbbf] bg-canvas p-5 shadow-2xl sm:max-w-[560px] sm:p-6">
         <DialogCloseButton />
-        <FormError message={registerMutation.isError ? registerMutation.error.message : undefined} />
         <DialogHeader className="pr-10 text-left">
           <DialogTitle className="font-heading text-2xl text-ink">สมัครสมาชิก</DialogTitle>
           <DialogDescription className="text-base leading-relaxed text-muted">กรอกข้อมูลเพื่อสร้างบัญชีสำหรับสั่งซื้อและติดตามรายการได้สะดวกขึ้น</DialogDescription>
@@ -170,7 +171,6 @@ export function AuthDialogs() {
       </DialogTrigger>
       <DialogContent showCloseButton={false} className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border-[#b9cbbf] bg-canvas p-5 shadow-2xl sm:max-w-[460px] sm:p-6">
         <DialogCloseButton />
-        <FormError message={loginMutation.isError ? loginMutation.error.message : undefined} />
         <DialogHeader className="pr-10 text-left">
           <DialogTitle className="font-heading text-2xl text-ink">เข้าสู่ระบบ</DialogTitle>
           <DialogDescription className="text-base leading-relaxed text-muted">เข้าสู่ระบบเพื่อจัดการข้อมูลและติดตามคำสั่งซื้อของคุณ</DialogDescription>
