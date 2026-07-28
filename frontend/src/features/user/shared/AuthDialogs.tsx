@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { CircleUserRound, LogOut, UserPlus, X } from 'lucide-react'
+import { CircleUserRound, LogOut, UserCog, UserPlus, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
@@ -139,6 +140,9 @@ export function AuthDialogs() {
       <small className="text-sm font-semibold text-muted">สวัสดี</small>
       <strong className="max-w-40 truncate text-base font-extrabold text-ink">{authQuery.data.name}</strong>
     </span>
+    <Link to="/my-profile" className={`inline-flex items-center justify-center gap-2 no-underline ${triggerButtonClassName}`} aria-label="จัดการ">
+      <UserCog size={18} aria-hidden="true" /><span className="max-sm:hidden">จัดการ</span>
+    </Link>
     <Button type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending} aria-busy={logoutMutation.isPending} className={triggerButtonClassName} aria-label="ออกจากระบบ">
       <LogOut size={18} aria-hidden="true" /><span className="max-sm:hidden">ออกจากระบบ</span>
     </Button>
