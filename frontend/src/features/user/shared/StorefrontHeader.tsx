@@ -2,17 +2,19 @@ import { ClipboardList, MessageCircle, ShoppingCart, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthDialogs } from '@/features/user/shared/AuthDialogs'
-import { products } from '@/data/user/products'
+import { useCustomerProducts } from '@/features/user/shared/hooks/useCustomerProducts'
 import { useCartStore } from '@/stores/cart-store'
 
 export function StorefrontHeader() {
   const items = useCartStore((state) => state.items)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const cartMenuRef = useRef<HTMLDivElement>(null)
+  const productsQuery = useCustomerProducts()
+  const products = productsQuery.data
   const cartItems = useMemo(() => items.flatMap((item) => {
-    const product = products.find((candidate) => candidate.id === item.productId)
+    const product = products?.find((candidate) => candidate.id === item.productId)
     return product ? [{ ...product, quantity: item.quantity }] : []
-  }), [items])
+  }), [items, products])
   const itemCount = useMemo(() => cartItems.reduce((count, item) => count + item.quantity, 0), [cartItems])
   const total = useMemo(() => cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0), [cartItems])
 
@@ -54,7 +56,7 @@ export function StorefrontHeader() {
               {cartItems.length ? <>
                 <ul className="mt-3 mb-0 grid list-none gap-3 p-0">
                   {cartItems.map((item) => <li key={item.id} className="flex items-center gap-3">
-                    <img className="size-12 rounded-lg object-cover" src={item.image} alt="" />
+                    {item.imageUrl && <img className="size-12 rounded-lg object-cover" src={item.imageUrl} alt="" />}
                     <span className="min-w-0 flex-1 truncate font-bold text-ink">{item.name}</span>
                     <span className="shrink-0 text-base font-bold text-muted">x {item.quantity}</span>
                   </li>)}

@@ -2,13 +2,15 @@ import { ArrowRight, ShoppingCart } from 'lucide-react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '@/stores/cart-store'
-import { products } from '@/data/user/products'
+import { useCustomerProducts } from '@/features/user/shared/hooks/useCustomerProducts'
 
 export function StickyCart() {
   const navigate = useNavigate()
   const items = useCartStore((state) => state.items)
+  const productsQuery = useCustomerProducts()
+  const products = productsQuery.data
   const itemCount = useMemo(() => items.reduce((count, item) => count + item.quantity, 0), [items])
-  const total = useMemo(() => items.reduce((sum, item) => sum + (products.find((product) => product.id === item.productId)?.price ?? 0) * item.quantity, 0), [items])
+  const total = useMemo(() => items.reduce((sum, item) => sum + (products?.find((product) => product.id === item.productId)?.price ?? 0) * item.quantity, 0), [items, products])
 
   return (
     <aside id="cart" className="fixed bottom-5 left-1/2 z-20 flex w-[min(100%-48px,1440px)] -translate-x-1/2 items-center justify-between gap-5 rounded-[20px] bg-brand-deep py-3 pr-3.5 pl-[22px] text-white shadow-2xl shadow-brand-deep/30 max-md:bottom-2.5 max-md:w-[calc(100%-22px)] max-md:gap-2 max-md:rounded-[17px] max-md:px-3.5 max-md:py-2.5" aria-label="สรุปตะกร้าสินค้า">

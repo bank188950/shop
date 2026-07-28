@@ -6,7 +6,8 @@ import Swal from 'sweetalert2'
 import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
-import { products } from '@/data/user/products'
+import { useCustomerProducts } from '@/features/user/shared/hooks/useCustomerProducts'
+import { productStockLabel } from '@/features/user/shared/utils/product-labels'
 import { useCartStore } from '@/stores/cart-store'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -43,10 +44,12 @@ export function OrderSummaryPage() {
   const [delivery, setDelivery] = useState<DeliveryPeriod | null>(null)
   const [isOrderConfirmed, setIsOrderConfirmed] = useState(false)
 
+  const productsQuery = useCustomerProducts()
+  const products = productsQuery.data
   const cartItems = useMemo(() => items.flatMap((item) => {
-    const product = products.find((candidate) => candidate.id === item.productId)
+    const product = products?.find((candidate) => candidate.id === item.productId)
     return product ? [{ ...product, quantity: item.quantity }] : []
-  }), [items])
+  }), [items, products])
   const itemCount = useMemo(() => cartItems.reduce((total, item) => total + item.quantity, 0), [cartItems])
   const subtotal = useMemo(() => cartItems.reduce((total, item) => total + item.price * item.quantity, 0), [cartItems])
   const confirmOrder = async () => {
@@ -96,18 +99,18 @@ export function OrderSummaryPage() {
                       </DialogTrigger>
                       <DialogContent showCloseButton={false} className="max-w-md border border-[#d8dfd5] bg-white shadow-2xl">
                         <DialogClose asChild><Button type="button" variant="ghost" size="icon" className="absolute right-2 top-1 z-10 size-8 rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand" aria-label="ปิดหน้าต่าง"><X size={18} strokeWidth={2.5} aria-hidden="true" /></Button></DialogClose>
-                        <img className="mt-4 aspect-[1.4/1] w-full rounded-lg object-cover" src={item.image} alt={item.name} />
+                        <img className="mt-4 aspect-[1.4/1] w-full rounded-lg object-cover" src={item.imageUrl ?? ''} alt={item.name} />
                         <DialogHeader>
                           <DialogTitle className="font-heading text-2xl text-ink">{item.name}</DialogTitle>
                           <DialogDescription className="text-base leading-relaxed text-[#455048]">{item.description}</DialogDescription>
                         </DialogHeader>
                         <div className="flex items-center justify-between border-t border-[#e2e8e3] pt-4">
-                          <span className="text-lg font-bold text-muted">{item.stockLabel}</span>
+                          <span className="text-lg font-bold text-muted">{productStockLabel(item)}</span>
                           <strong className="font-heading text-2xl text-brand">{formatPrice(item.price)}</strong>
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <img className="size-[112px] rounded-lg object-cover max-md:size-[88px]" src={item.image} alt={item.name} />
+                    <img className="size-[112px] rounded-lg object-cover max-md:size-[88px]" src={item.imageUrl ?? ''} alt={item.name} />
                     <div className="min-w-0">
                       <h2 className="m-0 font-heading text-[22px] leading-tight text-ink">{item.name}</h2>
                       <p className="mt-1 mb-3 text-lg font-semibold text-muted">{formatPrice(item.price)}</p>

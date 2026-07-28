@@ -46,6 +46,7 @@ require_once dirname(__DIR__, 2) . '/src/user/auth/repository.php';
 require_once dirname(__DIR__, 2) . '/src/user/auth/session.php';
 require_once dirname(__DIR__, 2) . '/src/user/auth/routes.php';
 require_once dirname(__DIR__, 2) . '/src/user/locations/routes.php';
+require_once dirname(__DIR__, 2) . '/src/user/products/routes.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = api_path();
@@ -55,6 +56,7 @@ try {
     if (admin_auth_route($method, $path)) exit;
     if (customer_auth_route($method, $path)) exit;
     if (customer_location_route($method, $path)) exit;
+    if (customer_product_route($method, $path)) exit;
     if (str_starts_with($path, '/admin/') && !admin_auth_current(app_db())) json_response(['message' => 'กรุณาเข้าสู่ระบบ'], 401);
     if (product_route($method, $path)) exit;
     if (category_route($method, $path)) exit;
