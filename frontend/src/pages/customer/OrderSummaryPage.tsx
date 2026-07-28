@@ -8,15 +8,20 @@ import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 import { useCustomerProducts } from '@/features/user/shared/hooks/useCustomerProducts'
 import { productStockLabel } from '@/features/user/shared/utils/product-labels'
+import { useCustomerAuth } from '@/features/user/auth/hooks/useCustomerAuth'
+import { useCreateCustomerOrder, useDeliverySettings, usePayCustomerOrder } from '@/features/user/order/hooks/useCustomerOrders'
+import { orderStatusClass, orderStatusLabel } from '@/features/user/order/utils/order-labels'
+import type { CustomerOrder, DeliveryPeriod } from '@/api/user/orders'
+import type { CustomerProduct } from '@/api/user/products'
 import { useCartStore } from '@/stores/cart-store'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
-type DeliveryPeriod = 'morning' | 'afternoon'
+type CartLine = CustomerProduct & { quantity: number }
 
 const deliveryOptions = {
-  morning: { label: 'รอบเช้า', cutoff: 'สั่งได้ถึง 08:00', time: 'จัดส่ง 09:00–10:00', icon: SunMedium },
-  afternoon: { label: 'รอบบ่าย', cutoff: 'สั่งได้ถึง 12:00', time: 'จัดส่ง 14:00–15:00', icon: Sunset },
+  morning: { label: 'รอบเช้า', icon: SunMedium },
+  afternoon: { label: 'รอบบ่าย', icon: Sunset },
 }
 
 const formatPrice = (price: number) => `${price.toLocaleString('th-TH')} บาท`
@@ -41,42 +46,83 @@ const enlargeAlertButtons = () => {
 export function OrderSummaryPage() {
   const items = useCartStore((state) => state.items)
   const setQuantity = useCartStore((state) => state.setQuantity)
+  const clearCart = useCartStore((state) => state.clear)
   const [delivery, setDelivery] = useState<DeliveryPeriod | null>(null)
-  const [isOrderConfirmed, setIsOrderConfirmed] = useState(false)
+  const [order, setOrder] = useState<CustomerOrder | null>(null)
+  const [confirmedItems, setConfirmedItems] = useState<CartLine[]>([])
 
   const productsQuery = useCustomerProducts()
+  const authQuery = useCustomerAuth()
+  const settingsQuery = useDeliverySettings()
+  const createOrderMutation = useCreateCustomerOrder()
+  const payOrderMutation = usePayCustomerOrder()
+  const customer = authQuery.data
   const products = productsQuery.data
+  const isOrderConfirmed = Boolean(order)
   const cartItems = useMemo(() => items.flatMap((item) => {
     const product = products?.find((candidate) => candidate.id === item.productId)
     return product ? [{ ...product, quantity: item.quantity }] : []
   }), [items, products])
-  const itemCount = useMemo(() => cartItems.reduce((total, item) => total + item.quantity, 0), [cartItems])
-  const subtotal = useMemo(() => cartItems.reduce((total, item) => total + item.price * item.quantity, 0), [cartItems])
+  const displayItems = order ? confirmedItems : cartItems
+  const itemCount = useMemo(() => displayItems.reduce((total, item) => total + item.quantity, 0), [displayItems])
+  const subtotal = order?.totalAmount ?? displayItems.reduce((total, item) => total + item.price * item.quantity, 0)
+
+  const alert = (title: string, icon: 'warning' | 'error' = 'warning') => Swal.fire({
+    icon,
+    title,
+    showCancelButton: true,
+    showCloseButton: true,
+    confirmButtonText: 'ตกลง',
+    cancelButtonText: 'ยกเลิก',
+    buttonsStyling: false,
+    didOpen: enlargeAlertButtons,
+    customClass: {
+      popup: 'rounded-2xl p-8 sm:p-10',
+      title: 'font-heading text-3xl text-ink sm:text-4xl',
+      closeButton: 'absolute top-4 right-4 grid size-11 place-items-center rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand',
+      actions: 'mt-8 gap-4',
+      confirmButton: 'min-h-14 rounded-full bg-brand px-10 font-heading text-2xl font-extrabold text-white hover:bg-brand-dark',
+      cancelButton: 'min-h-14 rounded-full bg-[#6b7280] px-10 font-heading text-2xl font-extrabold text-white hover:bg-[#4b5563]',
+    },
+  })
+
   const confirmOrder = async () => {
+    if (!customer) {
+      await alert('กรุณาเข้าสู่ระบบก่อนสั่งซื้อ')
+      return
+    }
+    if (!customer.locationId) {
+      await alert('กรุณาเลือกสถานที่ส่งของในหน้าจัดการผู้ใช้ก่อน')
+      return
+    }
     if (!delivery) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'กรุณาเลือกรอบการสั่งซื้อ',
-        showCancelButton: true,
-        showCloseButton: true,
-        confirmButtonText: 'ตกลง',
-        cancelButtonText: 'ยกเลิก',
-        buttonsStyling: false,
-        didOpen: enlargeAlertButtons,
-        customClass: {
-          popup: 'rounded-2xl p-8 sm:p-10',
-          title: 'font-heading text-3xl text-ink sm:text-4xl',
-          closeButton: 'absolute top-4 right-4 grid size-11 place-items-center rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand',
-          actions: 'mt-8 gap-4',
-          confirmButton: 'min-h-14 rounded-full bg-brand px-10 font-heading text-2xl font-extrabold text-white hover:bg-brand-dark',
-          cancelButton: 'min-h-14 rounded-full bg-[#6b7280] px-10 font-heading text-2xl font-extrabold text-white hover:bg-[#4b5563]',
-        },
-      })
+      await alert('กรุณาเลือกรอบการสั่งซื้อ')
       return
     }
 
-    setIsOrderConfirmed(true)
+    try {
+      const createdOrder = await createOrderMutation.mutateAsync({
+        locationId: customer.locationId,
+        deliveryPeriod: delivery,
+        items: cartItems.map((item) => ({ productId: item.id, quantity: item.quantity })),
+      })
+      setConfirmedItems(cartItems)
+      setOrder(createdOrder)
+      clearCart()
+    } catch (error) {
+      await alert(error instanceof Error ? error.message : 'ไม่สามารถสร้างคำสั่งซื้อได้', 'error')
+    }
   }
+
+  const payOrder = async () => {
+    if (!order) return
+    try {
+      setOrder(await payOrderMutation.mutateAsync(order.id))
+    } catch (error) {
+      await alert(error instanceof Error ? error.message : 'ไม่สามารถยืนยันการชำระเงินได้', 'error')
+    }
+  }
+
 
   return (
     <section className="min-h-screen overflow-hidden">
@@ -89,9 +135,12 @@ export function OrderSummaryPage() {
         <div id="cart" className="grid grid-cols-[minmax(0,1.35fr)_minmax(320px,.95fr)] gap-6 max-lg:grid-cols-1">
           <div className="grid content-start gap-5">
             <section className="rounded-[18px] border border-[#b9cbbf] p-5 max-md:p-4" aria-labelledby="items-heading">
-              <h1 id="items-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><PanelsTopLeft size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />รายการสินค้า</h1>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h1 id="items-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><PanelsTopLeft size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />รายการสินค้า</h1>
+                {order && <span className="inline-flex flex-wrap items-center gap-2"><strong className="font-heading text-xl text-ink">{order.orderNumber}</strong><span className={`inline-flex min-h-9 items-center rounded-full px-3 text-base font-extrabold ${orderStatusClass(order.orderStatus)}`}>{orderStatusLabel(order.orderStatus)}</span></span>}
+              </div>
               <div className="mt-5 grid gap-4">
-                {cartItems.length ? cartItems.map((item) => (
+                {displayItems.length ? displayItems.map((item) => (
                   <article key={item.id} className="relative grid grid-cols-[112px_minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-[#bdcbbb] bg-white p-3 max-md:grid-cols-[88px_minmax(0,1fr)] max-md:gap-3">
                     <Dialog>
                       <DialogTrigger asChild>
@@ -147,12 +196,14 @@ export function OrderSummaryPage() {
                       : 'border-[#f2b866] bg-gradient-to-br from-afternoon to-[#fffaf2] hover:-translate-y-0.5 hover:shadow-lg'
                   const accentClass = isMorning ? 'text-[#338ad7]' : 'text-[#c88434]'
                   const cutoffBadgeClass = isMorning ? 'bg-[#c8e7fb]/75 text-[#2d78b9]' : 'bg-[#ffe1b4]/75 text-[#a86117]'
-                  return <button key={value} type="button" disabled={isOrderConfirmed} aria-pressed={selected} onClick={() => setDelivery((current) => current === value ? null : value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none ${cardClass}`}>
+                  const round = settingsQuery.data?.[value]
+                  const isClosed = round ? !round.isOpen : false
+                  return <button key={value} type="button" disabled={isOrderConfirmed || isClosed} aria-pressed={selected} onClick={() => setDelivery((current) => current === value ? null : value)} className={`relative grid min-h-[124px] place-items-center content-center rounded-2xl border-[1.5px] px-4 py-3 text-[#1b2b31] transition disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none ${cardClass}`}>
                     <span className={`absolute right-3 top-3 grid size-11 place-items-center rounded-full border-2 ${accentClass} ${isMorning ? 'border-[#338ad7]' : 'border-[#c88434]'} ${selected ? 'opacity-100' : 'opacity-0'}`}><Check size={20} strokeWidth={2.5} /></span>
                     <Icon size={32} className={accentClass} aria-hidden="true" />
                     <strong className="font-heading text-[22px]">{option.label}</strong>
-                    <span className="text-xl font-semibold">{option.time}</span>
-                    <span className={`mt-2 rounded-full px-3 py-1 text-base font-bold ${cutoffBadgeClass}`}>{option.cutoff}</span>
+                    <span className="text-xl font-semibold">{round ? `จัดส่ง ${round.deliveryStart}–${round.deliveryEnd}` : 'กำลังโหลดเวลา'}</span>
+                    <span className={`mt-2 rounded-full px-3 py-1 text-base font-bold ${cutoffBadgeClass}`}>{round ? (isClosed ? `ปิดรับรอบนี้แล้ว (${round.cutoff})` : `สั่งได้ถึง ${round.cutoff}`) : '—'}</span>
                   </button>
                 })}
               </div>
@@ -161,11 +212,12 @@ export function OrderSummaryPage() {
             <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="recipient-heading">
               <h2 id="recipient-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><UserRound size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />ข้อมูลผู้รับ</h2>
               <dl className="mt-5 grid grid-cols-2 gap-x-8 gap-y-5 text-lg max-md:grid-cols-1 max-md:gap-y-4">
-                <div><dt className="text-xl font-bold text-ink">ชื่อลูกค้า</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">นายสมชาย ดีใจ</dd></div>
-                <div><dt className="text-xl font-bold text-ink">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">0812345678</dd></div>
-                <div><dt className="text-xl font-bold text-ink">สถานที่ส่งของ</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">จุดรับสินค้า B</dd></div>
-                <div><dt className="text-xl font-bold text-ink">LINE ID</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">@somchai_line</dd></div>
+                <div><dt className="text-xl font-bold text-ink">ชื่อลูกค้า</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer?.name ?? '—'}</dd></div>
+                <div><dt className="text-xl font-bold text-ink">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer?.phone ?? '—'}</dd></div>
+                <div><dt className="text-xl font-bold text-ink">สถานที่ส่งของ</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{order?.locationName || customer?.locationName || '—'}</dd></div>
+                <div><dt className="text-xl font-bold text-ink">LINE ID</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer?.lineId || '—'}</dd></div>
               </dl>
+              {!authQuery.isLoading && !customer && <p className="mt-4 mb-0 text-lg font-bold text-[#c84646]">กรุณาเข้าสู่ระบบก่อนสั่งซื้อ ระบบจะใช้ชื่อและสถานที่ส่งของจากบัญชีของคุณ</p>}
             </section>
           </div>
 
@@ -179,18 +231,25 @@ export function OrderSummaryPage() {
               </dl>
               <div className="mt-5 flex items-center justify-between border-t border-white/25 pt-5"><span className="font-heading text-xl">ยอดชำระสุทธิ</span><strong className="font-heading text-[32px]">{formatPrice(subtotal)}</strong></div>
             </section>
-            {!isOrderConfirmed && <button type="button" onClick={confirmOrder} disabled={!cartItems.length} className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#76503a] px-4 text-xl font-extrabold text-white transition hover:bg-[#5f3d2b] disabled:cursor-not-allowed disabled:opacity-50">ยืนยันการเลือกสินค้า <Send size={20} aria-hidden="true" /></button>}
+            {!isOrderConfirmed && <button type="button" onClick={confirmOrder} disabled={!cartItems.length || createOrderMutation.isPending} aria-busy={createOrderMutation.isPending} className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#76503a] px-4 text-xl font-extrabold text-white transition hover:bg-[#5f3d2b] disabled:cursor-not-allowed disabled:opacity-50">{createOrderMutation.isPending ? 'กำลังสร้างคำสั่งซื้อ' : 'ยืนยันการเลือกสินค้า'} <Send size={20} aria-hidden="true" /></button>}
 
-            {isOrderConfirmed && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="payment-heading" aria-live="polite">
+            {order && order.paymentStatus === 'pending' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="payment-heading" aria-live="polite">
               <h2 id="payment-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">ช่องทางการชำระเงิน</h2>
               <div className="mt-5 grid place-items-center gap-4 rounded-xl border-2 border-dashed border-[#77a984] bg-white p-5 text-center">
-                <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeSVG value={paymentQrPlaceholder} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} aria-label="QR Code สำหรับชำระเงิน" /></div>
+                <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeSVG value={`${paymentQrPlaceholder}|${order.orderNumber}|${order.totalAmount}`} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} aria-label="QR Code สำหรับชำระเงิน" /></div>
                 <div>
                   <p className="m-0 text-xl font-extrabold text-ink">สแกน QR Code เพื่อชำระเงิน</p>
-                  <p className="mt-1 mb-0 text-lg font-bold text-brand">ยอดชำระ {formatPrice(subtotal)}</p>
-                  <p className="mt-1 mb-0 text-base text-muted">ใช้แอปธนาคารเพื่อสแกนและยืนยันการชำระเงิน</p>
+                  <p className="mt-1 mb-0 text-lg font-bold text-brand">ยอดชำระ {formatPrice(order.totalAmount)}</p>
+                  <p className="mt-1 mb-0 text-base text-muted">ชำระภายใน {settingsQuery.data?.paymentMinutes ?? 30} นาที ไม่อย่างนั้นคำสั่งซื้อจะถูกยกเลิกและคืนสินค้าเข้าสต็อก</p>
                 </div>
               </div>
+              <button type="button" onClick={payOrder} disabled={payOrderMutation.isPending} aria-busy={payOrderMutation.isPending} className="mt-4 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-brand px-4 text-xl font-extrabold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50">{payOrderMutation.isPending ? 'กำลังยืนยัน' : 'ชำระเงินแล้ว'} <Check size={20} aria-hidden="true" /></button>
+            </section>}
+
+            {order && order.paymentStatus === 'paid' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 text-center max-md:p-4" aria-live="polite">
+              <p className="m-0 inline-flex items-center gap-2 font-heading text-2xl text-brand"><Check size={24} strokeWidth={3} aria-hidden="true" />ได้รับการชำระเงินแล้ว</p>
+              <p className="mt-2 mb-0 text-lg font-bold text-[#455048]">คำสั่งซื้อ {order.orderNumber} อยู่ระหว่าง{orderStatusLabel(order.orderStatus)} ทางร้านจะอัปเดตสถานะให้อีกครั้ง</p>
+              <Link to="/my-orders" className="mt-4 inline-flex min-h-12 items-center justify-center rounded-full bg-[#76503a] px-6 text-lg font-extrabold text-white no-underline transition hover:bg-[#5f3d2b]">ดูออเดอร์ของฉัน</Link>
             </section>}
           </aside>
         </div>

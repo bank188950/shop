@@ -22,5 +22,8 @@ function app_db(): PDO
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
 
+    // ให้ NOW() ของ MySQL ตรงกับเวลาของ PHP ไม่งั้นเวลาที่บันทึกกับเวลาที่นำไปเทียบจะคนละ timezone
+    $connection->exec("SET time_zone = '" . (new DateTimeImmutable())->format('P') . "'");
+
     return $connection;
 }

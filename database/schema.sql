@@ -193,7 +193,6 @@ CREATE TABLE `order_payments` (
   `payment_method` enum('bank_transfer','cash','online') COLLATE utf8mb4_unicode_ci NOT NULL,
   `payment_status` enum('pending','paid','rejected','refunded') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `amount` decimal(10,2) NOT NULL,
-  `slip_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `paid_at` datetime DEFAULT NULL,
   `verified_at` datetime DEFAULT NULL,
   `verified_by` bigint UNSIGNED DEFAULT NULL,
