@@ -1,19 +1,13 @@
-import { Eye, ListChecks, Repeat2, Search } from 'lucide-react'
+import { Eye, Repeat2, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { createRoot, type Root } from 'react-dom/client'
-import Swal from 'sweetalert2'
+import { useEffect, useMemo, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ThaiDatePicker } from '@/components/ui/thai-date-picker'
 import { AdminTablePagination } from '@/features/admin/shared/AdminTablePagination'
-import { adminOrderBulkStatuses, adminOrderStatuses, deliveryPeriods, formatPrice, orderStatusClass, orderStatusLabel, orderedAtLabel, paymentStatusClass, paymentStatusLabel, todayIsoDate } from '@/features/admin/orders/utils/order-labels'
-import { useAdminOrders, useUpdateAdminOrdersStatus } from '@/features/admin/orders/hooks/useAdminOrders'
-import type { AdminDeliveryPeriod, AdminOrder, AdminOrderStatus } from '@/api/admin/orders'
-
-function BulkStatusSelect({ onValueChange }: { onValueChange: (value: string) => void }) {
-  return <Select onValueChange={onValueChange}><SelectTrigger className="min-h-12 text-base" aria-label="เลือกสถานะใหม่"><SelectValue placeholder="เลือกสถานะ" /></SelectTrigger><SelectContent className="z-[1100]">{adminOrderBulkStatuses.map((item) => <SelectItem key={item} value={item}>{orderStatusLabel(item)}</SelectItem>)}</SelectContent></Select>
-}
+import { adminOrderStatuses, deliveryPeriods, formatPrice, orderStatusClass, orderStatusLabel, orderedAtLabel, paymentStatusClass, paymentStatusLabel, todayIsoDate } from '@/features/admin/orders/utils/order-labels'
+import { useAdminOrders } from '@/features/admin/orders/hooks/useAdminOrders'
+import type { AdminDeliveryPeriod, AdminOrderStatus } from '@/api/admin/orders'
 
 export function OrderPage() {
   const [date, setDate] = useState(todayIsoDate)
@@ -21,26 +15,14 @@ export function OrderPage() {
   const [locationId, setLocationId] = useState<'all' | number>('all')
   const [status, setStatus] = useState<'all' | AdminOrderStatus>('all')
   const [query, setQuery] = useState('')
-  const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([])
   const [page, setPage] = useState(1)
-  const selectAllRef = useRef<HTMLInputElement>(null)
   const filters = useMemo(() => ({ deliveryDate: date, deliveryPeriod: period, locationId, orderStatus: status, query }), [date, locationId, period, query, status])
   const ordersQuery = useAdminOrders(filters)
-  const updateStatusMutation = useUpdateAdminOrdersStatus()
   const orders = ordersQuery.data?.orders ?? []
   const locations = ordersQuery.data?.locations ?? []
-  // เปลี่ยนสถานะได้เฉพาะรายการที่ชำระเงินแล้ว ตรงกับเงื่อนไขที่ backend บังคับซ้ำอีกชั้น
-  const changeableOrders = orders.filter((order) => order.paymentStatus === 'paid')
-  const selectedChangeableOrderIds = selectedOrderIds.filter((id) => changeableOrders.some((order) => order.id === id))
-  const allChangeableSelected = changeableOrders.length > 0 && changeableOrders.every((order) => selectedOrderIds.includes(order.id))
-  const hasPartialSelection = selectedChangeableOrderIds.length > 0 && !allChangeableSelected
   const pageSize = 10
   const pageCount = Math.max(1, Math.ceil(orders.length / pageSize))
   const visibleOrders = orders.slice((page - 1) * pageSize, page * pageSize)
-
-  useEffect(() => {
-    if (selectAllRef.current) selectAllRef.current.indeterminate = hasPartialSelection
-  }, [hasPartialSelection])
 
   useEffect(() => {
     setPage((currentPage) => Math.min(currentPage, pageCount))
@@ -52,53 +34,6 @@ export function OrderPage() {
     if (!locations.some((location) => location.id === locationId)) setLocationId('all')
   }, [locationId, locations, ordersQuery.data, ordersQuery.isPlaceholderData])
 
-  function toggleOrder(order: AdminOrder) {
-    if (order.paymentStatus !== 'paid') return
-    setSelectedOrderIds((current) => current.includes(order.id) ? current.filter((id) => id !== order.id) : [...current, order.id])
-  }
-
-  function toggleAllChangeableOrders() {
-    const changeableIds = changeableOrders.map((order) => order.id)
-    setSelectedOrderIds((current) => allChangeableSelected ? current.filter((id) => !changeableIds.includes(id)) : [...new Set([...current, ...changeableIds])])
-  }
-
-  async function updateSelectedStatuses() {
-    if (!selectedChangeableOrderIds.length) return
-    let selectedStatus = ''
-    let selectRoot: Root | undefined
-    const result = await Swal.fire({
-      title: 'เปลี่ยนสถานะรายการสั่งซื้อ',
-      text: `เลือกสถานะใหม่สำหรับ ${selectedChangeableOrderIds.length} รายการสั่งซื้อ`,
-      html: '<div id="bulk-status-select"></div>',
-      showCancelButton: true,
-      confirmButtonText: 'เปลี่ยนสถานะ',
-      cancelButtonText: 'ยกเลิก',
-      confirmButtonColor: '#7b393e',
-      cancelButtonColor: '#607168',
-      reverseButtons: true,
-      focusCancel: true,
-      didOpen: () => {
-        const container = Swal.getHtmlContainer()?.querySelector('#bulk-status-select')
-        if (!container) return
-        selectRoot = createRoot(container)
-        selectRoot.render(<BulkStatusSelect onValueChange={(value) => { selectedStatus = value; Swal.resetValidationMessage() }} />)
-      },
-      willClose: () => selectRoot?.unmount(),
-      preConfirm: () => {
-        if (!selectedStatus) Swal.showValidationMessage('กรุณาเลือกสถานะใหม่')
-        return selectedStatus
-      },
-    })
-    if (!result.value) return
-
-    try {
-      await updateStatusMutation.mutateAsync({ orderIds: selectedChangeableOrderIds, orderStatus: result.value as AdminOrderStatus })
-      setSelectedOrderIds((current) => current.filter((id) => !selectedChangeableOrderIds.includes(id)))
-    } catch (error) {
-      Swal.fire({ icon: 'error', title: 'เปลี่ยนสถานะไม่สำเร็จ', text: error instanceof Error ? error.message : 'ไม่สามารถเปลี่ยนสถานะรายการสั่งซื้อได้', confirmButtonText: 'ตกลง', confirmButtonColor: '#7b393e' })
-    }
-  }
-
   return <section className="admin-page">
     <div className="admin-page-heading"><div><h1 className="admin-title">รายการสั่งซื้อ</h1></div><Link to="/admin/dispatches-today" className="admin-secondary-button"><Repeat2 size={18} aria-hidden="true" />ดูสรุปรอบส่งวันนี้</Link></div>
     <section className="admin-filter-card" aria-label="ตัวกรองรายการสั่งซื้อ">
@@ -108,7 +43,6 @@ export function OrderPage() {
       <label className="admin-filter-select">จุดนัด<Select value={String(locationId)} onValueChange={(value) => setLocationId(value === 'all' ? 'all' : Number(value))}><SelectTrigger aria-label="จุดนัด"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem>{locations.map((location) => <SelectItem key={location.id} value={String(location.id)}>{location.name}</SelectItem>)}</SelectContent></Select></label>
       <label className="admin-filter-select">สถานะ<Select value={status} onValueChange={(value) => setStatus(value as 'all' | AdminOrderStatus)}><SelectTrigger aria-label="สถานะ"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem>{adminOrderStatuses.map((item) => <SelectItem key={item} value={item}>{orderStatusLabel(item)}</SelectItem>)}</SelectContent></Select></label>
     </section>
-    <div className="admin-bulk-actions" aria-live="polite"><p>{selectedChangeableOrderIds.length ? `เลือกแล้ว ${selectedChangeableOrderIds.length} รายการสั่งซื้อ` : 'เลือกรายการสั่งซื้อที่ชำระเงินแล้วเพื่อเปลี่ยนสถานะ'}</p><button className="admin-primary-button" type="button" onClick={updateSelectedStatuses} disabled={!selectedChangeableOrderIds.length || updateStatusMutation.isPending}><ListChecks size={18} aria-hidden="true" />เปลี่ยนสถานะ</button></div>
-    <div className="admin-table-wrap"><div className="admin-table-scroll"><table className="admin-data-table"><thead><tr><th className="admin-order-select"><input ref={selectAllRef} type="checkbox" checked={allChangeableSelected} onChange={toggleAllChangeableOrders} disabled={!changeableOrders.length} aria-label="เลือกรายการสั่งซื้อที่ชำระเงินแล้วทั้งหมด" title="เลือกเฉพาะรายการสั่งซื้อที่ชำระเงินแล้ว" /></th><th>เลขที่รายการสั่งซื้อ</th><th>ลูกค้า / จุดรับ</th><th>รอบส่ง</th><th>รายการ</th><th>ยอดรวม</th><th>ชำระเงิน</th><th>สถานะ</th><th><span className="sr-only">ดูรายละเอียด</span></th></tr></thead><tbody>{ordersQuery.isLoading ? <tr><td className="admin-empty-cell" colSpan={9}>กำลังโหลดรายการสั่งซื้อ...</td></tr> : ordersQuery.isError ? <tr><td className="admin-empty-cell" colSpan={9}>ไม่สามารถโหลดรายการสั่งซื้อได้: {ordersQuery.error.message}</td></tr> : orders.length ? visibleOrders.map((order) => { const isPendingPayment = order.paymentStatus !== 'paid'; return <tr key={order.id}><td className="admin-order-select"><input type="checkbox" checked={selectedOrderIds.includes(order.id)} onChange={() => toggleOrder(order)} disabled={isPendingPayment} aria-label={isPendingPayment ? `ไม่สามารถเปลี่ยนสถานะรายการสั่งซื้อ ${order.orderNumber} เพราะยังไม่ชำระเงิน` : `เลือกรายการสั่งซื้อ ${order.orderNumber}`} title={isPendingPayment ? 'รายการสั่งซื้อที่ยังไม่ชำระเงินไม่สามารถเปลี่ยนสถานะได้' : 'เลือกรายการสั่งซื้อ'} /></td><td><strong>{order.orderNumber}</strong><small>{orderedAtLabel(order.orderedAt)}</small></td><td><strong>{order.userName}</strong><small>{order.locationName}</small></td><td><strong>{deliveryPeriods[order.deliveryPeriod].label}</strong><small>{deliveryPeriods[order.deliveryPeriod].deliveryTime}</small></td><td>{order.items.map((item) => <small key={item.name}>{item.name} {item.quantity} {item.unitName}</small>)}</td><td className="numeric"><strong>{formatPrice(order.totalAmount)}</strong></td><td><span className={`admin-status ${paymentStatusClass(order.paymentStatus)}`}>{paymentStatusLabel(order.paymentStatus)}</span></td><td><span className={`admin-status ${orderStatusClass(order.orderStatus)}`}>{orderStatusLabel(order.orderStatus)}</span></td><td><Link className="admin-table-link" to={`/admin/orders/${order.id}`} aria-label={`ดูรายละเอียดรายการสั่งซื้อ ${order.orderNumber}`}><Eye size={19} aria-hidden="true" /></Link></td></tr> }) : <tr><td className="admin-empty-cell" colSpan={9}>ไม่พบรายการสั่งซื้อที่ตรงกับตัวกรอง</td></tr>}</tbody></table></div><AdminTablePagination currentPage={page} totalItems={orders.length} pageSize={pageSize} onPageChange={setPage} label="รายการสั่งซื้อ" /></div>
+    <div className="admin-table-wrap"><div className="admin-table-scroll"><table className="admin-data-table"><thead><tr><th>เลขที่รายการสั่งซื้อ</th><th>ลูกค้า / จุดรับ</th><th>รอบส่ง</th><th>รายการ</th><th>ยอดรวม</th><th>ชำระเงิน</th><th>สถานะ</th><th><span className="sr-only">ดูรายละเอียด</span></th></tr></thead><tbody>{ordersQuery.isLoading ? <tr><td className="admin-empty-cell" colSpan={8}>กำลังโหลดรายการสั่งซื้อ...</td></tr> : ordersQuery.isError ? <tr><td className="admin-empty-cell" colSpan={8}>ไม่สามารถโหลดรายการสั่งซื้อได้: {ordersQuery.error.message}</td></tr> : orders.length ? visibleOrders.map((order) => <tr key={order.id}><td><strong>{order.orderNumber}</strong><small>{orderedAtLabel(order.orderedAt)}</small></td><td><strong>{order.userName}</strong><small>{order.locationName}</small></td><td><strong>{deliveryPeriods[order.deliveryPeriod].label}</strong><small>{deliveryPeriods[order.deliveryPeriod].deliveryTime}</small></td><td>{order.items.map((item) => <small key={item.name}>{item.name} {item.quantity} {item.unitName}</small>)}</td><td className="numeric"><strong>{formatPrice(order.totalAmount)}</strong></td><td><span className={`admin-status ${paymentStatusClass(order.paymentStatus)}`}>{paymentStatusLabel(order.paymentStatus)}</span></td><td><span className={`admin-status ${orderStatusClass(order.orderStatus)}`}>{orderStatusLabel(order.orderStatus)}</span></td><td><Link className="admin-table-link" to={`/admin/orders/${order.id}`} aria-label={`ดูรายละเอียดรายการสั่งซื้อ ${order.orderNumber}`}><Eye size={19} aria-hidden="true" /></Link></td></tr>) : <tr><td className="admin-empty-cell" colSpan={8}>ไม่พบรายการสั่งซื้อที่ตรงกับตัวกรอง</td></tr>}</tbody></table></div><AdminTablePagination currentPage={page} totalItems={orders.length} pageSize={pageSize} onPageChange={setPage} label="รายการสั่งซื้อ" /></div>
   </section>
 }

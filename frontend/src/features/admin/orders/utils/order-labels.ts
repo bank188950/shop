@@ -2,9 +2,6 @@ import type { AdminDeliveryPeriod, AdminOrderStatus, AdminPaymentStatus } from '
 
 export const adminOrderStatuses: AdminOrderStatus[] = ['pending_payment', 'pending_review', 'preparing', 'ready_for_delivery', 'delivered', 'cancelled']
 
-/** สถานะที่เปลี่ยนแบบกลุ่มได้จากหน้ารายการ ต้องตรงกับ ADMIN_ORDER_BULK_STATUSES ฝั่ง backend */
-export const adminOrderBulkStatuses = adminOrderStatuses.filter((status) => status !== 'pending_payment')
-
 const orderStatusLabels: Record<AdminOrderStatus, string> = {
   pending_payment: 'รอชำระเงิน',
   pending_review: 'รอตรวจสอบ',
