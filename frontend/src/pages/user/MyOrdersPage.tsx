@@ -1,10 +1,17 @@
-import { CheckCircle2, ChevronLeft, Clock3, MapPin, PackageCheck, ReceiptText } from 'lucide-react'
+import { CheckCircle2, ChevronLeft, CircleX, Clock3, MapPin, PackageCheck, ReceiptText } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
 import { useUserOrders } from '@/features/user/order/hooks/useUserOrders'
+import { PaymentQrDialog } from '@/features/user/order/PaymentQrDialog'
 import { deliveryPeriodLabel, orderStatusClass, orderStatusLabel, thaiDateLabel } from '@/features/user/order/utils/order-labels'
+import type { OrderStatus } from '@/api/user/orders'
+
+function OrderStatusIcon({ status }: { status: OrderStatus }) {
+  const Icon = status === 'delivered' ? CheckCircle2 : status === 'cancelled' ? CircleX : Clock3
+  return <Icon className="mr-1.5" size={18} aria-hidden="true" />
+}
 
 export function MyOrdersPage() {
   const authQuery = useUserAuth()
@@ -28,7 +35,7 @@ export function MyOrdersPage() {
               <h2 className="mt-1 mb-0 font-heading text-2xl text-ink">{orderStatusLabel(order.orderStatus)}</h2>
             </div>
             <span className={`inline-flex min-h-9 items-center rounded-full px-3 text-base font-extrabold ${orderStatusClass(order.orderStatus)}`}>
-              {order.orderStatus === 'delivered' ? <CheckCircle2 className="mr-1.5" size={18} aria-hidden="true" /> : <Clock3 className="mr-1.5" size={18} aria-hidden="true" />}{orderStatusLabel(order.orderStatus)}
+              <OrderStatusIcon status={order.orderStatus} />{orderStatusLabel(order.orderStatus)}
             </span>
           </div>
           <div className="mt-5 grid gap-3 border-t border-[#e2e8e3] pt-4 text-lg text-[#455048]">
@@ -42,6 +49,7 @@ export function MyOrdersPage() {
               <strong className="font-heading text-xl text-brand">{order.totalAmount.toLocaleString('th-TH')} บาท</strong>
             </p>
           </div>
+          {order.paymentStatus === 'pending' && order.orderStatus !== 'cancelled' && <div className="mt-4 flex justify-end"><PaymentQrDialog order={order} /></div>}
         </article>)}
       </div>
     </main>

@@ -11,6 +11,7 @@ import { productStockLabel } from '@/features/user/shared/utils/product-labels'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
 import { useCreateUserOrder, useDeliverySettings, usePayUserOrder } from '@/features/user/order/hooks/useUserOrders'
 import { orderStatusClass, orderStatusLabel } from '@/features/user/order/utils/order-labels'
+import { paymentQrValue } from '@/features/user/order/utils/payment-qr'
 import type { UserOrder, DeliveryPeriod } from '@/api/user/orders'
 import type { UserProduct } from '@/api/user/products'
 import { useCartStore } from '@/stores/cart-store'
@@ -25,7 +26,6 @@ const deliveryOptions = {
 }
 
 const formatPrice = (price: number) => `${price.toLocaleString('th-TH')} บาท`
-const paymentQrPlaceholder = 'LOOKCHIN_LOR_LUEAN_PAYMENT_TEMPLATE'
 const enlargeAlertButtons = () => {
   const title = Swal.getTitle()
   const actions = Swal.getActions()
@@ -236,11 +236,11 @@ export function OrderSummaryPage() {
             {order && order.paymentStatus === 'pending' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="payment-heading" aria-live="polite">
               <h2 id="payment-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">ช่องทางการชำระเงิน</h2>
               <div className="mt-5 grid place-items-center gap-4 rounded-xl border-2 border-dashed border-[#77a984] bg-white p-5 text-center">
-                <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeSVG value={`${paymentQrPlaceholder}|${order.orderNumber}|${order.totalAmount}`} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} aria-label="QR Code สำหรับชำระเงิน" /></div>
+                <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeSVG value={paymentQrValue(order.orderNumber, order.totalAmount)} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} aria-label="QR Code สำหรับชำระเงิน" /></div>
                 <div>
                   <p className="m-0 text-xl font-extrabold text-ink">สแกน QR Code เพื่อชำระเงิน</p>
                   <p className="mt-1 mb-0 text-lg font-bold text-brand">ยอดชำระ {formatPrice(order.totalAmount)}</p>
-                  <p className="mt-1 mb-0 text-base text-muted">ชำระภายใน {settingsQuery.data?.paymentMinutes ?? 30} นาที ไม่อย่างนั้นคำสั่งซื้อจะถูกยกเลิกและคืนสินค้าเข้าสต็อก</p>
+                  <p className="mt-1 mb-0 text-base text-muted">ชำระเงินภายใน {settingsQuery.data?.paymentMinutes ?? 20} นาที ไม่นั้นคำสั่งซื้อจะถูกยกเลิกครับ</p>
                 </div>
               </div>
               <button type="button" onClick={payOrder} disabled={payOrderMutation.isPending} aria-busy={payOrderMutation.isPending} className="mt-4 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-brand px-4 text-xl font-extrabold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50">{payOrderMutation.isPending ? 'กำลังยืนยัน' : 'ชำระเงินแล้ว'} <Check size={20} aria-hidden="true" /></button>

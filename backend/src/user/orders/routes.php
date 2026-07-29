@@ -46,7 +46,6 @@ function user_order_route(string $method, string $path): bool
     $db = app_db();
     $user = user_auth_current($db);
     if (!$user) json_response(['message' => 'กรุณาเข้าสู่ระบบก่อนสั่งซื้อ'], 401);
-    user_order_expire_pending($db);
     $userId = (int) $user['id'];
 
     if ($method === 'GET' && $path === '/user/orders') {

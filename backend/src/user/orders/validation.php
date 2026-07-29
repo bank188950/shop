@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const USER_ORDER_PAYMENT_MINUTES = 30;
+const USER_ORDER_PAYMENT_MINUTES = 20;
 
 function user_order_validate_input(array $input): array
 {

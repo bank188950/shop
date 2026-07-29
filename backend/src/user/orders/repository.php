@@ -118,39 +118,3 @@ function user_order_mark_paid(PDO $db, int $orderId): void
     $db->prepare("UPDATE order_payments SET payment_status = 'paid', paid_at = NOW() WHERE order_id = :order_id")->execute(['order_id' => $orderId]);
 }
 
-function user_order_cancel(PDO $db, int $orderId, string $reason): void
-{
-    $db->beginTransaction();
-    try {
-        foreach (user_order_items($db, $orderId) as $item) {
-            if (!$item['product_id']) continue;
-            $product = user_order_lock_product($db, (int) $item['product_id']);
-            if ($product) user_order_change_stock($db, $product, (int) $item['quantity'], 1);
-        }
-        $db->prepare("UPDATE orders SET order_status = 'cancelled', cancelled_at = NOW(), cancellation_reason = :reason WHERE id = :id")->execute(['reason' => $reason, 'id' => $orderId]);
-        $db->prepare("UPDATE order_payments SET payment_status = 'rejected' WHERE order_id = :order_id AND payment_status = 'pending'")->execute(['order_id' => $orderId]);
-        $db->commit();
-    } catch (Throwable $exception) {
-        $db->rollBack();
-        throw $exception;
-    }
-}
-
-/** ยกเลิกออเดอร์ที่ยังไม่จ่ายเมื่อครบ 30 นาที หรือเลยเวลาปิดรับของรอบนั้น แล้วคืนสต็อกอัตโนมัติ */
-function user_order_expire_pending(PDO $db): void
-{
-    $orders = $db->query("SELECT id, delivery_date, delivery_period, ordered_at FROM orders WHERE order_status = 'pending_payment'")->fetchAll();
-    if (!$orders) return;
-
-    $settings = settings_find($db);
-    $today = date('Y-m-d');
-    $now = date('H:i:s');
-
-    foreach ($orders as $order) {
-        $expiresAt = strtotime($order['ordered_at']) + USER_ORDER_PAYMENT_MINUTES * 60;
-        $pastCutoff = $order['delivery_date'] < $today
-            || ($order['delivery_date'] === $today && $now > user_order_period_cutoff($settings, $order['delivery_period']));
-        if (time() < $expiresAt && !$pastCutoff) continue;
-        user_order_cancel($db, (int) $order['id'], 'ไม่ได้ชำระเงินภายในเวลาที่กำหนด');
-    }
-}
