@@ -189,7 +189,8 @@ th.table-display-column, td.table-display-column { width: 1%; white-space: nowra
 .admin-sidebar nav a { font-size: 16px; }
 .admin-logout { font-size: 16px; }
 .admin-topbar-icon > svg { width: 24px; height: 24px; }
-.admin-topbar-badge { top: 0; width: 22px; height: 22px; border: 0; }
+/** วงกลมกว้าง 22px เป็นค่าต่ำสุด แล้วยืดเป็นแคปซูลเมื่อเป็น 99+ เพื่อไม่ให้ตัวเลขล้นขอบ */
+.admin-topbar-badge { top: 0; width: auto; min-width: 22px; height: 22px; padding: 0 5px; border: 0; border-radius: 999px; }
 .preparation-create-button, .preparation-ready-button { border-color: #76503a; background: #76503a; }
 .preparation-create-button:hover:not(:disabled), .preparation-create-button:focus-visible:not(:disabled), .preparation-ready-button:hover, .preparation-ready-button:focus-visible { border-color: #5f3d2b; background: #5f3d2b; }
 
