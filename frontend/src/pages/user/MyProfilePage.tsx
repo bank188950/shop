@@ -2,12 +2,12 @@ import { ChevronLeft, UserCog } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
-import { useCustomerAuth } from '@/features/user/auth/hooks/useCustomerAuth'
+import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
 import { ProfileForm } from '@/features/user/profile/ProfileForm'
 
 export function MyProfilePage() {
-  const authQuery = useCustomerAuth()
-  const customer = authQuery.data
+  const authQuery = useUserAuth()
+  const user = authQuery.data
 
   return (
     <section className="min-h-screen overflow-hidden">
@@ -21,8 +21,8 @@ export function MyProfilePage() {
             <UserCog size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />จัดการผู้ใช้
           </h1>
           {authQuery.isLoading && <p className="mt-5 mb-0 text-lg font-bold text-muted">กำลังโหลดข้อมูลผู้ใช้...</p>}
-          {!authQuery.isLoading && !customer && <p className="mt-5 mb-0 text-lg font-bold text-muted">กรุณาเข้าสู่ระบบเพื่อดูข้อมูลผู้ใช้</p>}
-          {customer && <ProfileForm customer={customer} />}
+          {!authQuery.isLoading && !user && <p className="mt-5 mb-0 text-lg font-bold text-muted">กรุณาเข้าสู่ระบบเพื่อดูข้อมูลผู้ใช้</p>}
+          {user && <ProfileForm user={user} />}
         </section>
       </main>
       <StorefrontFooter />

@@ -1,8 +1,8 @@
 import api from '@/lib/axios'
 
-export type CustomerLocation = { id: number, name: string }
+export type UserLocation = { id: number, name: string }
 
-export async function getCustomerLocations() {
-  const response = await api.get<{ data: CustomerLocation[] }>('/user/locations')
+export async function getUserLocations() {
+  const response = await api.get<{ data: UserLocation[] }>('/user/locations')
   return response.data.data
 }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-function customer_profile_validate_input(array $input): array
+function user_profile_validate_input(array $input): array
 {
     $name = trim((string) ($input['name'] ?? ''));
     $phone = trim((string) ($input['phone'] ?? ''));

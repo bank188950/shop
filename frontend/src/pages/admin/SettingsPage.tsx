@@ -35,7 +35,7 @@ export function SettingsPage() {
       </div>
       <div className="notice-settings">
         <div className="admin-section-heading"><div><h2><BellRing size={21} aria-hidden="true" />ตั้งค่าการแจ้งข้อมูลเตือน</h2><p>เตรียมข้อความและสถานะ popup สำหรับใช้บนหน้าร้านในอนาคต</p></div></div>
-        <label className="notice-message-label" htmlFor="customer-notice"><span className="sr-only">รายละเอียด popup</span><Textarea id="customer-notice" {...register('noticeMessage')} rows={4} placeholder="รายละเอียดที่กรอกจะไปแสดงใน popup" /></label>
+        <label className="notice-message-label" htmlFor="user-notice"><span className="sr-only">รายละเอียด popup</span><Textarea id="user-notice" {...register('noticeMessage')} rows={4} placeholder="รายละเอียดที่กรอกจะไปแสดงใน popup" /></label>
         <label className="notice-popup-toggle"><input type="checkbox" {...register('isNoticePopupEnabled')} /><span><strong>เปิดการใช้งาน</strong></span></label>
       </div>
       <div className="notice-settings">

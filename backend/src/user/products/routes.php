@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-function customer_product_status(int $stockQuantity, int $lowStockThreshold): string
+function user_product_status(int $stockQuantity, int $lowStockThreshold): string
 {
     if ($stockQuantity <= 0) return 'sold-out';
     if ($stockQuantity <= $lowStockThreshold) return 'low-stock';
     return 'in-stock';
 }
 
-function customer_product_to_api(array $product): array
+function user_product_to_api(array $product): array
 {
     $stockQuantity = (int) $product['stock_quantity'];
 
@@ -23,11 +23,11 @@ function customer_product_to_api(array $product): array
         'unitName' => $product['unit_name'],
         'stockQuantity' => $stockQuantity,
         'isRecommended' => (bool) $product['is_recommended'],
-        'status' => customer_product_status($stockQuantity, (int) $product['low_stock_threshold']),
+        'status' => user_product_status($stockQuantity, (int) $product['low_stock_threshold']),
     ];
 }
 
-function customer_product_route(string $method, string $path): bool
+function user_product_route(string $method, string $path): bool
 {
     if ($method !== 'GET') return false;
     $db = app_db();
@@ -39,7 +39,7 @@ function customer_product_route(string $method, string $path): bool
             INNER JOIN product_units u ON u.id = p.unit_id
             WHERE p.is_active = 1 AND c.is_active = 1
             ORDER BY (p.stock_quantity = 0) ASC, p.is_recommended DESC, p.id ASC')->fetchAll();
-        json_response(['data' => array_map('customer_product_to_api', $products)]);
+        json_response(['data' => array_map('user_product_to_api', $products)]);
     }
 
     if ($path === '/user/product-categories') {

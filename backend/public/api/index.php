@@ -61,12 +61,12 @@ $path = api_path();
 try {
     if ($method === 'GET' && $path === '/health') json_response(['status' => 'ok']);
     if (admin_auth_route($method, $path)) exit;
-    if (customer_auth_route($method, $path)) exit;
-    if (customer_location_route($method, $path)) exit;
-    if (customer_product_route($method, $path)) exit;
-    if (customer_profile_route($method, $path)) exit;
-    if (customer_settings_route($method, $path)) exit;
-    if (customer_order_route($method, $path)) exit;
+    if (user_auth_route($method, $path)) exit;
+    if (user_location_route($method, $path)) exit;
+    if (user_product_route($method, $path)) exit;
+    if (user_profile_route($method, $path)) exit;
+    if (user_settings_route($method, $path)) exit;
+    if (user_order_route($method, $path)) exit;
     if (str_starts_with($path, '/admin/') && !admin_auth_current(app_db())) json_response(['message' => 'กรุณาเข้าสู่ระบบ'], 401);
     if (product_route($method, $path)) exit;
     if (category_route($method, $path)) exit;
@@ -75,7 +75,7 @@ try {
     if (banner_route($method, $path)) exit;
     if (settings_route($method, $path)) exit;
     if (admin_profile_route($method, $path)) exit;
-    if (customer_message_route($method, $path)) exit;
+    if (user_message_route($method, $path)) exit;
     if (user_route($method, $path)) exit;
 } catch (Throwable $exception) {
     $message = 'ไม่สามารถเชื่อมต่อฐานข้อมูลหรือประมวลผล API ได้';

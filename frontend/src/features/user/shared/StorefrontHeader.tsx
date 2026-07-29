@@ -2,14 +2,14 @@ import { ClipboardList, MessageCircle, ShoppingCart, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthDialogs } from '@/features/user/shared/AuthDialogs'
-import { useCustomerProducts } from '@/features/user/shared/hooks/useCustomerProducts'
+import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
 import { useCartStore } from '@/stores/cart-store'
 
 export function StorefrontHeader() {
   const items = useCartStore((state) => state.items)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const cartMenuRef = useRef<HTMLDivElement>(null)
-  const productsQuery = useCustomerProducts()
+  const productsQuery = useUserProducts()
   const products = productsQuery.data
   const cartItems = useMemo(() => items.flatMap((item) => {
     const product = products?.find((candidate) => candidate.id === item.productId)

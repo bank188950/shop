@@ -4,7 +4,7 @@ export type OrderStatus = 'pending_payment' | 'pending_review' | 'preparing' | '
 export type OrderPaymentStatus = 'pending' | 'paid' | 'rejected' | 'refunded'
 export type DeliveryPeriod = 'morning' | 'afternoon'
 
-export type CustomerOrderItem = {
+export type UserOrderItem = {
   name: string
   unitName: string
   quantity: number
@@ -12,7 +12,7 @@ export type CustomerOrderItem = {
   lineTotal: number
 }
 
-export type CustomerOrder = {
+export type UserOrder = {
   id: number
   orderNumber: string
   orderedAt: string
@@ -22,8 +22,8 @@ export type CustomerOrder = {
   orderStatus: OrderStatus
   paymentStatus: OrderPaymentStatus
   totalAmount: number
-  customerNote: string
-  items: CustomerOrderItem[]
+  userNote: string
+  items: UserOrderItem[]
 }
 
 export type CreateOrderInput = {
@@ -32,22 +32,22 @@ export type CreateOrderInput = {
   items: { productId: number, quantity: number }[]
 }
 
-export async function getCustomerOrders() {
-  const response = await api.get<{ data: CustomerOrder[] }>('/user/orders')
+export async function getUserOrders() {
+  const response = await api.get<{ data: UserOrder[] }>('/user/orders')
   return response.data.data
 }
 
-export async function createCustomerOrder(input: CreateOrderInput) {
+export async function createUserOrder(input: CreateOrderInput) {
   const body = new URLSearchParams({
     location_id: String(input.locationId),
     delivery_period: input.deliveryPeriod,
     items: JSON.stringify(input.items),
   })
-  const response = await api.post<{ data: CustomerOrder }>('/user/orders', body)
+  const response = await api.post<{ data: UserOrder }>('/user/orders', body)
   return response.data.data
 }
 
-export async function payCustomerOrder(orderId: number) {
-  const response = await api.post<{ data: CustomerOrder }>(`/user/orders/${orderId}/pay`)
+export async function payUserOrder(orderId: number) {
+  const response = await api.post<{ data: UserOrder }>(`/user/orders/${orderId}/pay`)
   return response.data.data
 }

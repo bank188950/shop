@@ -6,18 +6,18 @@ import Swal from 'sweetalert2'
 import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
-import { useCustomerProducts } from '@/features/user/shared/hooks/useCustomerProducts'
+import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
 import { productStockLabel } from '@/features/user/shared/utils/product-labels'
-import { useCustomerAuth } from '@/features/user/auth/hooks/useCustomerAuth'
-import { useCreateCustomerOrder, useDeliverySettings, usePayCustomerOrder } from '@/features/user/order/hooks/useCustomerOrders'
+import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
+import { useCreateUserOrder, useDeliverySettings, usePayUserOrder } from '@/features/user/order/hooks/useUserOrders'
 import { orderStatusClass, orderStatusLabel } from '@/features/user/order/utils/order-labels'
-import type { CustomerOrder, DeliveryPeriod } from '@/api/user/orders'
-import type { CustomerProduct } from '@/api/user/products'
+import type { UserOrder, DeliveryPeriod } from '@/api/user/orders'
+import type { UserProduct } from '@/api/user/products'
 import { useCartStore } from '@/stores/cart-store'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
-type CartLine = CustomerProduct & { quantity: number }
+type CartLine = UserProduct & { quantity: number }
 
 const deliveryOptions = {
   morning: { label: 'รอบเช้า', icon: SunMedium },
@@ -48,15 +48,15 @@ export function OrderSummaryPage() {
   const setQuantity = useCartStore((state) => state.setQuantity)
   const clearCart = useCartStore((state) => state.clear)
   const [delivery, setDelivery] = useState<DeliveryPeriod | null>(null)
-  const [order, setOrder] = useState<CustomerOrder | null>(null)
+  const [order, setOrder] = useState<UserOrder | null>(null)
   const [confirmedItems, setConfirmedItems] = useState<CartLine[]>([])
 
-  const productsQuery = useCustomerProducts()
-  const authQuery = useCustomerAuth()
+  const productsQuery = useUserProducts()
+  const authQuery = useUserAuth()
   const settingsQuery = useDeliverySettings()
-  const createOrderMutation = useCreateCustomerOrder()
-  const payOrderMutation = usePayCustomerOrder()
-  const customer = authQuery.data
+  const createOrderMutation = useCreateUserOrder()
+  const payOrderMutation = usePayUserOrder()
+  const user = authQuery.data
   const products = productsQuery.data
   const isOrderConfirmed = Boolean(order)
   const cartItems = useMemo(() => items.flatMap((item) => {
@@ -87,11 +87,11 @@ export function OrderSummaryPage() {
   })
 
   const confirmOrder = async () => {
-    if (!customer) {
+    if (!user) {
       await alert('กรุณาเข้าสู่ระบบก่อนสั่งซื้อ')
       return
     }
-    if (!customer.locationId) {
+    if (!user.locationId) {
       await alert('กรุณาเลือกสถานที่ส่งของในหน้าจัดการผู้ใช้ก่อน')
       return
     }
@@ -102,7 +102,7 @@ export function OrderSummaryPage() {
 
     try {
       const createdOrder = await createOrderMutation.mutateAsync({
-        locationId: customer.locationId,
+        locationId: user.locationId,
         deliveryPeriod: delivery,
         items: cartItems.map((item) => ({ productId: item.id, quantity: item.quantity })),
       })
@@ -212,12 +212,12 @@ export function OrderSummaryPage() {
             <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="recipient-heading">
               <h2 id="recipient-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><UserRound size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />ข้อมูลผู้รับ</h2>
               <dl className="mt-5 grid grid-cols-2 gap-x-8 gap-y-5 text-lg max-md:grid-cols-1 max-md:gap-y-4">
-                <div><dt className="text-xl font-bold text-ink">ชื่อลูกค้า</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer?.name ?? '—'}</dd></div>
-                <div><dt className="text-xl font-bold text-ink">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer?.phone ?? '—'}</dd></div>
-                <div><dt className="text-xl font-bold text-ink">สถานที่ส่งของ</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{order?.locationName || customer?.locationName || '—'}</dd></div>
-                <div><dt className="text-xl font-bold text-ink">LINE ID</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{customer?.lineId || '—'}</dd></div>
+                <div><dt className="text-xl font-bold text-ink">ชื่อลูกค้า</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{user?.name ?? '—'}</dd></div>
+                <div><dt className="text-xl font-bold text-ink">เบอร์โทรศัพท์</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{user?.phone ?? '—'}</dd></div>
+                <div><dt className="text-xl font-bold text-ink">สถานที่ส่งของ</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{order?.locationName || user?.locationName || '—'}</dd></div>
+                <div><dt className="text-xl font-bold text-ink">LINE ID</dt><dd className="mt-1.5 ml-0 text-lg font-bold text-[#455048]">{user?.lineId || '—'}</dd></div>
               </dl>
-              {!authQuery.isLoading && !customer && <p className="mt-4 mb-0 text-lg font-bold text-[#c84646]">กรุณาเข้าสู่ระบบก่อนสั่งซื้อ ระบบจะใช้ชื่อและสถานที่ส่งของจากบัญชีของคุณ</p>}
+              {!authQuery.isLoading && !user && <p className="mt-4 mb-0 text-lg font-bold text-[#c84646]">กรุณาเข้าสู่ระบบก่อนสั่งซื้อ ระบบจะใช้ชื่อและสถานที่ส่งของจากบัญชีของคุณ</p>}
             </section>
           </div>
 

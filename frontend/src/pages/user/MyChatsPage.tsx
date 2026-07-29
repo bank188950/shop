@@ -5,7 +5,7 @@ import { getAdminUserMessages, type AdminUserMessage } from '@/data/admin/user-m
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 
-const currentCustomerUserId = 1
+const currentUserUserId = 1
 const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม']
 
 function formatMessageDate(value: string) {
@@ -19,7 +19,7 @@ function getMessageMinute(value: string) {
 }
 
 export function MyChatsPage() {
-  const [messages, setMessages] = useState<AdminUserMessage[]>(() => getAdminUserMessages(currentCustomerUserId))
+  const [messages, setMessages] = useState<AdminUserMessage[]>(() => getAdminUserMessages(currentUserUserId))
   const messageGroups = useMemo(() => messages.reduce<{ sentAt: string; messages: AdminUserMessage[] }[]>((groups, message) => {
     const currentGroup = groups.at(-1)
     if (currentGroup && getMessageMinute(currentGroup.sentAt) === getMessageMinute(message.sentAt)) {
@@ -31,7 +31,7 @@ export function MyChatsPage() {
   }, []), [messages])
 
   useEffect(() => {
-    const refreshMessages = () => setMessages(getAdminUserMessages(currentCustomerUserId))
+    const refreshMessages = () => setMessages(getAdminUserMessages(currentUserUserId))
     window.addEventListener('focus', refreshMessages)
     window.addEventListener('storage', refreshMessages)
     return () => {

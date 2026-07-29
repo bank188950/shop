@@ -94,10 +94,10 @@ INSERT INTO `banners` (`id`, `title`, `image_path`, `display_order`, `is_active`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `customer_messages`
+-- Table structure for table `user_messages`
 --
 
-CREATE TABLE `customer_messages` (
+CREATE TABLE `user_messages` (
   `id` bigint UNSIGNED NOT NULL,
   `recipient_user_id` bigint UNSIGNED NOT NULL,
   `sender_admin_id` bigint UNSIGNED DEFAULT NULL,
@@ -141,7 +141,7 @@ INSERT INTO `locations` (`id`, `name`, `is_active`, `created_at`, `updated_at`) 
 CREATE TABLE `orders` (
   `id` bigint UNSIGNED NOT NULL,
   `order_number` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `customer_id` bigint UNSIGNED DEFAULT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
   `location_id` bigint UNSIGNED NOT NULL,
   `delivery_date` date NOT NULL,
   `delivery_period` enum('morning','afternoon') COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE `orders` (
   `payment_status` enum('pending','paid','rejected','refunded') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `subtotal_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
   `total_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `customer_note` text COLLATE utf8mb4_unicode_ci,
+  `user_note` text COLLATE utf8mb4_unicode_ci,
   `cancelled_at` datetime DEFAULT NULL,
   `cancelled_by` bigint UNSIGNED DEFAULT NULL,
   `cancellation_reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -335,7 +335,7 @@ INSERT INTO `settings` (`id`, `morning_order_cutoff`, `morning_delivery_start`, 
 
 CREATE TABLE `users` (
   `id` bigint UNSIGNED NOT NULL,
-  `role` enum('customer','admin') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'customer',
+  `role` enum('user','admin') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'user',
   `full_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` char(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `line_account` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -352,7 +352,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `role`, `full_name`, `phone`, `line_account`, `password_hash`, `default_location_id`, `is_active`, `last_login_at`, `created_at`, `updated_at`) VALUES
-(1, 'customer', 'bankkub', '0844578543', NULL, '$2y$12$lS5oWST8lMFImzTM2A6if.B/Kh8WEevgC2dT4LSBk0NkxzWBYwWrW', 1, 1, NULL, '2026-07-27 14:54:12', '2026-07-27 14:54:12');
+(1, 'user', 'bankkub', '0844578543', NULL, '$2y$12$lS5oWST8lMFImzTM2A6if.B/Kh8WEevgC2dT4LSBk0NkxzWBYwWrW', 1, 1, NULL, '2026-07-27 14:54:12', '2026-07-27 14:54:12');
 
 --
 -- Indexes for dumped tables
@@ -382,13 +382,13 @@ ALTER TABLE `banners`
   ADD KEY `fk_banners_created_by` (`created_by`);
 
 --
--- Indexes for table `customer_messages`
+-- Indexes for table `user_messages`
 --
-ALTER TABLE `customer_messages`
+ALTER TABLE `user_messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_customer_messages_inbox` (`recipient_user_id`,`deleted_at`,`sent_at`),
-  ADD KEY `idx_customer_messages_sender` (`sender_admin_id`,`sent_at`),
-  ADD KEY `fk_customer_messages_deleted_by` (`deleted_by`);
+  ADD KEY `idx_user_messages_inbox` (`recipient_user_id`,`deleted_at`,`sent_at`),
+  ADD KEY `idx_user_messages_sender` (`sender_admin_id`,`sent_at`),
+  ADD KEY `fk_user_messages_deleted_by` (`deleted_by`);
 
 --
 -- Indexes for table `locations`
@@ -405,7 +405,7 @@ ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_orders_order_number` (`order_number`),
   ADD KEY `idx_orders_dashboard` (`delivery_date`,`delivery_period`,`payment_status`,`order_status`),
-  ADD KEY `idx_orders_customer_created` (`customer_id`,`ordered_at`),
+  ADD KEY `idx_orders_user_created` (`user_id`,`ordered_at`),
   ADD KEY `idx_orders_location_date` (`location_id`,`delivery_date`),
   ADD KEY `idx_orders_preparation_group` (`preparation_group_id`),
   ADD KEY `fk_orders_cancelled_by` (`cancelled_by`),
@@ -494,9 +494,9 @@ ALTER TABLE `banners`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `customer_messages`
+-- AUTO_INCREMENT for table `user_messages`
 --
-ALTER TABLE `customer_messages`
+ALTER TABLE `user_messages`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -570,19 +570,19 @@ ALTER TABLE `banners`
   ADD CONSTRAINT `fk_banners_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `customer_messages`
+-- Constraints for table `user_messages`
 --
-ALTER TABLE `customer_messages`
-  ADD CONSTRAINT `fk_customer_messages_deleted_by` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_customer_messages_recipient` FOREIGN KEY (`recipient_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_customer_messages_sender` FOREIGN KEY (`sender_admin_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `user_messages`
+  ADD CONSTRAINT `fk_user_messages_deleted_by` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_user_messages_recipient` FOREIGN KEY (`recipient_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_user_messages_sender` FOREIGN KEY (`sender_admin_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `fk_orders_cancelled_by` FOREIGN KEY (`cancelled_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_orders_customer` FOREIGN KEY (`customer_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_orders_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_orders_location` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_orders_preparation_group` FOREIGN KEY (`preparation_group_id`) REFERENCES `preparation_groups` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_orders_status_updated_by` FOREIGN KEY (`status_updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;

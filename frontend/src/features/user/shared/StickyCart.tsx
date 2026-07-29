@@ -2,12 +2,12 @@ import { ArrowRight, ShoppingCart } from 'lucide-react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '@/stores/cart-store'
-import { useCustomerProducts } from '@/features/user/shared/hooks/useCustomerProducts'
+import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
 
 export function StickyCart() {
   const navigate = useNavigate()
   const items = useCartStore((state) => state.items)
-  const productsQuery = useCustomerProducts()
+  const productsQuery = useUserProducts()
   const products = productsQuery.data
   const itemCount = useMemo(() => items.reduce((count, item) => count + item.quantity, 0), [items])
   const total = useMemo(() => items.reduce((sum, item) => sum + (products?.find((product) => product.id === item.productId)?.price ?? 0) * item.quantity, 0), [items, products])

@@ -8,8 +8,8 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useCustomerAuth, useCustomerLogin, useCustomerLogout, useCustomerRegister } from '@/features/user/auth/hooks/useCustomerAuth'
-import { useCustomerLocations } from '@/features/user/shared/hooks/useCustomerLocations'
+import { useUserAuth, useUserLogin, useUserLogout, useUserRegister } from '@/features/user/auth/hooks/useUserAuth'
+import { useUserLocations } from '@/features/user/shared/hooks/useUserLocations'
 import { loginFormSchema, registerFormSchema, type LoginFormValues, type RegisterFormValues } from '@/features/user/auth/schema'
 
 const inputClassName = 'mt-1.5 h-12 border-[#b9cbbf] bg-white px-3 text-base text-ink placeholder:text-[#728077] focus-visible:border-brand focus-visible:ring-brand/25'
@@ -32,8 +32,8 @@ function DialogCloseButton() {
   return <DialogClose asChild><Button type="button" variant="ghost" size="icon" className="absolute right-3 top-3 rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand" aria-label="ปิดหน้าต่าง"><X size={22} strokeWidth={2.5} aria-hidden="true" /></Button></DialogClose>
 }
 
-function RegisterForm({ registerMutation, onSuccess }: { registerMutation: ReturnType<typeof useCustomerRegister>; onSuccess: () => void }) {
-  const locationsQuery = useCustomerLocations()
+function RegisterForm({ registerMutation, onSuccess }: { registerMutation: ReturnType<typeof useUserRegister>; onSuccess: () => void }) {
+  const locationsQuery = useUserLocations()
   const { register, control, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: { name: '', phone: '', lineId: '', locationId: '', password: '', confirmPassword: '' },
@@ -51,9 +51,9 @@ function RegisterForm({ registerMutation, onSuccess }: { registerMutation: Retur
   return <form className="grid gap-4" noValidate onSubmit={handleSubmit(submit)}>
     <div className="grid gap-4 sm:grid-cols-2">
       <div>
-        <Label htmlFor="register-customer-name" className="text-base font-bold text-ink">ชื่อลูกค้า</Label>
-        <Input id="register-customer-name" autoComplete="name" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'register-customer-name-error' : undefined} className={fieldClassName(Boolean(errors.name))} {...register('name')} />
-        <FieldError id="register-customer-name-error" message={errors.name?.message} />
+        <Label htmlFor="register-user-name" className="text-base font-bold text-ink">ชื่อลูกค้า</Label>
+        <Input id="register-user-name" autoComplete="name" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'register-user-name-error' : undefined} className={fieldClassName(Boolean(errors.name))} {...register('name')} />
+        <FieldError id="register-user-name-error" message={errors.name?.message} />
       </div>
       <div>
         <Label htmlFor="register-phone" className="text-base font-bold text-ink">เบอร์โทรศัพท์</Label>
@@ -97,7 +97,7 @@ function RegisterForm({ registerMutation, onSuccess }: { registerMutation: Retur
   </form>
 }
 
-function LoginForm({ loginMutation, onSuccess }: { loginMutation: ReturnType<typeof useCustomerLogin>; onSuccess: () => void }) {
+function LoginForm({ loginMutation, onSuccess }: { loginMutation: ReturnType<typeof useUserLogin>; onSuccess: () => void }) {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: { phone: '', password: '' },
@@ -130,10 +130,10 @@ function LoginForm({ loginMutation, onSuccess }: { loginMutation: ReturnType<typ
 
 export function AuthDialogs() {
   const [openDialog, setOpenDialog] = useState<'register' | 'login' | null>(null)
-  const authQuery = useCustomerAuth()
-  const registerMutation = useCustomerRegister()
-  const loginMutation = useCustomerLogin()
-  const logoutMutation = useCustomerLogout()
+  const authQuery = useUserAuth()
+  const registerMutation = useUserRegister()
+  const loginMutation = useUserLogin()
+  const logoutMutation = useUserLogout()
 
   if (authQuery.isLoading) return null
 

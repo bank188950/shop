@@ -1,8 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { CustomerLayout } from '@/layouts/CustomerLayout'
+import { UserLayout } from '@/layouts/UserLayout'
 import { AdminLayout } from '@/layouts/AdminLayout'
-import { HomePage } from '@/pages/customer/HomePage'
-import { OrderSummaryPage } from '@/pages/customer/OrderSummaryPage'
+import { HomePage } from '@/pages/user/HomePage'
+import { OrderSummaryPage } from '@/pages/user/OrderSummaryPage'
 import { DashboardPage } from '@/pages/admin/DashboardPage'
 import { AdminLoginPage } from '@/pages/admin/AdminLoginPage'
 import { ProductPage } from '@/pages/admin/ProductPage'
@@ -15,9 +15,9 @@ import { SettingsPage } from '@/pages/admin/SettingsPage'
 import { BannerPage } from '@/pages/admin/BannerPage'
 import { BannerInsertPage } from '@/pages/admin/BannerInsertPage'
 import { BannerEditPage } from '@/pages/admin/BannerEditPage'
-import { MyOrdersPage } from '@/pages/customer/MyOrdersPage'
-import { MyChatsPage } from '@/pages/customer/MyChatsPage'
-import { MyProfilePage } from '@/pages/customer/MyProfilePage'
+import { MyOrdersPage } from '@/pages/user/MyOrdersPage'
+import { MyChatsPage } from '@/pages/user/MyChatsPage'
+import { MyProfilePage } from '@/pages/user/MyProfilePage'
 import { LocationPage } from '@/pages/admin/LocationPage'
 import { LocationFormPage } from '@/pages/admin/LocationFormPage'
 import { ProductCategoryPage } from '@/pages/admin/ProductCategoryPage'
@@ -36,7 +36,7 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<CustomerLayout />}>
+        <Route element={<UserLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/order-summary" element={<OrderSummaryPage />} />
           <Route path="/my-orders" element={<MyOrdersPage />} />

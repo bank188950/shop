@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-function customer_message_validate_input(array $input, bool $hasImage, bool $isUpdate): array
+function user_message_validate_input(array $input, bool $hasImage, bool $isUpdate): array
 {
     $body = trim((string) ($input['body'] ?? ''));
     $removeImage = ($input['remove_image'] ?? '0') === '1';

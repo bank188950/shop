@@ -1,8 +1,8 @@
 import api from '@/lib/axios'
 
-export type CustomerProductStatus = 'in-stock' | 'low-stock' | 'sold-out'
+export type UserProductStatus = 'in-stock' | 'low-stock' | 'sold-out'
 
-export type CustomerProduct = {
+export type UserProduct = {
   id: number
   name: string
   description: string
@@ -13,17 +13,17 @@ export type CustomerProduct = {
   unitName: string
   stockQuantity: number
   isRecommended: boolean
-  status: CustomerProductStatus
+  status: UserProductStatus
 }
 
-export type CustomerProductCategory = { id: number, name: string }
+export type UserProductCategory = { id: number, name: string }
 
-export async function getCustomerProducts() {
-  const response = await api.get<{ data: CustomerProduct[] }>('/user/products')
+export async function getUserProducts() {
+  const response = await api.get<{ data: UserProduct[] }>('/user/products')
   return response.data.data
 }
 
-export async function getCustomerProductCategories() {
-  const response = await api.get<{ data: CustomerProductCategory[] }>('/user/product-categories')
+export async function getUserProductCategories() {
+  const response = await api.get<{ data: UserProductCategory[] }>('/user/product-categories')
   return response.data.data
 }

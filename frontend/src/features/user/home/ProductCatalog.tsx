@@ -1,13 +1,13 @@
 import { Ban, ChefHat, ImageOff, Plus, Star } from 'lucide-react'
 import { useState } from 'react'
 import { useCartStore } from '@/stores/cart-store'
-import { useCustomerProductCategories, useCustomerProducts } from '@/features/user/shared/hooks/useCustomerProducts'
+import { useUserProductCategories, useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
 import { productBadgeLabel, productStockLabel } from '@/features/user/shared/utils/product-labels'
 
 export function ProductCatalog() {
   const [categoryId, setCategoryId] = useState<number | null>(null)
-  const productsQuery = useCustomerProducts()
-  const categoriesQuery = useCustomerProductCategories()
+  const productsQuery = useUserProducts()
+  const categoriesQuery = useUserProductCategories()
   const addItem = useCartStore((state) => state.addItem)
   const cartItems = useCartStore((state) => state.items)
   const quantityByProduct = new Map(cartItems.map((item) => [item.productId, item.quantity]))

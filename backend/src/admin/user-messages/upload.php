@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-function customer_message_upload_image(?array $file): ?string
+function user_message_upload_image(?array $file): ?string
 {
     if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) return null;
     if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) json_response(['message' => 'อัปโหลดรูปข้อความไม่สำเร็จ'], 422);
@@ -11,7 +11,7 @@ function customer_message_upload_image(?array $file): ?string
     $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
     if (!isset($extensions[$mimeType])) json_response(['message' => 'รองรับเฉพาะไฟล์ JPG, PNG และ WebP'], 422);
 
-    $directory = dirname(__DIR__, 3) . '/public/uploads/customer-messages';
+    $directory = dirname(__DIR__, 3) . '/public/uploads/user-messages';
     if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
         json_response(['message' => 'ไม่สามารถเตรียมโฟลเดอร์เก็บรูปข้อความได้'], 500);
     }
@@ -21,12 +21,12 @@ function customer_message_upload_image(?array $file): ?string
         json_response(['message' => 'ไม่สามารถบันทึกรูปข้อความได้'], 500);
     }
 
-    return 'uploads/customer-messages/' . $filename;
+    return 'uploads/user-messages/' . $filename;
 }
 
-function customer_message_delete_image(?string $imagePath): void
+function user_message_delete_image(?string $imagePath): void
 {
-    if (!$imagePath || !str_starts_with($imagePath, 'uploads/customer-messages/')) return;
-    $file = dirname(__DIR__, 3) . '/public/uploads/customer-messages/' . basename($imagePath);
+    if (!$imagePath || !str_starts_with($imagePath, 'uploads/user-messages/')) return;
+    $file = dirname(__DIR__, 3) . '/public/uploads/user-messages/' . basename($imagePath);
     if (is_file($file)) unlink($file);
 }

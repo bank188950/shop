@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useCustomerLocations } from '@/features/user/shared/hooks/useCustomerLocations'
-import { useUpdateCustomerProfile } from '@/features/user/profile/hooks/useCustomerProfile'
+import { useUserLocations } from '@/features/user/shared/hooks/useUserLocations'
+import { useUpdateUserProfile } from '@/features/user/profile/hooks/useUserProfile'
 import { profileFormSchema, type ProfileFormValues } from '@/features/user/profile/schema'
-import type { CustomerAuth } from '@/api/user/auth'
+import type { UserAuth } from '@/api/user/auth'
 
 const inputClassName = 'mt-1.5 h-12 border-[#b9cbbf] bg-white px-3 text-base text-ink placeholder:text-[#728077] focus-visible:border-brand focus-visible:ring-brand/25'
 
@@ -20,16 +20,16 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   return message ? <p id={id} className="mt-1.5 mb-0 text-sm font-semibold text-[#c84646]" role="alert">{message}</p> : null
 }
 
-export function ProfileForm({ customer }: { customer: CustomerAuth }) {
-  const locationsQuery = useCustomerLocations()
-  const updateMutation = useUpdateCustomerProfile()
+export function ProfileForm({ user }: { user: UserAuth }) {
+  const locationsQuery = useUserLocations()
+  const updateMutation = useUpdateUserProfile()
   const { register, control, handleSubmit, reset, formState: { errors, isDirty } } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: customer.name,
-      phone: customer.phone,
-      lineId: customer.lineId,
-      locationId: customer.locationId ? String(customer.locationId) : '',
+      name: user.name,
+      phone: user.phone,
+      lineId: user.lineId,
+      locationId: user.locationId ? String(user.locationId) : '',
     },
   })
 

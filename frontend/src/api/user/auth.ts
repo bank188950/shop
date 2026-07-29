@@ -1,6 +1,6 @@
 import api from '@/lib/axios'
 
-export type CustomerAuth = {
+export type UserAuth = {
   id: number
   name: string
   phone: string
@@ -9,7 +9,7 @@ export type CustomerAuth = {
   locationName: string
 }
 
-export type CustomerRegisterInput = {
+export type UserRegisterInput = {
   name: string
   phone: string
   lineId: string
@@ -18,14 +18,14 @@ export type CustomerRegisterInput = {
   confirmPassword: string
 }
 
-export type CustomerLoginInput = { phone: string, password: string }
+export type UserLoginInput = { phone: string, password: string }
 
-export async function getCustomerAuth() {
-  const response = await api.get<{ data: CustomerAuth }>('/user/auth/me')
+export async function getUserAuth() {
+  const response = await api.get<{ data: UserAuth }>('/user/auth/me')
   return response.data.data
 }
 
-export async function registerCustomer(input: CustomerRegisterInput) {
+export async function registerUser(input: UserRegisterInput) {
   const body = new URLSearchParams({
     name: input.name.trim(),
     phone: input.phone.trim(),
@@ -34,16 +34,16 @@ export async function registerCustomer(input: CustomerRegisterInput) {
     password: input.password,
     confirm_password: input.confirmPassword,
   })
-  const response = await api.post<{ data: CustomerAuth }>('/user/auth/register', body)
+  const response = await api.post<{ data: UserAuth }>('/user/auth/register', body)
   return response.data.data
 }
 
-export async function loginCustomer(input: CustomerLoginInput) {
+export async function loginUser(input: UserLoginInput) {
   const body = new URLSearchParams({ phone: input.phone.trim(), password: input.password })
-  const response = await api.post<{ data: CustomerAuth }>('/user/auth/login', body)
+  const response = await api.post<{ data: UserAuth }>('/user/auth/login', body)
   return response.data.data
 }
 
-export async function logoutCustomer() {
+export async function logoutUser() {
   await api.post('/user/auth/logout')
 }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-function customer_location_route(string $method, string $path): bool
+function user_location_route(string $method, string $path): bool
 {
     if ($method !== 'GET' || $path !== '/user/locations') return false;
 

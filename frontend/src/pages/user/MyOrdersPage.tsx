@@ -2,13 +2,13 @@ import { CheckCircle2, ChevronLeft, Clock3, MapPin, PackageCheck, ReceiptText } 
 import { Link } from 'react-router-dom'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
-import { useCustomerAuth } from '@/features/user/auth/hooks/useCustomerAuth'
-import { useCustomerOrders } from '@/features/user/order/hooks/useCustomerOrders'
+import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
+import { useUserOrders } from '@/features/user/order/hooks/useUserOrders'
 import { deliveryPeriodLabel, orderStatusClass, orderStatusLabel, paymentStatusLabel, thaiDateLabel } from '@/features/user/order/utils/order-labels'
 
 export function MyOrdersPage() {
-  const authQuery = useCustomerAuth()
-  const ordersQuery = useCustomerOrders(Boolean(authQuery.data))
+  const authQuery = useUserAuth()
+  const ordersQuery = useUserOrders(Boolean(authQuery.data))
   const orders = ordersQuery.data ?? []
 
   return <section className="min-h-screen overflow-hidden">
