@@ -67,6 +67,7 @@ try {
     if (user_product_route($method, $path)) exit;
     if (user_profile_route($method, $path)) exit;
     if (user_settings_route($method, $path)) exit;
+    if (user_announcement_route($method, $path)) exit;
     if (user_recent_order_route($method, $path)) exit;
     if (user_order_route($method, $path)) exit;
     if (user_inbox_route($method, $path)) exit;
