@@ -266,6 +266,7 @@ p.admin-profile-field-error { margin: -2px 0 0; color: #c43c3c; font-size: 14px;
 .preparation-customer-list .preparation-customer-order-items { display: grid; gap: 5px; margin: 0; color: #65716a; font-size: 14px; font-weight: 400; }
 .preparation-customer-order-items > span { display: block; }
 .dispatch-location-heading p { color: #65716a; }
+.dispatch-empty { padding: 34px 0 6px; margin: 18px 0 0; color: #65716a; font-size: 14px; font-weight: 700; text-align: center; }
 .dispatch-location-card details li { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
 .dispatch-customer-order-detail { display: grid; min-width: 0; gap: 4px; }
 .dispatch-customer-order-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; }

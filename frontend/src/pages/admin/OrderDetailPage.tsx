@@ -8,7 +8,14 @@ import { useAdminOrder, useUpdateAdminOrderStatus } from '@/features/admin/order
 import type { AdminOrderStatus } from '@/api/admin/orders'
 
 const unpaidStatusOptions: AdminOrderStatus[] = ['pending_payment', 'cancelled']
-const paidStatusOptions: AdminOrderStatus[] = ['pending_review', 'preparing', 'ready_for_delivery', 'delivered']
+/** ฝั่งจ่ายแล้วเลือกได้เฉพาะ `รอตรวจสอบ` เพราะขั้นถัดไปต้องเดินผ่านหน้าเตรียมสินค้าและรอบส่งวันนี้เท่านั้น */
+const paidStatusOptions: AdminOrderStatus[] = ['pending_review']
+const paidFlowStatuses: AdminOrderStatus[] = ['pending_review', 'preparing', 'ready_for_delivery', 'delivered']
+
+/** คงสถานะที่บันทึกไว้เป็นตัวเลือกด้วย ไม่งั้นรายการที่เดินหน้าไปแล้วจะแสดงค่าว่างและถูกดึงกลับเมื่อกดบันทึก */
+function paidStatusOptionsFor(savedStatus: AdminOrderStatus) {
+  return paidFlowStatuses.includes(savedStatus) && !paidStatusOptions.includes(savedStatus) ? [...paidStatusOptions, savedStatus] : paidStatusOptions
+}
 
 export function OrderDetailPage() {
   const { orderId } = useParams()
@@ -26,12 +33,13 @@ export function OrderDetailPage() {
 
   if (orderQuery.isLoading) return <section className="admin-page"><div className="admin-page-heading"><div><h1 className="admin-title">กำลังโหลดรายการสั่งซื้อ...</h1></div></div></section>
   if (!order) return <section className="admin-page"><div className="admin-page-heading"><div><h1 className="admin-title">ไม่พบรายการสั่งซื้อ</h1></div></div><Link className="admin-primary-button" to="/admin/orders">กลับไปหน้ารายการสั่งซื้อ</Link></section>
-  const statusOptions = paymentStatus === 'pending' ? unpaidStatusOptions : paidStatusOptions
+  const savedStatus = order.orderStatus
+  const statusOptions = paymentStatus === 'pending' ? unpaidStatusOptions : paidStatusOptionsFor(savedStatus)
 
   function changePaymentStatus(value: 'pending' | 'paid') {
     setPaymentStatus(value)
     setStatus((currentStatus) => {
-      const allowedStatuses = value === 'pending' ? unpaidStatusOptions : paidStatusOptions
+      const allowedStatuses = value === 'pending' ? unpaidStatusOptions : paidStatusOptionsFor(savedStatus)
       return allowedStatuses.includes(currentStatus) ? currentStatus : allowedStatuses[0]
     })
   }

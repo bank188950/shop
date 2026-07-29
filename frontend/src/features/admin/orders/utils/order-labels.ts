@@ -70,6 +70,12 @@ export function orderedAtLabel(orderedAt: string) {
   return `${date.getDate()} ${thaiMonths[date.getMonth()]} ${date.getFullYear() + 543} ${time}`
 }
 
+/** แปลง `YYYY-MM-DD` เป็นวันที่ไทย พ.ศ. โดยไม่ผ่าน Date เพื่อไม่ให้ timezone เลื่อนวัน */
+export function deliveryDateLabel(isoDate: string) {
+  const [year, month, day] = isoDate.split('-').map(Number)
+  return `${day} ${thaiMonths[month - 1]} ${year + 543}`
+}
+
 export function todayIsoDate() {
   const now = new Date()
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
