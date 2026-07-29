@@ -126,10 +126,10 @@ function admin_dashboard_chart(PDO $db, array $filters): array
     $value = $filters['metric'] === 'sales' ? ADMIN_DASHBOARD_PAID_TOTAL : 'COUNT(*)';
 
     if ($filters['range'] === 'today') {
-        // จับกลุ่มทีละ 2 ชั่วโมงครบทั้งวัน 12 ช่วง จะได้ไม่ตัดรายการที่สั่งนอกเวลาทำการทิ้ง
+        // จับกลุ่มรายชั่วโมงครบทั้งวัน 24 ช่วง จะได้ไม่ตัดรายการที่สั่งนอกเวลาทำการทิ้ง
         $where .= ' AND DATE(o.ordered_at) = CURDATE()';
-        $bucket = 'FLOOR(HOUR(o.ordered_at) / 2)';
-        $labels = array_map(static fn (int $index) => sprintf('%02d:00', $index * 2), range(0, 11));
+        $bucket = 'HOUR(o.ordered_at)';
+        $labels = array_map(static fn (int $hour) => sprintf('%02d:00', $hour), range(0, 23));
         $offset = 0;
     } elseif ($filters['range'] === 'week') {
         $monday = date('Y-m-d', strtotime('monday this week'));
