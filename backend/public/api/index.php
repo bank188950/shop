@@ -41,6 +41,9 @@ require_once dirname(__DIR__, 2) . '/src/admin/user-messages/validation.php';
 require_once dirname(__DIR__, 2) . '/src/admin/user-messages/upload.php';
 require_once dirname(__DIR__, 2) . '/src/admin/user-messages/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/user-messages/routes.php';
+require_once dirname(__DIR__, 2) . '/src/admin/orders/validation.php';
+require_once dirname(__DIR__, 2) . '/src/admin/orders/repository.php';
+require_once dirname(__DIR__, 2) . '/src/admin/orders/routes.php';
 require_once dirname(__DIR__, 2) . '/src/user/auth/validation.php';
 require_once dirname(__DIR__, 2) . '/src/user/auth/repository.php';
 require_once dirname(__DIR__, 2) . '/src/user/auth/session.php';
@@ -82,6 +85,7 @@ try {
     if (settings_route($method, $path)) exit;
     if (admin_profile_route($method, $path)) exit;
     if (user_message_route($method, $path)) exit;
+    if (admin_order_route($method, $path)) exit;
     if (user_route($method, $path)) exit;
 } catch (Throwable $exception) {
     $message = 'ไม่สามารถเชื่อมต่อฐานข้อมูลหรือประมวลผล API ได้';
