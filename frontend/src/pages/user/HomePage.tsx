@@ -8,6 +8,7 @@ import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
 import { StickyCart } from '@/features/user/shared/StickyCart'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
+import { isNoticePopupShown, markNoticePopupShown } from '@/lib/notice-popup-session'
 
 export function HomePage() {
   // ใช้ query เดียวกับแถบประกาศ จึงไม่มี request เพิ่ม; popup ขึ้นตามสถานะเปิดใช้งาน ต่อให้ยังไม่ได้กรอกข้อความ
@@ -15,7 +16,12 @@ export function HomePage() {
   const isNoticeEnabled = notice?.isEnabled ?? false
   const noticeMessage = notice?.message ?? ''
 
-  useEffect(() => { if (isNoticeEnabled) void showNoticePopup(noticeMessage) }, [isNoticeEnabled, noticeMessage])
+  // ขึ้นครั้งเดียวจนกว่าจะปิด browser ทุกหน้าต่าง การรีเฟรชหรือเปิดแท็บใหม่จึงไม่แสดงซ้ำ
+  useEffect(() => {
+    if (!isNoticeEnabled || isNoticePopupShown()) return
+    markNoticePopupShown()
+    void showNoticePopup(noticeMessage)
+  }, [isNoticeEnabled, noticeMessage])
 
   return (
     <section className="overflow-hidden pb-32 max-md:pb-28">
