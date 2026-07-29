@@ -4,11 +4,9 @@ import { ChevronLeft, ClipboardList, ClipboardPlus, CookingPot, Eraser, Image, L
 import { useAdminOrders } from '@/features/admin/orders/hooks/useAdminOrders'
 import { todayIsoDate } from '@/features/admin/orders/utils/order-labels'
 import { useProducts } from '@/features/admin/product/hooks/useProducts'
+import { badgeCountLabel } from '@/utils/badge-count'
 import { useAdminProfile } from '@/features/admin/profile/hooks/useAdminProfile'
 import { useAdminLogout } from '@/features/admin/auth/hooks/useAdminAuth'
-
-/** เกิน 99 ให้แสดง 99+ ตัวเลขจะได้ไม่ล้นวงกลมบนไอคอน */
-const badgeCountLabel = (count: number) => count > 99 ? '99+' : String(count)
 
 const items = [
   { label: 'ภาพรวม', icon: LayoutDashboard, to: '/admin' },
