@@ -2,6 +2,7 @@ import { Banknote, CalendarDays, Check, ChevronRight, MapPin, PackageOpen, Repea
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { ThaiDatePicker } from '@/components/ui/thai-date-picker'
 import { deliveryDateLabel, deliveryPeriods, formatPrice, orderStatusClass, orderStatusLabel, todayIsoDate } from '@/features/admin/orders/utils/order-labels'
 import { useAdminOrders, useUpdateAdminOrdersStatus } from '@/features/admin/orders/hooks/useAdminOrders'
 import type { AdminDeliveryPeriod, AdminOrder } from '@/api/admin/orders'
@@ -22,8 +23,8 @@ function itemToneClass(name: string) {
 
 export function DispatchTodayPage() {
   const [period, setPeriod] = useState<AdminDeliveryPeriod>('morning')
-  // หน้านี้เป็นใบส่งของ "วันนี้" จึงตรึงวันไว้ตอนเปิดหน้า ไม่มีตัวเลือกวันให้ผู้ดูแล
-  const [date] = useState(todayIsoDate)
+  // เปิดหน้ามาที่รอบส่งของวันนี้ก่อน แล้วให้ผู้ดูแลเลือกวันจัดส่งอื่นได้จากตัวกรอง
+  const [date, setDate] = useState(todayIsoDate)
   const filters = useMemo(() => ({ deliveryDate: date, deliveryPeriod: period, locationId: 'all' as const, orderStatus: 'all' as const, query: '' }), [date, period])
   const ordersQuery = useAdminOrders(filters)
   const updateStatusMutation = useUpdateAdminOrdersStatus()
@@ -44,7 +45,7 @@ export function DispatchTodayPage() {
   const totalItems = useMemo(() => getSummaryItems(orders), [orders])
   const emptyMessage = ordersQuery.isLoading ? 'กำลังโหลดรอบส่งวันนี้...'
     : ordersQuery.isError ? `ไม่สามารถโหลดรอบส่งวันนี้ได้: ${ordersQuery.error.message}`
-      : `ไม่มีรายการสั่งซื้อที่ชำระเงินแล้วใน${deliveryPeriods[period].label}ของวันนี้`
+      : `ไม่มีรายการสั่งซื้อที่ชำระเงินแล้วใน${deliveryPeriods[period].label}ของวันที่ ${deliveryDateLabel(date)}`
 
   async function updateLocationStatuses(locationName: string, locationOrders: AdminOrder[]) {
     const readyOrders = locationOrders.filter((order) => order.orderStatus === 'ready_for_delivery')
@@ -85,6 +86,7 @@ export function DispatchTodayPage() {
 
   return <section className="admin-page">
     <div className="admin-page-heading"><div><h1 className="admin-title">รอบส่งวันนี้</h1></div><Link className="admin-secondary-button" to="/admin/orders"><Repeat2 size={18} aria-hidden="true" />ดูรายการสั่งซื้อ</Link></div>
+    <section className="dispatch-filter" aria-label="ตัวกรองวันจัดส่ง"><label>วันจัดส่ง<ThaiDatePicker value={date} onValueChange={setDate} ariaLabel="เลือกวันจัดส่ง" /></label></section>
     <section className="dispatch-period-picker" aria-label="เลือกรอบจัดส่ง">{(Object.keys(deliveryPeriods) as AdminDeliveryPeriod[]).map((value) => { const Icon = value === 'morning' ? Sun : Sunset; const isSelected = period === value; return <button type="button" key={value} className={`${value} ${isSelected ? 'active' : ''}`} aria-pressed={isSelected} onClick={() => setPeriod(value)}>{isSelected && <Check className="dispatch-period-selected-icon" size={20} aria-hidden="true" />}<Icon size={24} aria-hidden="true" /><span className="dispatch-period-label" style={{ fontSize: '22px' }}>{deliveryPeriods[value].label}</span><small>จัด{deliveryPeriods[value].deliveryTime}</small></button> })}</section>
     <section className="dispatch-summary" aria-label="สรุปรอบส่ง"><div><span className="dispatch-summary-icon"><UsersRound size={27} aria-hidden="true" /></span><span className="dispatch-summary-content"><small>ลูกค้าทั้งหมด</small><strong style={{ fontSize: '22px' }}>{orders.length} คน</strong></span></div><div><span className="dispatch-summary-icon"><Banknote size={27} aria-hidden="true" /></span><span className="dispatch-summary-content"><small>ยอดรวมทั้งหมด</small><strong style={{ fontSize: '22px' }}>{formatPrice(total)}</strong></span></div><div><span className="dispatch-summary-icon"><MapPin size={27} aria-hidden="true" /></span><span className="dispatch-summary-content"><small>จุดรับสินค้า</small><strong style={{ fontSize: '22px' }}>{locations.length} จุด</strong></span></div></section>
     <section className="dispatch-total-card"><div><h2><PackageOpen size={22} aria-hidden="true" />รวมของที่ต้องเตรียม</h2><p>นับจากทุกสถานที่ใน{deliveryPeriods[period].label}</p></div><ul>{totalItems.map((item) => <li key={item.name} className={itemToneClass(item.name)}><span>{item.name}</span><strong>{item.quantity} {item.unitName}</strong></li>)}</ul></section>
