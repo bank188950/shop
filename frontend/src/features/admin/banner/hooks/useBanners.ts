@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createAdminBanner, deleteAdminBanner, getAdminBanner, getAdminBanners, updateAdminBanner } from '@/api/admin/banners'
+import { createAdminBanner, deleteAdminBanner, getAdminBanner, getAdminBanners, moveAdminBanner, updateAdminBanner } from '@/api/admin/banners'
 import type { BannerSaveInput } from '@/api/admin/banners'
 
 const bannerKeys = {
@@ -28,6 +28,14 @@ export function useDeleteBanner() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: deleteAdminBanner,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: bannerKeys.all }),
+  })
+}
+
+export function useMoveBanner() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ bannerId, direction }: { bannerId: number, direction: 'up' | 'down' }) => moveAdminBanner(bannerId, direction),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: bannerKeys.all }),
   })
 }

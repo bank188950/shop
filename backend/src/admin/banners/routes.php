@@ -8,6 +8,14 @@ function banner_route(string $method, string $path): bool
         json_response(['data' => array_map('banner_to_api', banner_list($db))]);
     }
 
+    if ($method === 'POST' && preg_match('#^/admin/banners/(\d+)/move$#', $path, $moveMatches)) {
+        $direction = (string) ($_POST['direction'] ?? '');
+        if (!in_array($direction, ['up', 'down'], true)) json_response(['message' => 'ทิศทางการจัดลำดับไม่ถูกต้อง'], 422);
+        if (!banner_find($db, (int) $moveMatches[1])) json_response(['message' => 'ไม่พบแบนเนอร์'], 404);
+        banner_move($db, (int) $moveMatches[1], $direction);
+        json_response(['data' => array_map('banner_to_api', banner_list($db))]);
+    }
+
     if (!preg_match('#^/admin/banners/(\d+)$#', $path, $matches) && !($method === 'POST' && $path === '/admin/banners')) return false;
     $id = isset($matches[1]) ? (int) $matches[1] : null;
 

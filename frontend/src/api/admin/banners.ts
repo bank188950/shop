@@ -44,3 +44,9 @@ export async function updateAdminBanner(bannerId: number, input: BannerSaveInput
 export async function deleteAdminBanner(bannerId: number) {
   await api.delete(`/admin/banners/${bannerId}`)
 }
+
+export async function moveAdminBanner(bannerId: number, direction: 'up' | 'down') {
+  const body = new URLSearchParams({ direction })
+  const response = await api.post<{ data: AdminBanner[] }>(`/admin/banners/${bannerId}/move`, body)
+  return response.data.data
+}
