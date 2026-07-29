@@ -9,6 +9,14 @@ function category_route(string $method, string $path): bool
         json_response(['data' => array_map('category_to_api', category_list($db, $activeOnly))]);
     }
 
+    if ($method === 'POST' && preg_match('#^/admin/product-categories/(\d+)/move$#', $path, $moveMatches)) {
+        $direction = (string) ($_POST['direction'] ?? '');
+        if (!in_array($direction, ['up', 'down'], true)) json_response(['message' => 'ทิศทางการจัดลำดับไม่ถูกต้อง'], 422);
+        if (!category_find($db, (int) $moveMatches[1])) json_response(['message' => 'ไม่พบหมวดสินค้า'], 404);
+        category_move($db, (int) $moveMatches[1], $direction);
+        json_response(['data' => array_map('category_to_api', category_list($db))]);
+    }
+
     if (!preg_match('#^/admin/product-categories/(\d+)$#', $path, $matches) && !($method === 'POST' && $path === '/admin/product-categories')) return false;
     $id = isset($matches[1]) ? (int) $matches[1] : null;
 

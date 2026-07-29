@@ -43,9 +43,10 @@ function user_product_route(string $method, string $path): bool
     }
 
     if ($path === '/user/product-categories') {
+        // แสดงทุกหมวดที่แอดมินเปิดใช้งาน ถึงยังไม่มีสินค้าในหมวดนั้นก็ให้ขึ้น
         $categories = $db->query('SELECT c.id, c.name FROM product_categories c
-            WHERE c.is_active = 1 AND EXISTS (SELECT 1 FROM products p WHERE p.category_id = c.id AND p.is_active = 1)
-            ORDER BY c.id ASC')->fetchAll();
+            WHERE c.is_active = 1
+            ORDER BY c.display_order, c.id')->fetchAll();
         json_response(['data' => array_map(fn (array $category) => ['id' => (int) $category['id'], 'name' => $category['name']], $categories)]);
     }
 

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createAdminProductCategory, deleteAdminProductCategory, getAdminProductCategories, getAdminProductCategory, updateAdminProductCategory } from '@/api/admin/product-categories'
+import { createAdminProductCategory, deleteAdminProductCategory, getAdminProductCategories, getAdminProductCategory, moveAdminProductCategory, updateAdminProductCategory } from '@/api/admin/product-categories'
 import type { AdminProductCategory } from '@/api/admin/product-categories'
 
 const categoryKeys = {
@@ -28,6 +28,14 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: deleteAdminProductCategory,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: categoryKeys.all }),
+  })
+}
+
+export function useMoveCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ categoryId, direction }: { categoryId: number, direction: 'up' | 'down' }) => moveAdminProductCategory(categoryId, direction),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: categoryKeys.all }),
   })
 }

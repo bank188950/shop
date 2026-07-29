@@ -38,3 +38,9 @@ export async function updateAdminProductCategory(categoryId: number, input: Omit
 export async function deleteAdminProductCategory(categoryId: number) {
   await api.delete(`/admin/product-categories/${categoryId}`)
 }
+
+export async function moveAdminProductCategory(categoryId: number, direction: 'up' | 'down') {
+  const body = new URLSearchParams({ direction })
+  const response = await api.post<{ data: AdminProductCategory[] }>(`/admin/product-categories/${categoryId}/move`, body)
+  return response.data.data
+}
