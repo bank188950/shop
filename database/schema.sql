@@ -104,9 +104,7 @@ CREATE TABLE `user_messages` (
   `body` text COLLATE utf8mb4_unicode_ci,
   `image_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sent_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `edited_at` datetime DEFAULT NULL,
-  `deleted_at` datetime DEFAULT NULL,
-  `deleted_by` bigint UNSIGNED DEFAULT NULL
+  `edited_at` datetime DEFAULT NULL
 ) ;
 
 -- --------------------------------------------------------
@@ -386,9 +384,8 @@ ALTER TABLE `banners`
 --
 ALTER TABLE `user_messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_user_messages_inbox` (`recipient_user_id`,`deleted_at`,`sent_at`),
-  ADD KEY `idx_user_messages_sender` (`sender_admin_id`,`sent_at`),
-  ADD KEY `fk_user_messages_deleted_by` (`deleted_by`);
+  ADD KEY `idx_user_messages_inbox` (`recipient_user_id`,`sent_at`),
+  ADD KEY `idx_user_messages_sender` (`sender_admin_id`,`sent_at`);
 
 --
 -- Indexes for table `locations`
@@ -573,7 +570,6 @@ ALTER TABLE `banners`
 -- Constraints for table `user_messages`
 --
 ALTER TABLE `user_messages`
-  ADD CONSTRAINT `fk_user_messages_deleted_by` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_user_messages_recipient` FOREIGN KEY (`recipient_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_user_messages_sender` FOREIGN KEY (`sender_admin_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 

@@ -35,7 +35,7 @@ export function PaymentQrDialog({ order }: { order: UserOrder }) {
         <Button type="button" variant="ghost" size="icon" className="absolute right-2 top-2 z-10 size-11 rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand" aria-label="ปิดหน้าต่าง"><X size={18} strokeWidth={2.5} aria-hidden="true" /></Button>
       </DialogClose>
       <DialogHeader>
-        <DialogTitle className="font-heading text-2xl text-ink">สแกน QR Code เพื่อชำระเงิน</DialogTitle>
+        <DialogTitle className="font-heading text-2xl text-ink">ช่องทางการชำระเงิน</DialogTitle>
         <DialogDescription className="text-base text-muted">คำสั่งซื้อ {order.orderNumber}</DialogDescription>
       </DialogHeader>
       <div className="grid place-items-center gap-4 rounded-xl border-2 border-dashed border-[#77a984] bg-white p-5 text-center">
@@ -43,7 +43,8 @@ export function PaymentQrDialog({ order }: { order: UserOrder }) {
           <QRCodeCanvas ref={canvasRef} value={paymentQrValue(order.orderNumber, order.totalAmount)} size={176} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} title={`QR Code สำหรับชำระเงินคำสั่งซื้อ ${order.orderNumber}`} />
         </div>
         <div>
-          <p className="m-0 text-xl font-extrabold text-brand">ยอดชำระ {order.totalAmount.toLocaleString('th-TH')} บาท</p>
+          <p className="m-0 text-xl font-extrabold text-ink">สแกน QR Code เพื่อชำระเงิน</p>
+          <p className="mt-1 mb-0 text-lg font-bold text-brand">ยอดชำระ {order.totalAmount.toLocaleString('th-TH')} บาท</p>
           <p className="mt-1 mb-0 text-base text-muted">ชำระเงินภายใน {settingsQuery.data?.paymentMinutes ?? 20} นาที ไม่นั้นคำสั่งซื้อจะถูกยกเลิกครับ</p>
         </div>
       </div>

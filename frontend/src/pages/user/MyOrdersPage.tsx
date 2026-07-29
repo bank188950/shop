@@ -1,7 +1,9 @@
 import { CheckCircle2, ChevronLeft, CircleX, Clock3, MapPin, PackageCheck, ReceiptText } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
+import { StorefrontPagination } from '@/features/user/shared/StorefrontPagination'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
 import { useUserOrders } from '@/features/user/order/hooks/useUserOrders'
 import { PaymentQrDialog } from '@/features/user/order/PaymentQrDialog'
@@ -13,10 +15,16 @@ function OrderStatusIcon({ status }: { status: OrderStatus }) {
   return <Icon className="mr-1.5" size={18} aria-hidden="true" />
 }
 
+const pageSize = 10
+
 export function MyOrdersPage() {
   const authQuery = useUserAuth()
   const ordersQuery = useUserOrders(Boolean(authQuery.data))
+  const [page, setPage] = useState(1)
   const orders = ordersQuery.data ?? []
+  // กันหน้าค้างเกินจำนวนจริง เช่นออเดอร์ถูกลบจนหน้าที่เปิดอยู่ไม่มีข้อมูลแล้ว
+  const currentPage = Math.min(page, Math.max(1, Math.ceil(orders.length / pageSize)))
+  const visibleOrders = orders.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   return <section className="min-h-screen overflow-hidden">
     <StorefrontHeader />
@@ -28,7 +36,7 @@ export function MyOrdersPage() {
       {ordersQuery.isError && <p className="mt-4 mb-0 text-lg font-bold text-[#c84646]" role="alert">{ordersQuery.error.message}</p>}
       {ordersQuery.isSuccess && !orders.length && <p className="mt-4 mb-0 text-lg font-bold text-muted">ยังไม่มีออเดอร์ เลือกเมนูที่ชอบแล้วสั่งซื้อได้เลย</p>}
       <div className="mt-3 grid gap-4">
-        {orders.map((order) => <article key={order.id} className="rounded-2xl border border-[#b9cbbf] bg-white p-5 shadow-sm max-md:p-4">
+        {visibleOrders.map((order) => <article key={order.id} className="rounded-2xl border border-[#b9cbbf] bg-white p-5 shadow-sm max-md:p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="m-0 text-base font-bold text-muted">{order.orderNumber} · {thaiDateLabel(order.orderedAt)}</p>
@@ -52,6 +60,7 @@ export function MyOrdersPage() {
           {order.paymentStatus === 'pending' && order.orderStatus !== 'cancelled' && <div className="mt-4 flex justify-end"><PaymentQrDialog order={order} /></div>}
         </article>)}
       </div>
+      <StorefrontPagination currentPage={currentPage} totalItems={orders.length} pageSize={pageSize} onPageChange={setPage} label="ออเดอร์" />
     </main>
     <StorefrontFooter />
   </section>
