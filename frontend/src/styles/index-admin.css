@@ -265,6 +265,8 @@ p.admin-profile-field-error { margin: -2px 0 0; color: #c43c3c; font-size: 14px;
 .preparation-customer-order-header strong:not(.preparation-customer-order-id) { font-weight: 400; }
 .preparation-customer-list .preparation-customer-order-items { display: grid; gap: 5px; margin: 0; color: #65716a; font-size: 14px; font-weight: 400; }
 .preparation-customer-order-items > span { display: block; }
+.admin-status-readonly { display: grid; width: min(100%, 230px); gap: 6px; color: #33443a; font-size: 14px; font-weight: 800; }
+.admin-status-readonly .admin-status { justify-self: start; }
 .dispatch-location-heading p { color: #65716a; }
 .dispatch-empty { padding: 34px 0 6px; margin: 18px 0 0; color: #65716a; font-size: 14px; font-weight: 700; text-align: center; }
 .dispatch-location-card details li { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
@@ -479,9 +481,12 @@ p.admin-profile-field-error { margin: -2px 0 0; color: #c43c3c; font-size: 14px;
   background: #dcedf5;
 }
 
-.admin-order-status {
-  padding: 8px 18px;
-  font-size: 16px;
+/* กฎรวม font-size ที่ `.admin-shell :is(...)` มี specificity 0,3,1 เพราะ :is() คิดจาก argument ที่เจาะจงที่สุด ต้องไล่ให้ถึง 0,4,0 ถึงจะคุมขนาดตัวอักษรของ badge นี้ได้ */
+.admin-shell .admin-content .admin-status.admin-order-status {
+  min-height: 36px;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 20px;
 }
 
 @media (max-width: 900px) {
