@@ -36,7 +36,14 @@ function user_announcement_route(string $method, string $path): bool
         array_filter(settings_ads($db), static fn (array $ad) => (bool) $ad['is_active']),
     ));
 
-    json_response(['data' => ['orders' => $orderLines, 'advertisements' => $advertisements]]);
+    // popup แจ้งเตือนหน้าร้าน ยึดสถานะเปิดใช้งานเป็นหลัก ถึงยังไม่ได้กรอกข้อความก็ให้หน้าร้านแสดง popup
+    $settings = settings_find($db);
+    $notice = [
+        'isEnabled' => (int) $settings['is_notice_popup_enabled'] === 1,
+        'message' => trim((string) ($settings['notice_popup_message'] ?? '')),
+    ];
+
+    json_response(['data' => ['orders' => $orderLines, 'advertisements' => $advertisements, 'notice' => $notice]]);
 }
 
 function user_settings_route(string $method, string $path): bool

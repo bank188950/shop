@@ -34,7 +34,7 @@ export function SettingsPage() {
         <label><strong>รอบบ่าย</strong><span>ปิดรับรายการสั่งซื้อ</span><Controller control={control} name="afternoonCutoff" render={({ field }) => <TimePicker value={field.value} onValueChange={field.onChange} ariaLabel="เลือกเวลาปิดรับรอบบ่าย" />} /><span>เวลาจัดส่ง</span><Input {...register('afternoonDelivery')} /></label>
       </div>
       <div className="notice-settings">
-        <div className="admin-section-heading"><div><h2><BellRing size={21} aria-hidden="true" />ตั้งค่าการแจ้งข้อมูลเตือน</h2><p>เตรียมข้อความและสถานะ popup สำหรับใช้บนหน้าร้านในอนาคต</p></div></div>
+        <div className="admin-section-heading"><div><h2><BellRing size={21} aria-hidden="true" />ตั้งค่าการแจ้งข้อมูลเตือน</h2><p>เมื่อเปิดใช้งาน ข้อความนี้จะแสดงเป็น popup ตอนลูกค้าเข้าหน้าแรกของร้าน</p></div></div>
         <label className="notice-message-label" htmlFor="user-notice"><span className="sr-only">รายละเอียด popup</span><Textarea id="user-notice" {...register('noticeMessage')} rows={4} placeholder="รายละเอียดที่กรอกจะไปแสดงใน popup" /></label>
         <label className="notice-popup-toggle"><input type="checkbox" {...register('isNoticePopupEnabled')} /><span><strong>เปิดการใช้งาน</strong></span></label>
       </div>

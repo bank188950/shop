@@ -35,4 +35,15 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--color-brand); o
 .announcement-bar:hover .announcement-track { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; }.announcement-track, .product-recommended-badge { animation: none !important; }.motion-safe\:transition, .motion-safe\:transition-transform { transition: none !important; } }
 
+/* sweetalert2 แทรก CSS ของตัวเองตอน runtime แบบไม่อยู่ใน layer จึงชนะ utility ของ Tailwind ที่อยู่ใน @layer utilities เสมอ
+   การปรับหน้าตา popup ต้องเขียนเป็น CSS ที่ specificity สูงกว่า .swal2-* แทนการส่ง class ผ่าน customClass */
+.swal2-popup.notice-popup { padding-bottom: 2em; }
+/* เปลี่ยนกรอบโฟกัสสีฟ้าของ sweetalert2 เป็น outline สีเขียวชุดเดียวกับปุ่มอื่นในหน้าร้าน */
+.swal2-popup.notice-popup .swal2-close:focus-visible { outline: 3px solid var(--color-brand); outline-offset: -3px; box-shadow: none; }
+
+/* ไอคอนของ sweetalert2 ตั้งสีจาก class ภายในของตัวเอง ต้องเขียนทับที่ระดับ .swal2-icon เพื่อให้ specificity เท่ากัน */
+.swal2-icon.notice-alert-icon { border-color: var(--color-brand); color: var(--color-brand); }
+.swal2-icon.notice-alert-icon .swal2-icon-content { display: grid; place-items: center; }
+.swal2-icon.notice-alert-icon svg { width: 72%; height: 72%; }
+
 .hero-swiper .swiper-pagination { bottom: 18px; }.hero-swiper .swiper-pagination-bullet { width: 10px; height: 10px; background: #fff; opacity: .55; }.hero-swiper .swiper-pagination-bullet-active { width: 28px; border-radius: 999px; opacity: 1; }
