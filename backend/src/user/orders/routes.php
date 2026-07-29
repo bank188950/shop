@@ -46,6 +46,43 @@ function user_order_create(PDO $db, int $userId, array $data): int
     }
 }
 
+/** รายการสั่งซื้อของวันนี้ที่โชว์หน้าแรก เห็นได้เฉพาะคนที่เข้าสู่ระบบ และเห็นเฉพาะสถานที่ส่งของเดียวกับตัวเอง */
+function user_recent_order_route(string $method, string $path): bool
+{
+    if ($method !== 'GET' || $path !== '/user/recent-orders') return false;
+
+    $db = app_db();
+    $user = user_auth_current($db);
+    if (!$user) json_response(['message' => 'กรุณาเข้าสู่ระบบเพื่อดูรายการสั่งซื้อ'], 401);
+    if (!$user['default_location_id']) json_response(['data' => []]);
+
+    $statement = $db->prepare("SELECT o.id, o.delivery_period, o.ordered_at, o.total_amount, o.payment_status, u.full_name
+        FROM orders o
+        LEFT JOIN users u ON u.id = o.user_id
+        WHERE DATE(o.ordered_at) = CURDATE() AND o.order_status <> 'cancelled' AND o.location_id = :location_id
+        ORDER BY o.ordered_at DESC, o.id DESC");
+    $statement->execute(['location_id' => (int) $user['default_location_id']]);
+    $orders = $statement->fetchAll();
+
+    $itemStatement = $db->prepare('SELECT product_name, quantity, unit_name FROM order_items WHERE order_id = :order_id ORDER BY id');
+
+    json_response(['data' => array_map(static function (array $order) use ($itemStatement) {
+        $itemStatement->execute(['order_id' => $order['id']]);
+        return [
+            'id' => (int) $order['id'],
+            'userName' => $order['full_name'] ?? 'ลูกค้า',
+            'items' => array_map(
+                static fn (array $item) => sprintf('%s %d %s', $item['product_name'], (int) $item['quantity'], $item['unit_name']),
+                $itemStatement->fetchAll(),
+            ),
+            'deliveryPeriod' => $order['delivery_period'],
+            'orderedAt' => date(DATE_ATOM, strtotime($order['ordered_at'])),
+            'totalAmount' => (float) $order['total_amount'],
+            'paymentStatus' => $order['payment_status'],
+        ];
+    }, $orders)]);
+}
+
 function user_order_route(string $method, string $path): bool
 {
     if (!str_starts_with($path, '/user/orders')) return false;

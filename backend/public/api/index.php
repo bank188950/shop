@@ -67,6 +67,7 @@ try {
     if (user_product_route($method, $path)) exit;
     if (user_profile_route($method, $path)) exit;
     if (user_settings_route($method, $path)) exit;
+    if (user_recent_order_route($method, $path)) exit;
     if (user_order_route($method, $path)) exit;
     if (user_inbox_route($method, $path)) exit;
     if (str_starts_with($path, '/admin/') && !admin_auth_current(app_db())) json_response(['message' => 'กรุณาเข้าสู่ระบบ'], 401);
