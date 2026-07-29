@@ -28,6 +28,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--color-brand); o
 @keyframes promotion-flash { 50% { opacity: .4; } }
 @keyframes product-recommendation-rainbow { to { background-position: 200% center; } }
 .announcement-orders-track { animation: announcement-orders-scroll 30s linear 1 forwards; }
+/* ถ้าไม่มีคำโฆษณาให้สลับ ต้องวิ่งวนไปเรื่อย ๆ ไม่งั้นวิ่งจบรอบแรกแล้วบาร์จะว่าง */
+.announcement-orders-track.announcement-track-loop { animation-iteration-count: infinite; }
 .announcement-promotion-track { animation: announcement-promotion-scroll 16s linear infinite, promotion-flash 1s ease-in-out infinite; }
 .product-recommended-badge { background: linear-gradient(100deg, #f13b50, #f58b28, #f6dc2c, #42b96d, #2e9cec, #8553d6, #f13b50); background-size: 200% 100%; animation: product-recommendation-rainbow 3s linear infinite; }
 .announcement-bar:hover .announcement-track { animation-play-state: paused; }
