@@ -55,6 +55,7 @@ require_once dirname(__DIR__, 2) . '/src/user/orders/repository.php';
 require_once dirname(__DIR__, 2) . '/src/user/orders/routes.php';
 require_once dirname(__DIR__, 2) . '/src/user/settings/routes.php';
 require_once dirname(__DIR__, 2) . '/src/user/messages/routes.php';
+require_once dirname(__DIR__, 2) . '/src/user/banners/routes.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = api_path();
@@ -68,6 +69,7 @@ try {
     if (user_profile_route($method, $path)) exit;
     if (user_settings_route($method, $path)) exit;
     if (user_announcement_route($method, $path)) exit;
+    if (user_banner_route($method, $path)) exit;
     if (user_recent_order_route($method, $path)) exit;
     if (user_order_route($method, $path)) exit;
     if (user_inbox_route($method, $path)) exit;
