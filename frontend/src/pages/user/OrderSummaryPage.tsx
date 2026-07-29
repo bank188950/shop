@@ -174,7 +174,7 @@ export function OrderSummaryPage() {
                 )) : (
                   <div className="rounded-xl border border-dashed border-[#9eb7a4] bg-white/70 px-5 py-10 text-center">
                     <p className="m-0 text-xl font-bold text-ink">ยังไม่มีสินค้าในตะกร้า</p>
-                    <Link to="/" className="mt-3 inline-flex min-h-11 items-center text-lg font-bold text-brand">กลับไปเลือกเมนู</Link>
+                    <Link to="/my-orders" className="mt-3 inline-flex min-h-11 items-center text-lg font-bold text-brand">ดูออเดอร์ของฉัน</Link>
                   </div>
                 )}
               </div>

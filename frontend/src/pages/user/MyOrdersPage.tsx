@@ -4,7 +4,7 @@ import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
 import { useUserOrders } from '@/features/user/order/hooks/useUserOrders'
-import { deliveryPeriodLabel, orderStatusClass, orderStatusLabel, paymentStatusLabel, thaiDateLabel } from '@/features/user/order/utils/order-labels'
+import { deliveryPeriodLabel, orderStatusClass, orderStatusLabel, thaiDateLabel } from '@/features/user/order/utils/order-labels'
 
 export function MyOrdersPage() {
   const authQuery = useUserAuth()
@@ -27,12 +27,9 @@ export function MyOrdersPage() {
               <p className="m-0 text-base font-bold text-muted">{order.orderNumber} · {thaiDateLabel(order.orderedAt)}</p>
               <h2 className="mt-1 mb-0 font-heading text-2xl text-ink">{orderStatusLabel(order.orderStatus)}</h2>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className={`inline-flex min-h-9 items-center rounded-full px-3 text-base font-extrabold ${order.paymentStatus === 'paid' ? 'bg-[#def2e1] text-[#287b3b]' : 'bg-[#fbe3e3] text-[#c0453f]'}`}>{paymentStatusLabel(order.paymentStatus)}</span>
-              <span className={`inline-flex min-h-9 items-center rounded-full px-3 text-base font-extrabold ${orderStatusClass(order.orderStatus)}`}>
-                {order.orderStatus === 'delivered' ? <CheckCircle2 className="mr-1.5" size={18} aria-hidden="true" /> : <Clock3 className="mr-1.5" size={18} aria-hidden="true" />}{orderStatusLabel(order.orderStatus)}
-              </span>
-            </div>
+            <span className={`inline-flex min-h-9 items-center rounded-full px-3 text-base font-extrabold ${orderStatusClass(order.orderStatus)}`}>
+              {order.orderStatus === 'delivered' ? <CheckCircle2 className="mr-1.5" size={18} aria-hidden="true" /> : <Clock3 className="mr-1.5" size={18} aria-hidden="true" />}{orderStatusLabel(order.orderStatus)}
+            </span>
           </div>
           <div className="mt-5 grid gap-3 border-t border-[#e2e8e3] pt-4 text-lg text-[#455048]">
             <p className="m-0 flex items-start gap-2">
