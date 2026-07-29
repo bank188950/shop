@@ -5,14 +5,13 @@ import { ArrowRight, Banknote, CalendarDays, CircleAlert, ClipboardList, Eye, Ma
 import { Link } from 'react-router-dom'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ThaiDatePicker } from '@/components/ui/thai-date-picker'
-import { deliveryPeriods, formatPrice, getOrderListStatus, getOrderTotal, sortOrdersNewestFirst, statusClass, type DeliveryPeriod } from '@/data/admin/orders'
-import { usePreparationStore } from '@/features/admin/preparation/preparation-store'
+import { deliveryPeriods, formatPrice, orderStatusClass, orderStatusLabel, todayIsoDate } from '@/features/admin/orders/utils/order-labels'
+import { useDashboardChart, useDashboardSummary } from '@/features/admin/dashboard/hooks/useDashboard'
+import type { AdminDeliveryPeriod } from '@/api/admin/orders'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
-const dashboardDate = '2026-07-20'
 const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม']
-const thaiMonthShortNames = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
 const chartRangeOptions = [{ value: 'today', label: 'วันนี้' }, { value: 'week', label: 'สัปดาห์นี้' }, { value: 'month', label: 'เดือนนี้' }] as const
 const chartOptions = (metric: 'sales' | 'orders') => ({
   responsive: true,
@@ -45,63 +44,50 @@ const chartOptions = (metric: 'sales' | 'orders') => ({
   },
 })
 
+/** แปลง `YYYY-MM-DD` เป็นวันที่ไทยแบบเต็มโดยไม่ผ่าน Date เพื่อไม่ให้ timezone เลื่อนวัน */
 function formatDashboardDate(value: string) {
-  if (value === dashboardDate) return '20 กรกฎาคม 2569'
-  return new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${value}T00:00:00`))
+  const [year, month, day] = value.split('-').map(Number)
+  return `${day} ${thaiMonths[month - 1]} ${year + 543}`
 }
 
+const currentYear = new Date().getFullYear()
+const chartYearOptions = [currentYear - 1, currentYear, currentYear + 1].map((year) => String(year + 543))
+
 export function DashboardSummary() {
-  const { orders: adminOrders } = usePreparationStore()
-  const [date, setDate] = useState(dashboardDate)
-  const [period, setPeriod] = useState<'all' | DeliveryPeriod>('all')
-  const [location, setLocation] = useState('all')
+  const [date, setDate] = useState(todayIsoDate)
+  const [period, setPeriod] = useState<'all' | AdminDeliveryPeriod>('all')
+  const [locationId, setLocationId] = useState<'all' | number>('all')
   const [chartMetric, setChartMetric] = useState<'sales' | 'orders'>('sales')
-  const [chartYear, setChartYear] = useState('2569')
-  const [chartMonth, setChartMonth] = useState('6')
-  const [chartLocation, setChartLocation] = useState('all')
+  const [chartYear, setChartYear] = useState(String(currentYear + 543))
+  const [chartMonthIndex, setChartMonthIndex] = useState(String(new Date().getMonth()))
+  const [chartLocationId, setChartLocationId] = useState<'all' | number>('all')
   const [chartRange, setChartRange] = useState<'today' | 'week' | 'month'>('month')
 
-  const locations = useMemo(() => Array.from(new Set(adminOrders.map((order) => order.location))), [adminOrders])
+  const filters = useMemo(() => ({ deliveryDate: date, deliveryPeriod: period, locationId }), [date, locationId, period])
+  const chartFilters = useMemo(() => ({
+    metric: chartMetric,
+    range: chartRange,
+    year: Number(chartYear) - 543,
+    month: Number(chartMonthIndex) + 1,
+    locationId: chartLocationId,
+  }), [chartLocationId, chartMetric, chartMonthIndex, chartRange, chartYear])
+
+  const summaryQuery = useDashboardSummary(filters)
+  const chartQuery = useDashboardChart(chartFilters)
+  const summary = summaryQuery.data?.summary
+  const locations = summaryQuery.data?.locations ?? []
+  const locationSummary = summary?.locationSummary ?? []
+  const pendingOrders = summary?.pendingOrders ?? []
   const periodSummary = period === 'all' ? 'รอบเช้าและรอบบ่าย' : deliveryPeriods[period].label
-  const filteredOrders = useMemo(() => adminOrders.filter((order) => (
-    order.deliveryDate === date
-    && (period === 'all' || order.period === period)
-    && (location === 'all' || order.location === location)
-  )), [adminOrders, date, location, period])
-  const paidOrders = filteredOrders.filter((order) => order.paymentStatus === 'จ่ายแล้ว')
-  const activeOrders = filteredOrders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'พร้อมส่ง'].includes(order.status))
-  const pendingOrders = sortOrdersNewestFirst(filteredOrders
-    .filter((order) => order.paymentStatus === 'รอชำระเงิน' || order.status === 'ยกเลิก'))
-    .slice(0, 5)
-  const locationSummary = locations.map((item) => {
-    const orders = filteredOrders.filter((order) => order.location === item)
-    const morning = orders.filter((order) => order.period === 'morning').length
-    const afternoon = orders.filter((order) => order.period === 'afternoon').length
-    const paid = orders.filter((order) => order.paymentStatus === 'จ่ายแล้ว').length
-    const active = orders.filter((order) => ['รอตรวจสอบ', 'เตรียมสินค้า', 'พร้อมส่ง'].includes(order.status)).length
-    return { location: item, morning, afternoon, paid, active, total: paid ? orders.filter((order) => order.paymentStatus === 'จ่ายแล้ว').reduce((sum, order) => sum + getOrderTotal(order), 0) : 0 }
-  }).filter((item) => item.morning + item.afternoon > 0)
-  const selectedMonthIndex = Number(chartMonth)
-  const daysInSelectedMonth = new Date(Number(chartYear) - 543, selectedMonthIndex + 1, 0).getDate()
-  const monthlyLabels = Array.from({ length: daysInSelectedMonth }, (_, index) => `${index + 1} ${thaiMonthShortNames[selectedMonthIndex]}`)
-  const chartLocationOffset = chartLocation === 'all' ? 0 : locations.indexOf(chartLocation) + 1
-  const chartLabels = chartRange === 'today'
-    ? ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00']
-    : chartRange === 'week'
-      ? ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์']
-      : monthlyLabels
-  const chartValues = Array.from({ length: chartLabels.length }, (_, index) => {
-    const variation = ((index + 1) * 37 + selectedMonthIndex * 17 + Number(chartYear) + chartLocationOffset * 23) % 41
-    const rangeMultiplier = chartRange === 'today' ? 1.2 : chartRange === 'week' ? 1.08 : 1
-    return chartMetric === 'sales'
-      ? Math.round((4200 + variation * 125 + ((index + 1) % 6) * 290 - chartLocationOffset * 620) * rangeMultiplier)
-      : Math.max(1, Math.round((12 + variation % 17 + (index + 1) % 5 - chartLocationOffset * 2) * rangeMultiplier))
-  })
+  const locationName = locations.find((item) => item.id === locationId)?.name ?? ''
+  const activeOrderCount = summary?.activeOrderCount ?? 0
+
+  const selectedMonthIndex = Number(chartMonthIndex)
   const chartRangeTitle = chartRange === 'today' ? 'วันนี้' : chartRange === 'week' ? 'สัปดาห์นี้' : `เดือน${thaiMonths[selectedMonthIndex]} ${chartYear}`
   const chartData = {
-    labels: chartLabels,
+    labels: chartQuery.data?.labels ?? [],
     datasets: [{
-      data: chartValues,
+      data: chartQuery.data?.values ?? [],
       borderColor: chartMetric === 'sales' ? '#267053' : '#2f83d4',
       backgroundColor: chartMetric === 'sales' ? '#26705320' : '#2f83d420',
       fill: true,
@@ -113,28 +99,31 @@ export function DashboardSummary() {
   }
 
   function clearFilters() {
-    setDate(dashboardDate)
+    setDate(todayIsoDate())
     setPeriod('all')
-    setLocation('all')
+    setLocationId('all')
   }
 
-  return <>
-    <section className="dashboard-wide-chart"><article className="dashboard-chart-card"><div className="dashboard-card-heading"><div><h2>แนวโน้ม{chartMetric === 'sales' ? 'ยอดขาย' : 'จำนวนรายการสั่งซื้อ'} {chartRangeTitle}</h2><div className="dashboard-chart-range" role="group" aria-label="เลือกช่วงเวลาของกราฟ">{chartRangeOptions.map((option) => <button key={option.value} type="button" className={chartRange === option.value ? 'active' : ''} aria-pressed={chartRange === option.value} onClick={() => setChartRange(option.value)}>{option.label}</button>)}</div></div><div className="dashboard-chart-controls"><div className="dashboard-chart-filter"><Select value={chartYear} onValueChange={(value) => { setChartYear(value); setChartRange('month') }}><SelectTrigger aria-label="เลือกปีของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content">{['2568', '2569', '2570'].map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select><Select value={chartMonth} onValueChange={(value) => { setChartMonth(value); setChartRange('month') }}><SelectTrigger aria-label="เลือกเดือนของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content">{thaiMonths.map((item, index) => <SelectItem key={item} value={String(index)}>{item}</SelectItem>)}</SelectContent></Select><Select value={chartLocation} onValueChange={setChartLocation}><SelectTrigger aria-label="เลือกจุดรับสินค้าของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content"><SelectItem value="all">ทุกจุดรับ</SelectItem>{locations.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div><div className="dashboard-chart-toggle" role="group" aria-label="เลือกข้อมูลกราฟ"><button type="button" className={chartMetric === 'sales' ? 'active' : ''} onClick={() => setChartMetric('sales')}>ยอดขาย</button><button type="button" className={chartMetric === 'orders' ? 'active' : ''} onClick={() => setChartMetric('orders')}>รายการสั่งซื้อ</button></div></div></div><div className="dashboard-chart"><Line data={chartData} options={chartOptions(chartMetric)} aria-label={chartMetric === 'sales' ? `กราฟยอดขาย${chartRangeTitle}` : `กราฟจำนวนรายการสั่งซื้อ${chartRangeTitle}`} role="img" /></div></article></section>
+  if (summaryQuery.isLoading) return <div className="page-message">กำลังโหลดข้อมูลภาพรวม...</div>
+  if (summaryQuery.isError) return <div className="page-message">ไม่สามารถโหลดข้อมูลภาพรวมได้: {summaryQuery.error.message}</div>
 
-    <section className="dashboard-dispatch-controls" aria-label="ตัวกรองสรุปรอบส่งและรายการสั่งซื้อที่ต้องติดตาม"><div className="dashboard-filter-card"><div className="dashboard-filter-groups"><div className="dashboard-filter-group"><p><CalendarDays size={16} aria-hidden="true" />กำหนดรอบส่ง</p><label>วันจัดส่ง<ThaiDatePicker value={date} onValueChange={setDate} ariaLabel="เลือกวันจัดส่ง" /></label><label>รอบส่ง<Select value={period} onValueChange={(value) => setPeriod(value as 'all' | DeliveryPeriod)}><SelectTrigger aria-label="รอบส่ง"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem><SelectItem value="morning">รอบเช้า</SelectItem><SelectItem value="afternoon">รอบบ่าย</SelectItem></SelectContent></Select></label></div><div className="dashboard-filter-group"><p><MapPin size={16} aria-hidden="true" />จุดรับสินค้า</p><label>สถานที่รับสินค้า<Select value={location} onValueChange={setLocation}><SelectTrigger aria-label="จุดรับสินค้า"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem>{locations.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label></div></div><button type="button" className="dashboard-reset-button" onClick={clearFilters}><RefreshCw size={16} aria-hidden="true" />ล้างตัวกรอง</button></div></section>
+  return <>
+    <section className="dashboard-wide-chart"><article className="dashboard-chart-card"><div className="dashboard-card-heading"><div><h2>แนวโน้ม{chartMetric === 'sales' ? 'ยอดขาย' : 'จำนวนรายการสั่งซื้อ'} {chartRangeTitle}</h2><div className="dashboard-chart-range" role="group" aria-label="เลือกช่วงเวลาของกราฟ">{chartRangeOptions.map((option) => <button key={option.value} type="button" className={chartRange === option.value ? 'active' : ''} aria-pressed={chartRange === option.value} onClick={() => setChartRange(option.value)}>{option.label}</button>)}</div></div><div className="dashboard-chart-controls"><div className="dashboard-chart-filter"><Select value={chartYear} onValueChange={(value) => { setChartYear(value); setChartRange('month') }}><SelectTrigger aria-label="เลือกปีของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content">{chartYearOptions.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select><Select value={chartMonthIndex} onValueChange={(value) => { setChartMonthIndex(value); setChartRange('month') }}><SelectTrigger aria-label="เลือกเดือนของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content">{thaiMonths.map((item, index) => <SelectItem key={item} value={String(index)}>{item}</SelectItem>)}</SelectContent></Select><Select value={String(chartLocationId)} onValueChange={(value) => setChartLocationId(value === 'all' ? 'all' : Number(value))}><SelectTrigger aria-label="เลือกจุดรับสินค้าของกราฟ"><SelectValue /></SelectTrigger><SelectContent className="dashboard-chart-filter-content"><SelectItem value="all">ทุกจุดรับ</SelectItem>{locations.map((item) => <SelectItem key={item.id} value={String(item.id)}>{item.name}</SelectItem>)}</SelectContent></Select></div><div className="dashboard-chart-toggle" role="group" aria-label="เลือกข้อมูลกราฟ"><button type="button" className={chartMetric === 'sales' ? 'active' : ''} onClick={() => setChartMetric('sales')}>ยอดขาย</button><button type="button" className={chartMetric === 'orders' ? 'active' : ''} onClick={() => setChartMetric('orders')}>รายการสั่งซื้อ</button></div></div></div><div className="dashboard-chart">{chartQuery.isError ? <p className="dashboard-empty-state">ไม่สามารถโหลดกราฟได้: {chartQuery.error.message}</p> : <Line data={chartData} options={chartOptions(chartMetric)} aria-label={chartMetric === 'sales' ? `กราฟยอดขาย${chartRangeTitle}` : `กราฟจำนวนรายการสั่งซื้อ${chartRangeTitle}`} role="img" />}</div></article></section>
+
+    <section className="dashboard-dispatch-controls" aria-label="ตัวกรองสรุปรอบส่งและรายการสั่งซื้อที่ต้องติดตาม"><div className="dashboard-filter-card"><div className="dashboard-filter-groups"><div className="dashboard-filter-group"><p><CalendarDays size={16} aria-hidden="true" />กำหนดรอบส่ง</p><label>วันจัดส่ง<ThaiDatePicker value={date} onValueChange={setDate} ariaLabel="เลือกวันจัดส่ง" /></label><label>รอบส่ง<Select value={period} onValueChange={(value) => setPeriod(value as 'all' | AdminDeliveryPeriod)}><SelectTrigger aria-label="รอบส่ง"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem><SelectItem value="morning">รอบเช้า</SelectItem><SelectItem value="afternoon">รอบบ่าย</SelectItem></SelectContent></Select></label></div><div className="dashboard-filter-group"><p><MapPin size={16} aria-hidden="true" />จุดรับสินค้า</p><label>สถานที่รับสินค้า<Select value={String(locationId)} onValueChange={(value) => setLocationId(value === 'all' ? 'all' : Number(value))}><SelectTrigger aria-label="จุดรับสินค้า"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">ทั้งหมด</SelectItem>{locations.map((item) => <SelectItem key={item.id} value={String(item.id)}>{item.name}</SelectItem>)}</SelectContent></Select></label></div></div><button type="button" className="dashboard-reset-button" onClick={clearFilters}><RefreshCw size={16} aria-hidden="true" />ล้างตัวกรอง</button></div></section>
 
     <div className="admin-cards dashboard-kpis">
-      <Link to="/admin/orders" className="dashboard-kpi"><span className="admin-card-icon mint"><Banknote size={22} aria-hidden="true" /></span><span><small>ยอดขายที่ชำระแล้ว</small><strong>{formatPrice(paidOrders.reduce((sum, order) => sum + getOrderTotal(order), 0))}</strong><p>มี {paidOrders.length} รายการ <ArrowRight size={14} aria-hidden="true" /></p></span></Link>
-      <Link to="/admin/orders" className="dashboard-kpi"><span className="admin-card-icon peach"><ClipboardList size={22} aria-hidden="true" /></span><span><small>แสดงรายการ</small><strong>{filteredOrders.length} รายการ</strong><p>ดูรายการทั้งหมด <ArrowRight size={14} aria-hidden="true" /></p></span></Link>
-      <Link to="/admin/dispatches-today" className="dashboard-kpi"><span className="admin-card-icon blue"><Truck size={22} aria-hidden="true" /></span><span><small>รอดำเนินการ</small><strong>{activeOrders.length} รายการ</strong><p className={activeOrders.length ? 'warning' : 'positive'}>{activeOrders.length ? <>ดูรายการ <ArrowRight size={14} aria-hidden="true" /></> : 'ไม่มีงานค้าง'}</p></span></Link>
-      <a href="#dashboard-pending-orders" className="dashboard-kpi"><span className="admin-card-icon rose"><CircleAlert size={22} aria-hidden="true" /></span><span><small>รอชำระเงิน, ยกเลิก</small><strong>{pendingOrders.length} รายการ</strong><p>ดูรายการ <ArrowRight size={14} aria-hidden="true" /></p></span></a>
+      <Link to="/admin/orders" className="dashboard-kpi"><span className="admin-card-icon mint"><Banknote size={22} aria-hidden="true" /></span><span><small>ยอดขายที่ชำระแล้ว</small><strong>{formatPrice(summary?.paidSalesTotal ?? 0)}</strong><p>มี {summary?.paidOrderCount ?? 0} รายการ <ArrowRight size={14} aria-hidden="true" /></p></span></Link>
+      <Link to="/admin/orders" className="dashboard-kpi"><span className="admin-card-icon peach"><ClipboardList size={22} aria-hidden="true" /></span><span><small>แสดงรายการ</small><strong>{summary?.orderCount ?? 0} รายการ</strong><p>ดูรายการทั้งหมด <ArrowRight size={14} aria-hidden="true" /></p></span></Link>
+      <Link to="/admin/dispatches-today" className="dashboard-kpi"><span className="admin-card-icon blue"><Truck size={22} aria-hidden="true" /></span><span><small>รอดำเนินการ</small><strong>{activeOrderCount} รายการ</strong><p className={activeOrderCount ? 'warning' : 'positive'}>{activeOrderCount ? <>ดูรายการ <ArrowRight size={14} aria-hidden="true" /></> : 'ไม่มีงานค้าง'}</p></span></Link>
+      <a href="#dashboard-pending-orders" className="dashboard-kpi"><span className="admin-card-icon rose"><CircleAlert size={22} aria-hidden="true" /></span><span><small>รอชำระเงิน, ยกเลิก</small><strong>{summary?.pendingOrderCount ?? 0} รายการ</strong><p>ดูรายการ <ArrowRight size={14} aria-hidden="true" /></p></span></a>
     </div>
 
-    <section className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>สรุปรอบส่งแยกตามจุดรับสินค้า</h2><p>ใช้ตรวจจำนวนงานและยอดขายก่อนเตรียมสินค้า</p></div><Link to="/admin/dispatches-today" className="admin-text-button">ดูจุดรับสินค้า <ArrowRight size={16} aria-hidden="true" /></Link></div><div className="dashboard-table-scroll"><table className="dashboard-data-table dashboard-location-summary-table"><thead><tr><th>จุดรับสินค้า</th><th>รอบเช้า</th><th>รอบบ่าย</th><th>จ่ายแล้ว</th><th>รอดำเนินการ</th><th>ยอดขาย</th><th>ดูรายละเอียด</th></tr></thead><tbody>{locationSummary.length ? locationSummary.map((item) => <tr key={item.location}><td><strong>{item.location}</strong></td><td className="numeric">{item.morning}</td><td className="numeric">{item.afternoon}</td><td className="numeric">{item.paid}</td><td className="numeric">{item.active}</td><td className="numeric"><strong style={{ color: '#303934', fontWeight: 400 }}>{formatPrice(item.total)}</strong></td><td><Link className="admin-table-link" to="/admin/dispatches-today" aria-label={`ดูรายละเอียด ${item.location}`}><Eye size={18} aria-hidden="true" /></Link></td></tr>) : <tr><td colSpan={7} className="dashboard-empty-cell">ไม่มีรายการสั่งซื้อในตัวกรองนี้</td></tr>}</tbody></table></div></section>
+    <section className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>สรุปรอบส่งแยกตามจุดรับสินค้า</h2><p>ใช้ตรวจจำนวนงานและยอดขายก่อนเตรียมสินค้า</p></div><Link to="/admin/dispatches-today" className="admin-text-button">ดูจุดรับสินค้า <ArrowRight size={16} aria-hidden="true" /></Link></div><div className="dashboard-table-scroll"><table className="dashboard-data-table dashboard-location-summary-table"><thead><tr><th>จุดรับสินค้า</th><th>รอบเช้า</th><th>รอบบ่าย</th><th>จ่ายแล้ว</th><th>รอดำเนินการ</th><th>ยอดขาย</th><th>ดูรายละเอียด</th></tr></thead><tbody>{locationSummary.length ? locationSummary.map((item) => <tr key={item.locationId}><td><strong>{item.locationName}</strong></td><td className="numeric">{item.morning}</td><td className="numeric">{item.afternoon}</td><td className="numeric">{item.paid}</td><td className="numeric">{item.active}</td><td className="numeric"><strong style={{ color: '#303934', fontWeight: 400 }}>{formatPrice(item.salesTotal)}</strong></td><td><Link className="admin-table-link" to="/admin/dispatches-today" aria-label={`ดูรายละเอียด ${item.locationName}`}><Eye size={18} aria-hidden="true" /></Link></td></tr>) : <tr><td colSpan={7} className="dashboard-empty-cell">ไม่มีรายการสั่งซื้อในตัวกรองนี้</td></tr>}</tbody></table></div></section>
 
     <section id="dashboard-pending-orders" className="dashboard-bottom-grid dashboard-orders-only">
-      <article className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>รายการสั่งซื้อ (รอการชำระเงิน, ยกเลิก)</h2><p>แสดงรายการสั่งซื้อที่รอชำระเงินหรือยกเลิก</p></div><Link to="/admin/orders" className="admin-text-button">ดูรายการสั่งซื้อ <ArrowRight size={16} aria-hidden="true" /></Link></div><div className="dashboard-table-scroll"><table className="dashboard-data-table dashboard-order-table"><thead><tr><th>เลขที่รายการสั่งซื้อ</th><th>ลูกค้า / จุดรับ</th><th>รอบส่ง</th><th>ยอดรวม</th><th>สถานะ</th><th>ดูรายละเอียด</th></tr></thead><tbody>{pendingOrders.length ? pendingOrders.map((order) => <tr key={order.id}><td><strong>{order.id}</strong></td><td><strong>{order.userName}</strong><small>{order.location}</small></td><td><strong>{deliveryPeriods[order.period].label}</strong></td><td className="numeric">{formatPrice(getOrderTotal(order))}</td><td><span className={`admin-status ${statusClass(getOrderListStatus(order))}`}>{getOrderListStatus(order)}</span></td><td><Link className="admin-table-link" to={`/admin/orders/${order.id}`} aria-label={`ดูรายละเอียดรายการสั่งซื้อ ${order.id}`}><Eye size={18} aria-hidden="true" /></Link></td></tr>) : <tr><td colSpan={6} className="dashboard-empty-cell">ไม่มีรายการสั่งซื้อที่รอชำระเงินหรือยกเลิก</td></tr>}</tbody></table></div></article>
+      <article className="dashboard-panel"><div className="dashboard-panel-heading"><div><h2>รายการสั่งซื้อ (รอการชำระเงิน, ยกเลิก)</h2><p>แสดงรายการสั่งซื้อที่รอชำระเงินหรือยกเลิก</p></div><Link to="/admin/orders" className="admin-text-button">ดูรายการสั่งซื้อ <ArrowRight size={16} aria-hidden="true" /></Link></div><div className="dashboard-table-scroll"><table className="dashboard-data-table dashboard-order-table"><thead><tr><th>เลขที่รายการสั่งซื้อ</th><th>ลูกค้า / จุดรับ</th><th>รอบส่ง</th><th>ยอดรวม</th><th>สถานะ</th><th>ดูรายละเอียด</th></tr></thead><tbody>{pendingOrders.length ? pendingOrders.map((order) => <tr key={order.id}><td><strong>{order.orderNumber}</strong></td><td><strong>{order.userName}</strong><small>{order.locationName}</small></td><td><strong>{deliveryPeriods[order.deliveryPeriod].label}</strong></td><td className="numeric">{formatPrice(order.totalAmount)}</td><td><span className={`admin-status ${orderStatusClass(order.orderStatus)}`}>{orderStatusLabel(order.orderStatus)}</span></td><td><Link className="admin-table-link" to={`/admin/orders/${order.id}`} aria-label={`ดูรายละเอียดรายการสั่งซื้อ ${order.orderNumber}`}><Eye size={18} aria-hidden="true" /></Link></td></tr>) : <tr><td colSpan={6} className="dashboard-empty-cell">ไม่มีรายการสั่งซื้อที่รอชำระเงินหรือยกเลิก</td></tr>}</tbody></table></div></article>
     </section>
-    <p className="dashboard-filter-summary dashboard-filter-summary-bottom"><CalendarDays size={18} aria-hidden="true" />ข้อมูลสำหรับวันที่ {formatDashboardDate(date)} ({periodSummary}){location !== 'all' ? ` · ${location}` : ''}</p>
+    <p className="dashboard-filter-summary dashboard-filter-summary-bottom"><CalendarDays size={18} aria-hidden="true" />ข้อมูลสำหรับวันที่ {formatDashboardDate(date)} ({periodSummary}){locationName ? ` · ${locationName}` : ''}</p>
   </>
 }
