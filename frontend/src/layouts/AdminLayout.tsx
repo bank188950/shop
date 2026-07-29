@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { ChevronLeft, ClipboardList, ClipboardPlus, CookingPot, Eraser, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Trash2, Truck, UserRound } from 'lucide-react'
-import { mockOrders } from '@/data/admin/orders'
+import { useAdminOrders } from '@/features/admin/orders/hooks/useAdminOrders'
+import { todayIsoDate } from '@/features/admin/orders/utils/order-labels'
 import { useProducts } from '@/features/admin/product/hooks/useProducts'
 import { useAdminProfile } from '@/features/admin/profile/hooks/useAdminProfile'
 import { useAdminLogout } from '@/features/admin/auth/hooks/useAdminAuth'
@@ -21,10 +22,11 @@ const items = [
   { label: 'ตั้งค่า', icon: Settings, to: '/admin/settings' },
 ]
 
-const newOrderCount = mockOrders.filter((order) => order.status === 'รอตรวจสอบ').length
-
 export function AdminLayout() {
   const navigate = useNavigate()
+  // ตัวเลขบนไอคอนคือรายการสั่งซื้อสถานะ "รอตรวจสอบ" ของวันปัจจุบัน นับรวมทั้งรอบเช้าและรอบบ่าย
+  const newOrderFilters = useMemo(() => ({ deliveryDate: todayIsoDate(), deliveryPeriod: 'all' as const, locationId: 'all' as const, orderStatus: 'pending_review' as const, query: '' }), [])
+  const newOrderCount = useAdminOrders(newOrderFilters).data?.orders.length ?? 0
   const lowStockCount = useProducts(1, 1).data?.meta.lowStock ?? 0
   const adminProfile = useAdminProfile().data
   const logoutMutation = useAdminLogout()
