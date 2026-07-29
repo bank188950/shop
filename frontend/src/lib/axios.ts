@@ -9,9 +9,13 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// แนบ body ของ response ไว้ที่ error ด้วย เผื่อหน้าไหนต้องใช้รายละเอียดมากกว่าข้อความเดียว
 api.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(new Error(error.response?.data?.message ?? 'ไม่สามารถเชื่อมต่อระบบได้')),
+  (error) => {
+    const data = error.response?.data
+    return Promise.reject(Object.assign(new Error(data?.message ?? 'ไม่สามารถเชื่อมต่อระบบได้'), { data }))
+  },
 )
 
 export default api

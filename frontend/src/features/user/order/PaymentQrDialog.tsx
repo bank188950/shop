@@ -4,7 +4,7 @@ import { QRCodeCanvas } from 'qrcode.react'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useDeliverySettings, usePayUserOrder } from '@/features/user/order/hooks/useUserOrders'
-import { paymentQrValue } from '@/features/user/order/utils/payment-qr'
+import { downloadPaymentQr, paymentQrValue } from '@/features/user/order/utils/payment-qr'
 import type { UserOrder } from '@/api/user/orders'
 
 export function PaymentQrDialog({ order }: { order: UserOrder }) {
@@ -13,15 +13,6 @@ export function PaymentQrDialog({ order }: { order: UserOrder }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const settingsQuery = useDeliverySettings()
   const payOrderMutation = usePayUserOrder()
-
-  const downloadQr = () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const link = document.createElement('a')
-    link.href = canvas.toDataURL('image/png')
-    link.download = `qr-${order.orderNumber}.png`
-    link.click()
-  }
 
   const payOrder = async () => {
     setError('')
@@ -58,7 +49,7 @@ export function PaymentQrDialog({ order }: { order: UserOrder }) {
       </div>
       {error && <p className="m-0 text-base font-bold text-[#c84646]" role="alert">{error}</p>}
       <div className="grid gap-3">
-        <button type="button" onClick={downloadQr} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#76503a] px-4 text-lg font-extrabold text-[#76503a] transition hover:bg-[#f6efe9]">
+        <button type="button" onClick={() => downloadPaymentQr(canvasRef.current, order.orderNumber)} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#76503a] px-4 text-lg font-extrabold text-[#76503a] transition hover:bg-[#f6efe9]">
           <Download size={20} aria-hidden="true" />ดาวน์โหลด QR Code
         </button>
         <button type="button" onClick={payOrder} disabled={payOrderMutation.isPending} aria-busy={payOrderMutation.isPending} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-brand px-4 text-lg font-extrabold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50">

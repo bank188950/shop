@@ -1,8 +1,9 @@
-import { Check, ChevronLeft, Clock, Info, Minus, PanelsTopLeft, Plus, Send, SunMedium, Sunset, UserRound, X } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { Check, ChevronLeft, Clock, Download, Info, Minus, PanelsTopLeft, Plus, Send, SunMedium, Sunset, UserRound, X } from 'lucide-react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { QRCodeSVG } from 'qrcode.react'
+import { QRCodeCanvas } from 'qrcode.react'
 import Swal from 'sweetalert2'
+import type { SweetAlertOptions } from 'sweetalert2'
 import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
@@ -11,7 +12,7 @@ import { productStockLabel } from '@/features/user/shared/utils/product-labels'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
 import { useCreateUserOrder, useDeliverySettings, usePayUserOrder } from '@/features/user/order/hooks/useUserOrders'
 import { orderStatusClass, orderStatusLabel } from '@/features/user/order/utils/order-labels'
-import { paymentQrValue } from '@/features/user/order/utils/payment-qr'
+import { downloadPaymentQr, paymentQrValue } from '@/features/user/order/utils/payment-qr'
 import type { UserOrder, DeliveryPeriod } from '@/api/user/orders'
 import type { UserProduct } from '@/api/user/products'
 import { useCartStore } from '@/stores/cart-store'
@@ -43,6 +44,41 @@ const enlargeAlertButtons = () => {
   })
 }
 
+type StockShortage = { name: string, remaining: number, unitName: string }
+
+/** backend ตอบ 409 พร้อมรายการของที่ไม่พอทั้งหมด เพื่อให้ลูกค้าแก้ตะกร้าจบในรอบเดียว */
+const stockShortagesOf = (error: unknown): StockShortage[] => {
+  const shortages = (error as { data?: { shortages?: StockShortage[] } })?.data?.shortages
+  return Array.isArray(shortages) ? shortages : []
+}
+
+const escapeHtml = (value: string) => value.replace(/[&<>"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[character] ?? character)
+
+const swalBaseOptions: SweetAlertOptions = {
+  showCancelButton: true,
+  showCloseButton: true,
+  cancelButtonText: 'ยกเลิก',
+  buttonsStyling: false,
+  didOpen: enlargeAlertButtons,
+  customClass: {
+    popup: 'rounded-2xl p-8 sm:p-10',
+    title: 'font-heading text-3xl text-ink sm:text-4xl',
+    htmlContainer: 'mt-3 text-xl font-bold text-[#455048]',
+    closeButton: 'absolute top-4 right-4 grid size-11 place-items-center rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand',
+    actions: 'mt-8 gap-4',
+    confirmButton: 'min-h-14 rounded-full bg-brand px-10 font-heading text-2xl font-extrabold text-white hover:bg-brand-dark',
+    cancelButton: 'min-h-14 rounded-full bg-[#6b7280] px-10 font-heading text-2xl font-extrabold text-white hover:bg-[#4b5563]',
+  },
+}
+
+const alertStockShortages = (shortages: StockShortage[]) => Swal.fire({
+  ...swalBaseOptions,
+  icon: 'error',
+  title: 'สินค้าที่มีไม่พอกับที่สั่ง',
+  html: `<ol class="m-0 inline-block list-decimal pl-7 text-left">${shortages.map((item) => `<li class="mt-2 first:mt-0">${escapeHtml(item.name)} เหลือ ${item.remaining} ${escapeHtml(item.unitName)}</li>`).join('')}</ol>`,
+  confirmButtonText: 'ตกลง',
+})
+
 export function OrderSummaryPage() {
   const items = useCartStore((state) => state.items)
   const setQuantity = useCartStore((state) => state.setQuantity)
@@ -50,6 +86,7 @@ export function OrderSummaryPage() {
   const [delivery, setDelivery] = useState<DeliveryPeriod | null>(null)
   const [order, setOrder] = useState<UserOrder | null>(null)
   const [confirmedItems, setConfirmedItems] = useState<CartLine[]>([])
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null)
 
   const productsQuery = useUserProducts()
   const authQuery = useUserAuth()
@@ -67,24 +104,7 @@ export function OrderSummaryPage() {
   const itemCount = useMemo(() => displayItems.reduce((total, item) => total + item.quantity, 0), [displayItems])
   const subtotal = order?.totalAmount ?? displayItems.reduce((total, item) => total + item.price * item.quantity, 0)
 
-  const alert = (title: string, icon: 'warning' | 'error' = 'warning') => Swal.fire({
-    icon,
-    title,
-    showCancelButton: true,
-    showCloseButton: true,
-    confirmButtonText: 'ตกลง',
-    cancelButtonText: 'ยกเลิก',
-    buttonsStyling: false,
-    didOpen: enlargeAlertButtons,
-    customClass: {
-      popup: 'rounded-2xl p-8 sm:p-10',
-      title: 'font-heading text-3xl text-ink sm:text-4xl',
-      closeButton: 'absolute top-4 right-4 grid size-11 place-items-center rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand',
-      actions: 'mt-8 gap-4',
-      confirmButton: 'min-h-14 rounded-full bg-brand px-10 font-heading text-2xl font-extrabold text-white hover:bg-brand-dark',
-      cancelButton: 'min-h-14 rounded-full bg-[#6b7280] px-10 font-heading text-2xl font-extrabold text-white hover:bg-[#4b5563]',
-    },
-  })
+  const alert = (title: string, icon: 'warning' | 'error' = 'warning') => Swal.fire({ ...swalBaseOptions, icon, title, confirmButtonText: 'ตกลง' })
 
   const confirmOrder = async () => {
     if (!user) {
@@ -100,6 +120,24 @@ export function OrderSummaryPage() {
       return
     }
 
+    // เช็คสต็อกจากข้อมูลที่โหลดมาก่อน ลูกค้าจะได้รู้ว่าของไม่พอตั้งแต่ยังไม่ต้องกดยืนยัน
+    const cartShortages = cartItems
+      .filter((item) => item.stockQuantity < item.quantity)
+      .map((item) => ({ name: item.name, remaining: item.stockQuantity, unitName: item.unitName }))
+    if (cartShortages.length) {
+      await alertStockShortages(cartShortages)
+      return
+    }
+
+    const confirmed = await Swal.fire({
+      ...swalBaseOptions,
+      icon: 'warning',
+      title: 'ยืนยันการสั่งซื้อ',
+      text: `${itemCount} รายการ · ${deliveryOptions[delivery].label} · ยอดชำระ ${formatPrice(subtotal)}`,
+      confirmButtonText: 'ยืนยันสั่งซื้อ',
+    })
+    if (!confirmed.isConfirmed) return
+
     try {
       const createdOrder = await createOrderMutation.mutateAsync({
         locationId: user.locationId,
@@ -110,6 +148,11 @@ export function OrderSummaryPage() {
       setOrder(createdOrder)
       clearCart()
     } catch (error) {
+      const shortages = stockShortagesOf(error)
+      if (shortages.length) {
+        await alertStockShortages(shortages)
+        return
+      }
       await alert(error instanceof Error ? error.message : 'ไม่สามารถสร้างคำสั่งซื้อได้', 'error')
     }
   }
@@ -236,19 +279,21 @@ export function OrderSummaryPage() {
             {order && order.paymentStatus === 'pending' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="payment-heading" aria-live="polite">
               <h2 id="payment-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">ช่องทางการชำระเงิน</h2>
               <div className="mt-5 grid place-items-center gap-4 rounded-xl border-2 border-dashed border-[#77a984] bg-white p-5 text-center">
-                <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeSVG value={paymentQrValue(order.orderNumber, order.totalAmount)} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} aria-label="QR Code สำหรับชำระเงิน" /></div>
+                <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeCanvas ref={qrCanvasRef} value={paymentQrValue(order.orderNumber, order.totalAmount)} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} title={`QR Code สำหรับชำระเงินคำสั่งซื้อ ${order.orderNumber}`} /></div>
                 <div>
                   <p className="m-0 text-xl font-extrabold text-ink">สแกน QR Code เพื่อชำระเงิน</p>
                   <p className="mt-1 mb-0 text-lg font-bold text-brand">ยอดชำระ {formatPrice(order.totalAmount)}</p>
                   <p className="mt-1 mb-0 text-base text-muted">ชำระเงินภายใน {settingsQuery.data?.paymentMinutes ?? 20} นาที ไม่นั้นคำสั่งซื้อจะถูกยกเลิกครับ</p>
                 </div>
               </div>
-              <button type="button" onClick={payOrder} disabled={payOrderMutation.isPending} aria-busy={payOrderMutation.isPending} className="mt-4 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-brand px-4 text-xl font-extrabold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50">{payOrderMutation.isPending ? 'กำลังยืนยัน' : 'ชำระเงินแล้ว'} <Check size={20} aria-hidden="true" /></button>
+              <button type="button" onClick={() => downloadPaymentQr(qrCanvasRef.current, order.orderNumber)} className="mt-4 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full border border-[#76503a] px-4 text-xl font-extrabold text-[#76503a] transition hover:bg-[#f6efe9]"><Download size={20} aria-hidden="true" />ดาวน์โหลด QR Code</button>
+              <button type="button" onClick={payOrder} disabled={payOrderMutation.isPending} aria-busy={payOrderMutation.isPending} className="mt-3 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-brand px-4 text-xl font-extrabold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50">{payOrderMutation.isPending ? 'กำลังยืนยัน' : 'ชำระเงินแล้ว'} <Check size={20} aria-hidden="true" /></button>
             </section>}
 
             {order && order.paymentStatus === 'paid' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 text-center max-md:p-4" aria-live="polite">
               <p className="m-0 inline-flex items-center gap-2 font-heading text-2xl text-brand"><Check size={24} strokeWidth={3} aria-hidden="true" />ได้รับการชำระเงินแล้ว</p>
-              <p className="mt-2 mb-0 text-lg font-bold text-[#455048]">คำสั่งซื้อ {order.orderNumber} อยู่ระหว่าง{orderStatusLabel(order.orderStatus)} ทางร้านจะอัปเดตสถานะให้อีกครั้ง</p>
+              <p className="mt-2 mb-0 text-lg font-bold text-[#455048]">คำสั่งซื้อ {order.orderNumber} อยู่ระหว่าง{orderStatusLabel(order.orderStatus)}</p>
+              <p className="mt-1 mb-0 text-lg font-bold text-[#455048]">ทางร้านจะอัปเดตสถานะให้อีกครั้ง</p>
               <Link to="/my-orders" className="mt-4 inline-flex min-h-12 items-center justify-center rounded-full bg-[#76503a] px-6 text-lg font-extrabold text-white no-underline transition hover:bg-[#5f3d2b]">ดูออเดอร์ของฉัน</Link>
             </section>}
           </aside>

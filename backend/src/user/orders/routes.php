@@ -6,6 +6,7 @@ function user_order_create(PDO $db, int $userId, array $data): int
     $db->beginTransaction();
     try {
         $lines = [];
+        $shortages = [];
         $total = 0.0;
         foreach ($data['items'] as $productId => $quantity) {
             $product = user_order_lock_product($db, (int) $productId);
@@ -13,9 +14,10 @@ function user_order_create(PDO $db, int $userId, array $data): int
                 $db->rollBack();
                 json_response(['message' => 'มีสินค้าในตะกร้าที่ไม่เปิดขายแล้ว กรุณาตรวจสอบรายการอีกครั้ง'], 409);
             }
+            // เก็บของที่ไม่พอไว้ให้ครบทุกตัวก่อน แล้วค่อยตอบทีเดียว ลูกค้าจะได้แก้ตะกร้าจบในรอบเดียว
             if ((int) $product['stock_quantity'] < $quantity) {
-                $db->rollBack();
-                json_response(['message' => sprintf('%s เหลือ %d %s ไม่พอกับที่สั่ง', $product['name'], (int) $product['stock_quantity'], $product['unit_name'])], 409);
+                $shortages[] = ['name' => $product['name'], 'remaining' => (int) $product['stock_quantity'], 'unitName' => $product['unit_name']];
+                continue;
             }
             $unitPrice = (float) $product['sale_price'];
             $lines[] = [
@@ -28,6 +30,11 @@ function user_order_create(PDO $db, int $userId, array $data): int
             ];
             $total += $unitPrice * $quantity;
             user_order_change_stock($db, $product, $quantity, -1);
+        }
+
+        if ($shortages) {
+            $db->rollBack();
+            json_response(['message' => 'สินค้าที่มีไม่พอกับที่สั่ง', 'shortages' => $shortages], 409);
         }
 
         $orderId = user_order_insert($db, $userId, $data, $lines, $total);
