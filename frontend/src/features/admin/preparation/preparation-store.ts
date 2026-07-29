@@ -34,6 +34,8 @@ function migratePreparationState(persistedState: unknown) {
   const state = persistedState as Pick<PreparationStore, 'orders' | 'batches'>
   const orders = state.orders.map((order) => ({
     ...order,
+    // ข้อมูลที่บันทึกไว้ก่อนเปลี่ยนชื่อฟิลด์ customerName เป็น userName จะไม่มีชื่อลูกค้า ให้ดึงกลับมาจากฟิลด์เดิม
+    userName: order.userName ?? (order as { customerName?: string }).customerName ?? '',
     status: additionalReadyOrderIds.has(order.id) || (order.deliveryDate === '2026-07-20' && order.period === 'morning' && order.location === 'จุดรับสินค้า B' && order.paymentStatus === 'จ่ายแล้ว')
       ? 'พร้อมส่ง'
       : String(order.status) === legacyPreparationStatus ? 'เตรียมสินค้า' : order.status,
@@ -96,4 +98,4 @@ export const usePreparationStore = create<PreparationStore>()(persist((set) => (
     const selectedOrderIds = new Set(orderIds)
     return { orders: state.orders.map((order) => selectedOrderIds.has(order.id) ? { ...order, status } : order) }
   }),
-}), { name: 'lookchin-admin-preparation-v2', version: 5, migrate: migratePreparationState }))
+}), { name: 'lookchin-admin-preparation-v2', version: 6, migrate: migratePreparationState }))
