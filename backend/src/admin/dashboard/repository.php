@@ -25,7 +25,7 @@ function admin_dashboard_where(array $filters, array &$params): string
     return $sql;
 }
 
-/** ตัวเลขบนไอคอนแถบบน แยก endpoint ไว้เพราะฝั่งหน้าเว็บดึงซ้ำทุก 15 วินาที จึงต้องนับอย่างเดียวไม่ดึงรายการจริง */
+/** ตัวเลขบนไอคอนแถบบน แยก endpoint ไว้เพราะฝั่งหน้าเว็บดึงซ้ำทุก 30 วินาที จึงต้องนับอย่างเดียวไม่ดึงรายการจริง */
 function admin_dashboard_badge_counts(PDO $db): array
 {
     $statement = $db->prepare("SELECT COUNT(*) FROM orders WHERE delivery_date = :delivery_date AND order_status = 'pending_review'");

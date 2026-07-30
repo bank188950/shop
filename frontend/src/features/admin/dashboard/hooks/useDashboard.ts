@@ -11,14 +11,16 @@ const dashboardKeys = {
 }
 
 /**
- * ตัวเลขบนไอคอนแถบบน ดึงซ้ำทุก 15 วินาที เพราะคนขายเปิดหน้าจอทิ้งไว้แล้วต้องเห็นออเดอร์ใหม่โดยไม่ต้องรีเฟรช
+ * ตัวเลขบนไอคอนแถบบน ดึงซ้ำทุก 30 วินาที เพราะคนขายเปิดหน้าจอทิ้งไว้แล้วต้องเห็นออเดอร์ใหม่โดยไม่ต้องรีเฟรช
  * ไม่ดึงตอนแท็บถูกซ่อน เพื่อไม่ให้กินแบตกับเน็ตของเครื่องมือถือ แต่จะดึงทันทีเมื่อกลับมาที่แท็บ
+ * ถ้าแอดมินปิดการแจ้งเตือนในหน้าตั้งค่า จะไม่ยิง request เลย ไม่ใช่แค่ซ่อนตัวเลขที่ดึงมาแล้ว
  */
-export function useAdminBadgeCounts() {
+export function useAdminBadgeCounts(isEnabled: boolean) {
   return useQuery({
     queryKey: adminBadgeCountsKey,
     queryFn: getAdminBadgeCounts,
-    refetchInterval: 15_000,
+    enabled: isEnabled,
+    refetchInterval: 30_000,
     refetchIntervalInBackground: false,
     staleTime: 0,
   })

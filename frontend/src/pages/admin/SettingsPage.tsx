@@ -1,4 +1,4 @@
-import { BellRing, CircleAlert, Clock3, Megaphone, Plus, Save, Trash2 } from 'lucide-react'
+import { Bell, BellRing, CircleAlert, Clock3, Megaphone, Plus, Save, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
@@ -9,7 +9,7 @@ import { settingsFormSchema, type SettingsFormValues } from '@/features/admin/se
 import { useSaveSettings, useSettings } from '@/features/admin/settings/hooks/useSettings'
 
 const maxAdvertisementCount = 3
-const defaultValues: SettingsFormValues = { morningCutoff: '08:00', morningDelivery: '09:00–10:00', afternoonCutoff: '12:00', afternoonDelivery: '14:00–15:00', noticeMessage: '', isNoticePopupEnabled: false, advertisements: [{ text: '' }], isAdvertisementVisible: false }
+const defaultValues: SettingsFormValues = { morningCutoff: '08:00', morningDelivery: '09:00–10:00', afternoonCutoff: '12:00', afternoonDelivery: '14:00–15:00', noticeMessage: '', isNoticePopupEnabled: false, isBadgeNotificationEnabled: true, advertisements: [{ text: '' }], isAdvertisementVisible: false }
 
 export function SettingsPage() {
   const settingsQuery = useSettings()
@@ -42,6 +42,10 @@ export function SettingsPage() {
         <div className="admin-section-heading"><div><h2><Megaphone size={21} aria-hidden="true" />ตั้งค่าโฆษณา</h2><p>กำหนดข้อความและการแสดงโฆษณาบนหน้าร้าน</p></div></div>
         <fieldset className="advertisement-list"><p id="advertisement-limit" className="advertisement-limit"><CircleAlert size={15} aria-hidden="true" />เพิ่มได้สูงสุด {maxAdvertisementCount} ข้อความ</p>{fields.map((field, index) => <div className="advertisement-field" key={field.id}><label htmlFor={`advertisement-text-${index}`}><span className="sr-only">คำโฆษณาที่ {index + 1}</span><Input id={`advertisement-text-${index}`} {...register(`advertisements.${index}.text`)} placeholder="กรอกคำโฆษณา" aria-describedby="advertisement-limit" /></label>{fields.length > 1 && <button type="button" className="advertisement-remove" aria-label={`ลบคำโฆษณาที่ ${index + 1}`} onClick={() => remove(index)}><Trash2 size={17} aria-hidden="true" /><span>ลบ</span></button>}</div>)}{fields.length < maxAdvertisementCount && <button type="button" className="advertisement-add" onClick={() => append({ text: '' })}><Plus size={17} aria-hidden="true" />เพิ่มคำโฆษณา</button>}</fieldset>
         <label className="notice-popup-toggle"><input type="checkbox" {...register('isAdvertisementVisible')} /><span><strong>แสดงโฆษณา</strong></span></label>
+      </div>
+      <div className="notice-settings">
+        <div className="admin-section-heading"><div><h2><Bell size={21} aria-hidden="true" />ตั้งค่าแจ้งเตือนออเดอร์ใหม่และสินค้าใกล้หมด</h2><p>เมื่อเปิดใช้งาน ตัวเลขบนไอคอนแถบด้านบนจะอัปเดตให้อัตโนมัติทุก 30 วินาที</p></div></div>
+        <label className="notice-popup-toggle"><input type="checkbox" {...register('isBadgeNotificationEnabled')} /><span><strong>เปิดการแจ้งเตือน</strong></span></label>
       </div>
       {error && <p className="banner-form-error" role="alert">{error}</p>}
       <div className="settings-save-action"><button type="submit" className="admin-primary-button" disabled={saveMutation.isPending} aria-busy={saveMutation.isPending}><Save size={18} aria-hidden="true" />{saveMutation.isPending ? 'กำลังบันทึก' : saved ? 'บันทึกแล้ว' : 'บันทึก'}</button></div>
