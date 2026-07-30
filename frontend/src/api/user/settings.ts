@@ -11,6 +11,7 @@ export type DeliverySettings = {
   morning: DeliveryPeriodSetting
   afternoon: DeliveryPeriodSetting
   paymentMinutes: number
+  paymentAccountName: string
 }
 
 export async function getDeliverySettings() {

@@ -63,5 +63,6 @@ function user_settings_route(string $method, string $path): bool
         'morning' => $period($settings['morning_order_cutoff'], $settings['morning_delivery_start'], $settings['morning_delivery_end']),
         'afternoon' => $period($settings['afternoon_order_cutoff'], $settings['afternoon_delivery_start'], $settings['afternoon_delivery_end']),
         'paymentMinutes' => USER_ORDER_PAYMENT_MINUTES,
+        'paymentAccountName' => trim((string) ($settings['payment_account_name'] ?? '')),
     ]]);
 }

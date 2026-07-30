@@ -31,7 +31,7 @@ export function useCreateUserOrder() {
 export function usePayUserOrder() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (orderId: number) => payUserOrder(orderId),
+    mutationFn: ({ orderId, slip }: { orderId: number, slip: File }) => payUserOrder(orderId, slip),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: userOrderKeys.list }),
   })
 }

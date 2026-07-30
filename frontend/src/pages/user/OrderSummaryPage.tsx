@@ -1,18 +1,19 @@
-import { Check, ChevronLeft, Clock, Download, Info, Minus, PanelsTopLeft, Plus, Send, SunMedium, Sunset, UserRound, X } from 'lucide-react'
+import { Check, ChevronLeft, Clock, Info, Minus, PanelsTopLeft, Plus, QrCode, Send, SunMedium, Sunset, UserRound, X } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { QRCodeCanvas } from 'qrcode.react'
 import Swal from 'sweetalert2'
-import type { SweetAlertOptions } from 'sweetalert2'
+import { swalBaseOptions } from '@/lib/swal'
 import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
 import { productStockLabel } from '@/features/user/shared/utils/product-labels'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
-import { useCreateUserOrder, useDeliverySettings, usePayUserOrder } from '@/features/user/order/hooks/useUserOrders'
+import { useCreateUserOrder, useDeliverySettings } from '@/features/user/order/hooks/useUserOrders'
+import { SlipUploadForm } from '@/features/user/order/SlipUploadForm'
 import { orderStatusClass, orderStatusLabel } from '@/features/user/order/utils/order-labels'
-import { downloadPaymentQr, paymentQrValue } from '@/features/user/order/utils/payment-qr'
+import { downloadPaymentQr } from '@/features/user/order/utils/payment-qr'
 import type { UserOrder, DeliveryPeriod } from '@/api/user/orders'
 import type { UserProduct } from '@/api/user/products'
 import { useCartStore } from '@/stores/cart-store'
@@ -27,22 +28,6 @@ const deliveryOptions = {
 }
 
 const formatPrice = (price: number) => `${price.toLocaleString('th-TH')} บาท`
-const enlargeAlertButtons = () => {
-  const title = Swal.getTitle()
-  const actions = Swal.getActions()
-  if (title) {
-    title.style.fontFamily = 'Sarabun, Noto Sans Thai, system-ui, sans-serif'
-    title.style.fontWeight = '800'
-  }
-  if (actions) actions.style.marginTop = '32px'
-
-  const buttons = [Swal.getConfirmButton(), Swal.getCancelButton()]
-  buttons.filter((button): button is HTMLButtonElement => Boolean(button)).forEach((button) => {
-    button.style.fontFamily = 'Sarabun, Noto Sans Thai, system-ui, sans-serif'
-    button.style.fontSize = '1.25rem'
-    button.style.lineHeight = '1'
-  })
-}
 
 type StockShortage = { name: string, remaining: number, unitName: string }
 
@@ -53,23 +38,6 @@ const stockShortagesOf = (error: unknown): StockShortage[] => {
 }
 
 const escapeHtml = (value: string) => value.replace(/[&<>"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[character] ?? character)
-
-const swalBaseOptions: SweetAlertOptions = {
-  showCancelButton: true,
-  showCloseButton: true,
-  cancelButtonText: 'ยกเลิก',
-  buttonsStyling: false,
-  didOpen: enlargeAlertButtons,
-  customClass: {
-    popup: 'rounded-2xl p-8 sm:p-10',
-    title: 'font-heading text-3xl text-ink sm:text-4xl',
-    htmlContainer: 'mt-3 text-xl font-bold text-[#455048]',
-    closeButton: 'absolute top-4 right-4 grid size-11 place-items-center rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand',
-    actions: 'mt-8 gap-4',
-    confirmButton: 'min-h-14 rounded-full bg-brand px-10 font-heading text-2xl font-extrabold text-white hover:bg-brand-dark',
-    cancelButton: 'min-h-14 rounded-full bg-[#6b7280] px-10 font-heading text-2xl font-extrabold text-white hover:bg-[#4b5563]',
-  },
-}
 
 const alertStockShortages = (shortages: StockShortage[]) => Swal.fire({
   ...swalBaseOptions,
@@ -88,11 +56,11 @@ export function OrderSummaryPage() {
   const [confirmedItems, setConfirmedItems] = useState<CartLine[]>([])
   const qrCanvasRef = useRef<HTMLCanvasElement>(null)
 
+  const navigate = useNavigate()
   const productsQuery = useUserProducts()
   const authQuery = useUserAuth()
   const settingsQuery = useDeliverySettings()
   const createOrderMutation = useCreateUserOrder()
-  const payOrderMutation = usePayUserOrder()
   const user = authQuery.data
   const products = productsQuery.data
   const isOrderConfirmed = Boolean(order)
@@ -156,16 +124,6 @@ export function OrderSummaryPage() {
       await alert(error instanceof Error ? error.message : 'ไม่สามารถสร้างคำสั่งซื้อได้', 'error')
     }
   }
-
-  const payOrder = async () => {
-    if (!order) return
-    try {
-      setOrder(await payOrderMutation.mutateAsync(order.id))
-    } catch (error) {
-      await alert(error instanceof Error ? error.message : 'ไม่สามารถยืนยันการชำระเงินได้', 'error')
-    }
-  }
-
 
   return (
     <section className="min-h-screen overflow-hidden">
@@ -279,15 +237,19 @@ export function OrderSummaryPage() {
             {order && order.paymentStatus === 'pending' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="payment-heading" aria-live="polite">
               <h2 id="payment-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">ช่องทางการชำระเงิน</h2>
               <div className="mt-5 grid place-items-center gap-4 rounded-xl border-2 border-dashed border-[#77a984] bg-white p-5 text-center">
-                <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeCanvas ref={qrCanvasRef} value={paymentQrValue(order.orderNumber, order.totalAmount)} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} title={`QR Code สำหรับชำระเงินคำสั่งซื้อ ${order.orderNumber}`} /></div>
+                {order.paymentQr
+                  ? <div className="grid size-44 place-items-center rounded-xl border border-[#d8dfd5] bg-white p-2 shadow-inner"><QRCodeCanvas ref={qrCanvasRef} value={order.paymentQr} size={152} bgColor="#ffffff" fgColor="#000000" level="M" marginSize={1} title={`QR Code สำหรับชำระเงินคำสั่งซื้อ ${order.orderNumber}`} /></div>
+                  : <p className="m-0 text-lg font-bold text-[#c84646]">ยังไม่มี QR สำหรับชำระเงิน กรุณาติดต่อแอดมิน</p>}
                 <div>
                   <p className="m-0 text-xl font-extrabold text-ink">สแกน QR Code เพื่อชำระเงิน</p>
                   <p className="mt-1 mb-0 text-lg font-bold text-brand">ยอดชำระ {formatPrice(order.totalAmount)}</p>
+                  {settingsQuery.data?.paymentAccountName && <p className="mt-1 mb-0 text-base font-bold text-[#455048]">โอนเข้าบัญชี {settingsQuery.data.paymentAccountName}</p>}
                   <p className="mt-1 mb-0 text-base text-muted">ชำระเงินภายใน {settingsQuery.data?.paymentMinutes ?? 20} นาที ไม่นั้นคำสั่งซื้อจะถูกยกเลิกครับ</p>
                 </div>
+                <button type="button" onClick={() => downloadPaymentQr(qrCanvasRef.current, order.orderNumber)} disabled={!order.paymentQr} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brand px-6 text-lg font-extrabold text-brand transition hover:bg-[#e1f3e5] disabled:cursor-not-allowed disabled:opacity-50"><QrCode size={20} aria-hidden="true" />ดาวน์โหลด QR Code</button>
               </div>
-              <button type="button" onClick={() => downloadPaymentQr(qrCanvasRef.current, order.orderNumber)} className="mt-4 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full border border-[#76503a] px-4 text-xl font-extrabold text-[#76503a] transition hover:bg-[#f6efe9]"><Download size={20} aria-hidden="true" />ดาวน์โหลด QR Code</button>
-              <button type="button" onClick={payOrder} disabled={payOrderMutation.isPending} aria-busy={payOrderMutation.isPending} className="mt-3 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-brand px-4 text-xl font-extrabold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50">{payOrderMutation.isPending ? 'กำลังยืนยัน' : 'ชำระเงินแล้ว'} <Check size={20} aria-hidden="true" /></button>
+              {/* ตะกร้าถูกล้างไปแล้วตอนสร้างคำสั่งซื้อ ใช้ replace เพื่อไม่ให้กดย้อนกลับมาเจอหน้าที่ทำอะไรต่อไม่ได้ */}
+              <div className="mt-4"><SlipUploadForm order={order} onPaid={() => navigate('/my-orders', { replace: true })} onServerError={(message) => { void alert(message, 'error') }} /></div>
             </section>}
 
             {order && order.paymentStatus === 'paid' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 text-center max-md:p-4" aria-live="polite">

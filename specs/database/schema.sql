@@ -189,6 +189,18 @@ CREATE TABLE `order_payments` (
   `id` bigint UNSIGNED NOT NULL,
   `order_id` bigint UNSIGNED NOT NULL,
   `payment_method` enum('bank_transfer','cash','online') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slip_image_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slip_reference_id` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slip_trans_ref` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slip_transferred_at` datetime DEFAULT NULL,
+  `slip_amount` decimal(10,2) DEFAULT NULL,
+  `slip_sender_name` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slip_sender_bank` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slip_sender_account` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slip_receiver_account` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `verify_code` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `verify_message` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `verify_attempts` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `payment_status` enum('pending','paid','rejected','refunded') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `amount` decimal(10,2) NOT NULL,
   `paid_at` datetime DEFAULT NULL,
@@ -314,6 +326,12 @@ CREATE TABLE `settings` (
   `afternoon_order_cutoff` time NOT NULL DEFAULT '12:00:00',
   `afternoon_delivery_start` time NOT NULL DEFAULT '14:00:00',
   `afternoon_delivery_end` time NOT NULL DEFAULT '15:00:00',
+  `payment_account_name` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_bank_code` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_account_number` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_promptpay_type` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_promptpay_id` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_slip_account_type` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `notice_popup_message` text COLLATE utf8mb4_unicode_ci,
   `is_notice_popup_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `is_badge_notification_enabled` tinyint(1) NOT NULL DEFAULT '0',
@@ -324,8 +342,8 @@ CREATE TABLE `settings` (
 -- Dumping data for table `settings`
 --
 
-INSERT INTO `settings` (`id`, `morning_order_cutoff`, `morning_delivery_start`, `morning_delivery_end`, `afternoon_order_cutoff`, `afternoon_delivery_start`, `afternoon_delivery_end`, `notice_popup_message`, `is_notice_popup_enabled`, `is_badge_notification_enabled`, `updated_at`) VALUES
-(1, '07:07:00', '09:00:00', '10:01:00', '19:10:00', '14:00:00', '15:01:00', 'ตตตต', 1, 1, '2026-07-27 13:17:05');
+INSERT INTO `settings` (`id`, `morning_order_cutoff`, `morning_delivery_start`, `morning_delivery_end`, `afternoon_order_cutoff`, `afternoon_delivery_start`, `afternoon_delivery_end`, `payment_account_name`, `payment_bank_code`, `payment_account_number`, `payment_promptpay_type`, `payment_promptpay_id`, `payment_slip_account_type`, `notice_popup_message`, `is_notice_popup_enabled`, `is_badge_notification_enabled`, `updated_at`) VALUES
+(1, '07:07:00', '09:00:00', '10:01:00', '19:10:00', '14:00:00', '15:01:00', NULL, '002', NULL, 'msisdn', NULL, '01002', 'ตตตต', 1, 1, '2026-07-27 13:17:05');
 
 -- --------------------------------------------------------
 
@@ -424,6 +442,7 @@ ALTER TABLE `order_items`
 ALTER TABLE `order_payments`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_order_payments_order` (`order_id`),
+  ADD UNIQUE KEY `uq_order_payments_trans_ref` (`slip_trans_ref`),
   ADD KEY `idx_order_payments_status` (`payment_status`,`created_at`),
   ADD KEY `fk_order_payments_verified_by` (`verified_by`);
 

@@ -196,7 +196,7 @@ function ProductFormFields({ productId, product, categories, units, categoriesEr
         </label>
         {tracksPieceQuantity && <>
           <label>จำนวนชิ้น
-            <div className="product-stock-control"><Input className={`product-stock-input ${fieldErrors.stockPieceCount ? 'product-field-invalid' : ''}`} type="number" min="0" value={values.stockPieceCount} onChange={(event) => { setValues((current) => ({ ...current, stockPieceCount: event.target.value })); clearFieldError('stockPieceCount') }} placeholder="0" aria-label="จำนวนชิ้น" aria-invalid={Boolean(fieldErrors.stockPieceCount)} /><button type="button" className="product-stock-open-button" onClick={() => openStockDialog('pieces')} aria-label="จัดการจำนวนชิ้น"><Settings2 size={20} aria-hidden="true" /></button></div>
+            <div className="product-stock-control"><Input className={`product-stock-input ${fieldErrors.stockPieceCount ? 'product-field-invalid' : ''}`} type="number" value={values.stockPieceCount} readOnly aria-label="จำนวนชิ้น" aria-invalid={Boolean(fieldErrors.stockPieceCount)} /><button type="button" className="product-stock-open-button" onClick={() => openStockDialog('pieces')} aria-label="จัดการจำนวนชิ้น"><Settings2 size={20} aria-hidden="true" /></button></div>
             <ProductFieldError message={fieldErrors.stockPieceCount} />
           </label>
           <label>จำนวนชิ้นต่อ (1 สินค้า)

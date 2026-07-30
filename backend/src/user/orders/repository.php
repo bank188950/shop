@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-function user_order_to_api(array $order, array $items): array
+function user_order_to_api(array $order, array $items, ?string $paymentQr = null): array
 {
     return [
         'id' => (int) $order['id'],
         'orderNumber' => $order['order_number'],
+        'paymentQr' => $paymentQr,
         'orderedAt' => $order['ordered_at'],
         'deliveryDate' => $order['delivery_date'],
         'deliveryPeriod' => $order['delivery_period'],
@@ -109,12 +110,59 @@ function user_order_list(PDO $db, int $userId): array
 {
     $statement = $db->prepare('SELECT o.*, l.name AS location_name FROM orders o INNER JOIN locations l ON l.id = o.location_id WHERE o.user_id = :user_id ORDER BY o.ordered_at DESC, o.id DESC');
     $statement->execute(['user_id' => $userId]);
-    return array_map(static fn (array $order) => user_order_to_api($order, user_order_items($db, (int) $order['id'])), $statement->fetchAll());
+    $settings = settings_find($db);
+    return array_map(
+        static fn (array $order) => user_order_to_api($order, user_order_items($db, (int) $order['id']), user_order_payment_qr($settings, $order)),
+        $statement->fetchAll(),
+    );
 }
 
-function user_order_mark_paid(PDO $db, int $orderId): void
+/**
+ * จองสิทธิ์ยิงตรวจสลิปหนึ่งครั้งแล้วบวกตัวนับทันทีในทรานแซกชันสั้น ๆ
+ * ต้องล็อกแถวเพราะการตรวจแต่ละครั้งเสียโทเคนจริง ถ้าปล่อยให้สองคำขอพร้อมกันอ่านตัวนับเดิมจะยิงเกินเพดาน
+ */
+function user_order_claim_verify_attempt(PDO $db, int $orderId): bool
 {
-    $db->prepare("UPDATE orders SET payment_status = 'paid', order_status = 'pending_review' WHERE id = :id")->execute(['id' => $orderId]);
-    $db->prepare("UPDATE order_payments SET payment_status = 'paid', paid_at = NOW() WHERE order_id = :order_id")->execute(['order_id' => $orderId]);
+    $db->beginTransaction();
+    try {
+        $statement = $db->prepare('SELECT verify_attempts FROM order_payments WHERE order_id = :order_id FOR UPDATE');
+        $statement->execute(['order_id' => $orderId]);
+        $attempts = (int) ($statement->fetchColumn() ?: 0);
+
+        if ($attempts >= USER_ORDER_SLIP_MAX_ATTEMPTS) {
+            $db->commit();
+            return false;
+        }
+
+        $db->prepare('UPDATE order_payments SET verify_attempts = verify_attempts + 1 WHERE order_id = :order_id')->execute(['order_id' => $orderId]);
+        $db->commit();
+        return true;
+    } catch (Throwable $exception) {
+        if ($db->inTransaction()) $db->rollBack();
+        throw $exception;
+    }
+}
+
+/** บันทึกผลตรวจสลิปและเดินสถานะในทรานแซกชันเดียว ไม่งั้นถ้าพังกลางทางจะเหลือสถานะที่ขัดกันเอง */
+function user_order_apply_slip(PDO $db, int $orderId, array $columns, bool $isPaid): void
+{
+    $db->beginTransaction();
+    try {
+        $db->prepare('UPDATE order_payments SET slip_image_path = :slip_image_path, slip_reference_id = :slip_reference_id,
+                slip_trans_ref = :slip_trans_ref, slip_transferred_at = :slip_transferred_at, slip_amount = :slip_amount,
+                slip_sender_name = :slip_sender_name, slip_sender_bank = :slip_sender_bank, slip_sender_account = :slip_sender_account,
+                slip_receiver_account = :slip_receiver_account, verify_code = :verify_code, verify_message = :verify_message
+            WHERE order_id = :order_id')->execute($columns + ['order_id' => $orderId]);
+
+        if ($isPaid) {
+            $db->prepare("UPDATE orders SET payment_status = 'paid', order_status = 'pending_review' WHERE id = :id")->execute(['id' => $orderId]);
+            $db->prepare("UPDATE order_payments SET payment_status = 'paid', paid_at = NOW() WHERE order_id = :order_id")->execute(['order_id' => $orderId]);
+        }
+
+        $db->commit();
+    } catch (Throwable $exception) {
+        if ($db->inTransaction()) $db->rollBack();
+        throw $exception;
+    }
 }
 

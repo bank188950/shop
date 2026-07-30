@@ -15,6 +15,8 @@ export type UserOrderItem = {
 export type UserOrder = {
   id: number
   orderNumber: string
+  /** payload ของ QR พร้อมเพย์ที่ backend สร้างจากบัญชีรับเงินใน settings เป็น null เมื่อชำระแล้วหรือยังไม่ได้ตั้งบัญชี */
+  paymentQr: string | null
   orderedAt: string
   deliveryDate: string
   deliveryPeriod: DeliveryPeriod
@@ -47,7 +49,9 @@ export async function createUserOrder(input: CreateOrderInput) {
   return response.data.data
 }
 
-export async function payUserOrder(orderId: number) {
-  const response = await api.post<{ data: UserOrder }>(`/user/orders/${orderId}/pay`)
+export async function payUserOrder(orderId: number, slip: File) {
+  const body = new FormData()
+  body.append('slip', slip)
+  const response = await api.post<{ data: UserOrder }>(`/user/orders/${orderId}/pay`, body)
   return response.data.data
 }

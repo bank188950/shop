@@ -108,18 +108,46 @@ function user_order_route(string $method, string $path): bool
 
         $orderId = user_order_create($db, $userId, $data);
         $order = user_order_find($db, $orderId, $userId);
-        json_response(['data' => user_order_to_api($order, user_order_items($db, $orderId))], 201);
+        json_response(['data' => user_order_to_api($order, user_order_items($db, $orderId), user_order_payment_qr(settings_find($db), $order))], 201);
     }
 
+    // ยืนยันการชำระเงินด้วยการแนบสลิปแล้วให้ Slip2Go ตรวจ ไม่ใช่ให้ผู้ใช้กดยืนยันเอง
     if ($method === 'POST' && preg_match('#^/user/orders/(\d+)/pay$#', $path, $matches)) {
         $orderId = (int) $matches[1];
         $order = user_order_find($db, $orderId, $userId);
         if (!$order) json_response(['message' => 'ไม่พบคำสั่งซื้อนี้'], 404);
         if ($order['order_status'] === 'cancelled') json_response(['message' => 'คำสั่งซื้อนี้ถูกยกเลิกแล้ว กรุณาสั่งซื้อใหม่'], 409);
-        if ($order['payment_status'] === 'pending') user_order_mark_paid($db, $orderId);
+
+        $settings = settings_find($db);
+        if ($order['payment_status'] === 'paid') {
+            json_response(['data' => user_order_to_api($order, user_order_items($db, $orderId), user_order_payment_qr($settings, $order))]);
+        }
+        if (!$settings['payment_account_number'] || !$settings['payment_slip_account_type']) {
+            json_response(['message' => 'ร้านยังไม่ได้ตั้งค่าบัญชีรับเงิน กรุณาติดต่อแอดมิน'], 503);
+        }
+
+        // เก็บไฟล์ให้ผ่านการตรวจชนิดและขนาดก่อน แล้วจึงตัดโควตา เพราะไฟล์ที่ไม่ผ่านยังไม่ได้ยิงออกไปและไม่ควรเสียสิทธิ์
+        $slip = user_order_slip_store($_FILES['slip'] ?? null);
+        if (!user_order_claim_verify_attempt($db, $orderId)) {
+            if (is_file($slip['fullPath'])) unlink($slip['fullPath']);
+            json_response(['message' => 'ตรวจสอบสลิปไม่สำเร็จหลายครั้งแล้ว กรุณาติดต่อแอดมินเพื่อตรวจสอบให้ครับ'], 429);
+        }
+
+        $result = slip2go_verify_image($slip['fullPath'], $slip['mimeType'], user_order_slip_conditions($settings, (float) $order['total_amount']));
+        $outcome = user_order_slip_outcome($result['code']);
+
+        try {
+            user_order_apply_slip($db, $orderId, user_order_slip_columns($result, $slip['path']), $outcome['isPaid']);
+        } catch (PDOException $exception) {
+            // ชน unique key ของ slip_trans_ref คือสลิปใบนี้เคยใช้ยืนยันคำสั่งซื้ออื่นไปแล้ว
+            if ($exception->getCode() !== '23000') throw $exception;
+            json_response(['message' => 'สลิปนี้ถูกใช้ยืนยันการชำระเงินของคำสั่งซื้ออื่นแล้ว'], 409);
+        }
+
+        if (!$outcome['isPaid']) json_response(['message' => $outcome['message']], 422);
 
         $order = user_order_find($db, $orderId, $userId);
-        json_response(['data' => user_order_to_api($order, user_order_items($db, $orderId))]);
+        json_response(['data' => user_order_to_api($order, user_order_items($db, $orderId), user_order_payment_qr($settings, $order)), 'message' => $outcome['message']]);
     }
 
     return false;
