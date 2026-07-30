@@ -669,21 +669,16 @@ p.admin-profile-field-error { margin: -2px 0 0; color: #c43c3c; font-size: 14px;
 
 @media (max-width: 600px) { .dispatch-filter { grid-template-columns: 1fr; padding: 16px; } }
 
-/* วางหัวข้อสลิปให้อยู่แถวเดียวกับหัวข้ออัปเดตสถานะ แล้วให้รูปสลิปกินพื้นที่คอลัมน์ขวาทั้งหมด */
-.admin-status-editor-slip { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, .6fr); align-items: start; column-gap: 18px; }
-.admin-status-editor-slip > h2 { grid-area: 1 / 1; }
-.admin-status-editor-slip > div { grid-area: 2 / 1; }
-.admin-status-editor-slip > .admin-order-slip { display: grid; grid-area: 1 / 2 / span 2; align-content: start; gap: 17px; margin-top: 0; }
+/* แยกการ์ดอัปเดตสถานะกับการ์ดสลิปเป็นสองกล่องซ้ายขวา ใช้สัดส่วนเดียวกับ order-detail-grid ด้านบน */
+.order-status-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr); gap: 18px; margin-top: 18px; }
+.order-status-grid > .admin-status-editor { margin-top: 0; }
+.admin-order-slip { display: grid; align-content: start; gap: 18px; }
 .admin-order-slip-button { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
-.admin-order-slip img { display: block; width: 100%; max-width: 280px; border: 1px solid #ccd4ce; border-radius: 10px; }
+.admin-order-slip img { display: block; width: 100%; border: 1px solid #ccd4ce; border-radius: 10px; }
 .admin-order-slip-dialog { z-index: 60; width: min(1040px, calc(100vw - 48px)); max-width: none; border-color: #8ec09a; background: #fff; box-shadow: 0 18px 44px #18261d38; }
 .admin-order-slip-dialog img { width: 100%; max-height: 78vh; border-radius: 10px; object-fit: contain; }
 .admin-order-slip-dialog [data-slot='dialog-close'] { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid #cfd8d1; border-radius: 999px; color: #33443a; background: #fff; opacity: 1; }
 .admin-order-slip-dialog [data-slot='dialog-close']:hover { border-color: #8ec09a; color: #1d6140; background: #eaf6ee; }
 .admin-order-slip-dialog [data-slot='dialog-close'] svg { width: 20px; height: 20px; }
 
-@media (max-width: 900px) {
-  .admin-status-editor-slip { grid-template-columns: 1fr; }
-  .admin-status-editor-slip > h2, .admin-status-editor-slip > div { grid-area: auto; }
-  .admin-status-editor-slip > .admin-order-slip { grid-area: auto; margin-top: 17px; }
-}
+@media (max-width: 900px) { .order-status-grid { grid-template-columns: 1fr; } }
