@@ -11,7 +11,7 @@ tags: [workflow, orders, payment, fulfillment, admin, user]
 
 ## ขั้นตอนการสั่งซื้อและชำระเงินของผู้ใช้
 
-`OrderSummaryPage` โหลดสินค้า, การตั้งค่ารอบส่ง และ session ผู้ใช้ผ่าน React Query ผู้ใช้ต้องเข้าสู่ระบบ, มี `locationId`, เลือกรอบ และมีสินค้าในตะกร้าก่อนเรียก `POST /user/orders` จาก `frontend/src/api/user/orders.ts`.
+`OrderSummaryPage` โหลดสินค้า, การตั้งค่ารอบส่ง และ session ผู้ใช้ผ่าน React Query ผู้ใช้ต้องเข้าสู่ระบบ, มี `locationId`, เลือกรอบ และมีสินค้าในตะกร้าก่อนเรียก `POST /user/orders` จาก `frontend/src/api/user/orders.ts`. กล่องสรุปนับ `รายการทั้งหมด` เป็นจำนวน product line ที่ต่างกัน และรวม `quantity` แยกตาม `unitName` (เช่น ไม้, แก้ว หรือจาน) เพื่อไม่สื่อว่าหน่วยสินค้าต่างชนิดรวมกันได้; เป็นเพียงการแสดงผลจากตะกร้า ไม่เปลี่ยน payload หรือกติกาสร้าง order ใน [โมเดล domain](../domain-model.md).
 
 ```mermaid
 sequenceDiagram
