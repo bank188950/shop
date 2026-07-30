@@ -5,7 +5,7 @@
 ```text
 frontend/  React + Vite + Tailwind + shadcn/ui
 backend/   PHP 8.2+ API + PDO
-database/  MySQL schema
+specs/     เอกสารออกแบบ UI และ MySQL schema
 ```
 
 ## URL ระหว่างพัฒนา

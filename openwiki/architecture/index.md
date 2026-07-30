@@ -1,3 +1,3 @@
-# ไฟล์
+# Files
 
-- [สถาปัตยกรรมรันไทม์และขอบเขตของสถานะ](overview.md) - วิธีที่ React/Vite SPA, PHP API front controller, MySQL schema, การจัดเส้นทาง และ store ในเบราว์เซอร์ทำงานร่วมกันในปัจจุบัน
+- [สถาปัตยกรรมรันไทม์และขอบเขตของสถานะ](overview.md) - วิธีที่ React/Vite SPA, Axios และ React Query, PHP API, session และ MySQL ทำงานร่วมกันสำหรับผู้ใช้และผู้ดูแล

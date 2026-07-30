@@ -2,10 +2,10 @@
 
 ## ขอบเขตและแหล่งอ้างอิงหลัก
 
-- Workspace นี้ประกอบด้วย `frontend/`, `backend/` และ `database/`
+- Workspace นี้ประกอบด้วย `frontend/`, `backend/` และ `specs/` โดย `specs/` เก็บเอกสารออกแบบและ `specs/database/schema.sql`
 - อ่านไฟล์นี้ก่อน จากนั้นอ่านไฟล์คำแนะนำที่อยู่ใกล้กับโค้ดที่จะเปลี่ยนมากที่สุดก่อนแก้ไข
 - ห้ามแก้ไข `CLAUDE.md` เพราะเนื้อหาซ้ำกับที่ `AGENTS.md` อ้างอิงไว้แล้ว ให้ `AGENTS.md` เป็นแหล่งอ้างอิงหลักเพียงไฟล์เดียว หากต้องปรับแนวทางการทำงาน ให้แก้ที่ `AGENTS.md`
-- งาน UI สำหรับเส้นทางลูกค้าต้องอ้างอิง `design-user.md` และเส้นทางผู้ดูแลระบบต้องอ้างอิง `design-admin.md` หากโค้ดขัดกับเอกสารออกแบบ ให้ปรับเอกสารในการเปลี่ยนแปลงเดียวกัน หรือขอคำแนะนำก่อนดำเนินการ
+- งาน UI สำหรับเส้นทางลูกค้าต้องอ้างอิง `specs/design-user.md` และเส้นทางผู้ดูแลระบบต้องอ้างอิง `specs/design-admin.md` หากโค้ดขัดกับเอกสารออกแบบ ให้ปรับเอกสารในการเปลี่ยนแปลงเดียวกัน หรือขอคำแนะนำก่อนดำเนินการ
 
 ## Frontend
 
@@ -33,7 +33,7 @@
 ## Backend และฐานข้อมูล
 
 - เก็บความลับไว้ใน `backend/.env` ห้าม commit หรือเปิดเผย credential ในโค้ดฝั่ง client
-- จัดการการเปลี่ยนแปลงฐานข้อมูลเป็น migration/schema change ใน `database/` และระบุ API contract ให้ชัดเจนในโค้ด backend
+- `specs/database/schema.sql` เป็นแหล่งอ้างอิงโครงสร้างฐานข้อมูลเพียงไฟล์เดียว โปรเจกต์นี้ไม่ใช้โฟลเดอร์ migration; เมื่อเปลี่ยนโครงสร้าง ให้แก้ `schema.sql` ให้ตรงกับผลลัพธ์สุดท้าย แล้วแจ้งคำสั่ง `ALTER TABLE` ที่ต้องรันกับฐานข้อมูลที่มีอยู่ให้ผู้ใช้ในคำตอบเดียวกัน และระบุ API contract ให้ชัดเจนในโค้ด backend
 - โปรเจกต์นี้ไม่ใช้ soft delete: การลบข้อมูลที่ผู้ใช้ยืนยันแล้วให้ลบออกจากฐานข้อมูลจริง และห้ามเพิ่มฟิลด์หรือเงื่อนไข `deleted_at` / `deleted_by` เพื่อจำลองการลบ
 - ห้ามเปลี่ยนข้อมูล production, พฤติกรรมการชำระเงิน หรือข้อกำหนดการยืนยันตัวตนโดยไม่ได้รับอนุมัติอย่างชัดเจน
 
@@ -56,8 +56,8 @@
 
 ## OpenWiki
 
-repository นี้ใช้ OpenWiki สำหรับการจัดทำเอกสารโค้ดอย่างต่อเนื่อง เริ่มต้นที่ `openwiki/quickstart.md` จากนั้นตามลิงก์ไปยังสถาปัตยกรรม, workflow, แนวคิดของ domain, การดำเนินการ, การเชื่อมต่อระบบ, แนวทางการทดสอบ และ source map
+This repository uses OpenWiki for recurring code documentation. Start with `openwiki/quickstart.md`, then follow its links to architecture, workflows, domain concepts, operations, integrations, testing guidance, and source maps.
 
-OpenWiki GitHub Actions workflow ที่ตั้งเวลาไว้จะรีเฟรช wiki ของ repository ห้ามแก้ไขหน้า OpenWiki ที่ถูกสร้างขึ้นด้วยมือ เว้นแต่ได้รับการร้องขออย่างชัดเจน ควรอัปเดตซอร์สโค้ด/เอกสารและปล่อยให้ OpenWiki สร้างใหม่แทน โดยเมื่อมีการอัปเดตไฟล์ในโฟลเดอร์ `openwiki/` ให้คงเนื้อหาเป็นภาษาไทยเสมอ ยกเว้นคำที่จำเป็นต้องทับศัพท์ (โค้ด, ชื่อไฟล์, ชื่อ table ฯลฯ)
+The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
 
 <!-- OPENWIKI:END -->
