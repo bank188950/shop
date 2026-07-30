@@ -44,7 +44,7 @@ export function StorefrontHeader() {
           </span>
         </Link>
         <div className="flex items-center gap-4 max-md:gap-1">
-          <Link to="/my-chats" className="hidden size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none sm:inline-flex" aria-label="ดูข้อความจากแอดมิน"><MessageCircle size={24} strokeWidth={2.3} aria-hidden="true" /></Link>
+          <Link to="/my-chats" className="hidden size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none sm:inline-flex" aria-label="ดูข้อความจากร้านค้า"><MessageCircle size={24} strokeWidth={2.3} aria-hidden="true" /></Link>
           <Link to="/my-orders" className="hidden size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none sm:inline-flex" aria-label="ออเดอร์ของฉัน"><ClipboardList size={24} strokeWidth={2.3} aria-hidden="true" /></Link>
           <div ref={cartMenuRef} className="relative">
             <button className="relative grid size-11 place-items-center border-0 bg-transparent p-2 text-[#165c2e]" type="button" onClick={() => setIsCartOpen((open) => !open)} aria-label={`${isCartOpen ? 'ปิด' : 'เปิด'}ตะกร้า มี ${itemCount} รายการ`} aria-expanded={isCartOpen} aria-controls="header-cart-menu">
