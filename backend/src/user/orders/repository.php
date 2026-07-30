@@ -118,6 +118,35 @@ function user_order_list(PDO $db, int $userId): array
 }
 
 /**
+ * แถวการชำระเงินถูกสร้างพร้อมคำสั่งซื้ออยู่แล้ว แต่การเขียนข้อมูลสลิปทั้งหมดเป็น UPDATE
+ * ถ้าแถวหายไปด้วยเหตุใดก็ตาม UPDATE จะไม่กระทบแถวใดเลยและไม่แจ้ง error ทำให้ตัวนับไม่เดินและข้อมูลสลิปไม่ถูกบันทึกแบบเงียบ ๆ
+ * จึงต้องยืนยันว่ามีแถวก่อนเริ่มตรวจสลิปทุกครั้ง
+ */
+function user_order_payment_ensure_row(PDO $db, int $orderId, float $amount): void
+{
+    // ต้องเช็คก่อนแล้วค่อย INSERT ห้ามใช้ INSERT ... ON DUPLICATE KEY UPDATE
+    // เพราะ InnoDB จองเลข auto-increment ก่อนรู้ว่าชนคีย์ซ้ำ เลขจึงเดินทุกครั้งที่เรียกแม้ไม่ได้สร้างแถวใหม่
+    $statement = $db->prepare('SELECT 1 FROM order_payments WHERE order_id = :order_id');
+    $statement->execute(['order_id' => $orderId]);
+    if ($statement->fetchColumn()) return;
+
+    try {
+        $db->prepare("INSERT INTO order_payments (order_id, payment_method, payment_status, amount)
+            VALUES (:order_id, 'online', 'pending', :amount)")->execute(['order_id' => $orderId, 'amount' => $amount]);
+    } catch (PDOException $exception) {
+        // สองคำขอพร้อมกันอาจผ่านการเช็คทั้งคู่ unique key ของ order_id กันไว้อยู่แล้ว แถวมีครบจึงถือว่าสำเร็จ
+        if ($exception->getCode() !== '23000') throw $exception;
+    }
+}
+
+function user_order_slip_image_path(PDO $db, int $orderId): ?string
+{
+    $statement = $db->prepare('SELECT slip_image_path FROM order_payments WHERE order_id = :order_id');
+    $statement->execute(['order_id' => $orderId]);
+    return $statement->fetchColumn() ?: null;
+}
+
+/**
  * จองสิทธิ์ยิงตรวจสลิปหนึ่งครั้งแล้วบวกตัวนับทันทีในทรานแซกชันสั้น ๆ
  * ต้องล็อกแถวเพราะการตรวจแต่ละครั้งเสียโทเคนจริง ถ้าปล่อยให้สองคำขอพร้อมกันอ่านตัวนับเดิมจะยิงเกินเพดาน
  */
@@ -148,11 +177,15 @@ function user_order_apply_slip(PDO $db, int $orderId, array $columns, bool $isPa
 {
     $db->beginTransaction();
     try {
-        $db->prepare('UPDATE order_payments SET slip_image_path = :slip_image_path, slip_reference_id = :slip_reference_id,
+        $statement = $db->prepare('UPDATE order_payments SET slip_image_path = :slip_image_path, slip_reference_id = :slip_reference_id,
                 slip_trans_ref = :slip_trans_ref, slip_transferred_at = :slip_transferred_at, slip_amount = :slip_amount,
                 slip_sender_name = :slip_sender_name, slip_sender_bank = :slip_sender_bank, slip_sender_account = :slip_sender_account,
                 slip_receiver_account = :slip_receiver_account, verify_code = :verify_code, verify_message = :verify_message
-            WHERE order_id = :order_id')->execute($columns + ['order_id' => $orderId]);
+            WHERE order_id = :order_id');
+        $statement->execute($columns + ['order_id' => $orderId]);
+        // ถ้าไม่มีแถวถูกกระทบ แปลว่าแถวการชำระเงินหายไป ต้องโยน error ให้เห็น ไม่ปล่อยให้ผลตรวจสลิปหายเงียบ ๆ
+        // เชื่อค่านี้ได้เพราะ rowCount ของ MySQL นับแถวที่ค่าเปลี่ยนจริง และ slip_image_path เป็นชื่อไฟล์สุ่มใหม่ทุกครั้งจึงเปลี่ยนเสมอ
+        if ($statement->rowCount() === 0) throw new RuntimeException('ไม่พบข้อมูลการชำระเงินของคำสั่งซื้อนี้');
 
         if ($isPaid) {
             $db->prepare("UPDATE orders SET payment_status = 'paid', order_status = 'pending_review' WHERE id = :id")->execute(['id' => $orderId]);

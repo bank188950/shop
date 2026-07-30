@@ -126,10 +126,14 @@ function user_order_route(string $method, string $path): bool
             json_response(['message' => 'ร้านยังไม่ได้ตั้งค่าบัญชีรับเงิน กรุณาติดต่อแอดมิน'], 503);
         }
 
+        // การนับครั้งและการบันทึกผลตรวจเป็น UPDATE ทั้งหมด ถ้าแถวการชำระเงินหายไปจะไม่มีอะไรถูกเขียนและไม่มี error
+        user_order_payment_ensure_row($db, $orderId, (float) $order['total_amount']);
+
         // เก็บไฟล์ให้ผ่านการตรวจชนิดและขนาดก่อน แล้วจึงตัดโควตา เพราะไฟล์ที่ไม่ผ่านยังไม่ได้ยิงออกไปและไม่ควรเสียสิทธิ์
+        $previousSlipPath = user_order_slip_image_path($db, $orderId);
         $slip = user_order_slip_store($_FILES['slip'] ?? null);
         if (!user_order_claim_verify_attempt($db, $orderId)) {
-            if (is_file($slip['fullPath'])) unlink($slip['fullPath']);
+            user_order_slip_delete($slip['path']);
             json_response(['message' => 'ตรวจสอบสลิปไม่สำเร็จหลายครั้งแล้ว กรุณาติดต่อแอดมินเพื่อตรวจสอบให้ครับ'], 429);
         }
 
@@ -137,7 +141,8 @@ function user_order_route(string $method, string $path): bool
         $outcome = user_order_slip_outcome($result['code']);
 
         try {
-            user_order_apply_slip($db, $orderId, user_order_slip_columns($result, $slip['path']), $outcome['isPaid']);
+            user_order_apply_slip($db, $orderId, user_order_slip_columns($result, $slip['path'], $outcome['isPaid']), $outcome['isPaid']);
+            if ($previousSlipPath !== $slip['path']) user_order_slip_delete($previousSlipPath);
         } catch (PDOException $exception) {
             // ชน unique key ของ slip_trans_ref คือสลิปใบนี้เคยใช้ยืนยันคำสั่งซื้ออื่นไปแล้ว
             if ($exception->getCode() !== '23000') throw $exception;

@@ -27,7 +27,7 @@ export function SlipUploadForm({ order, onPaid, onServerError }: {
   const errorMessage = errors.slip?.message ?? serverError
 
   // react-hook-form ถือ ref ของ input อยู่ ต้องยืมมาเก็บไว้เองเพื่อล้างค่าของ input จริง
-  const { ref: registerSlipRef, ...slipField } = register('slip')
+  const { ref: registerSlipRef, onChange: registerSlipChange, ...slipField } = register('slip')
   const slipInputRef = useRef<HTMLInputElement | null>(null)
 
   function clearSlip() {
@@ -65,6 +65,8 @@ export function SlipUploadForm({ order, onPaid, onServerError }: {
       </label>
       <input
         {...slipField}
+        // ผลตรวจของไฟล์เดิมไม่เกี่ยวกับไฟล์ใหม่ ต้องล้างทิ้งตอนเลือกไฟล์ ไม่งั้นข้อความค้างจนกดยืนยันรอบถัดไป
+        onChange={(event) => { setServerError(''); return registerSlipChange(event) }}
         ref={(element) => { registerSlipRef(element); slipInputRef.current = element }}
         id={inputId}
         type="file"
