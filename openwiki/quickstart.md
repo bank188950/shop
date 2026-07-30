@@ -37,10 +37,10 @@ repository นี้เป็นเว็บสั่งซื้อภาษา
 
 ## ขอบเขตของผลิตภัณฑ์ในปัจจุบัน
 
-- ผู้ใช้สมัครและเข้าสู่ระบบ, ดูสินค้าและรอบส่ง, สร้างคำสั่งซื้อ และกดยืนยันการชำระเงิน ตะกร้ายัง persist ในเบราว์เซอร์ แต่ backend สร้าง `orders`, `order_items` และ `order_payments` ใน transaction พร้อมตรวจและตัดสต็อก
-- ผู้ดูแลเข้าสู่ระบบก่อนใช้ route `/admin`; จัดการแคตตาล็อก, จุดรับ, แบนเนอร์, การตั้งค่า, ผู้ใช้, ข้อความ, คำสั่งซื้อ, รอบเตรียม และการจัดส่งผ่าน API ที่คุมด้วย session
+- ผู้ใช้สมัครและเข้าสู่ระบบ, ดูสินค้าและรอบส่ง, สร้างคำสั่งซื้อ แล้วอัปโหลดสลิปเพื่อให้ backend ตรวจผ่าน Slip2Go; ตะกร้ายัง persist ในเบราว์เซอร์ แต่ backend สร้าง `orders`, `order_items` และ `order_payments` ใน transaction พร้อมตรวจและตัดสต็อก
+- ผู้ดูแลเข้าสู่ระบบก่อนใช้ route `/admin`; จัดการแคตตาล็อก, จุดรับ, แบนเนอร์, การตั้งค่า, ผู้ใช้, ข้อความ, คำสั่งซื้อ, รอบเตรียม, การจัดส่ง และล้างไฟล์สลิปผ่าน API ที่คุมด้วย session
 - `specs/database/schema.sql` นิยามโมเดลถาวรเดียว รวม `order_status`, `payment_status`, `order_payments` และ `preparation_groups`; [โมเดล domain](domain-model.md) เป็นบ้านหลักของรายละเอียดข้อมูล
-- QR และปุ่ม `ชำระเงินแล้ว` เป็น **self-confirmation** ของผู้ใช้ ไม่พบ payment gateway, webhook, slip upload หรือ job ยกเลิกอัตโนมัติ แม้ UI จะแสดงเวลาชำระเงิน
+- QR PromptPay สร้างในโปรเจกต์ ส่วนการเปลี่ยนเป็น `paid` ต้องผ่านผลตรวจสลิปและการเทียบบัญชีผู้รับของร้าน; จำกัดการตรวจ 3 ครั้งต่อ order และยังไม่มี job ยกเลิกหรือคืนสต็อกอัตโนมัติ ดู [workflow คำสั่งซื้อ](workflows/orders-and-fulfillment.md#ขั้นตอนการสั่งซื้อและชำระเงินของผู้ใช้)
 
 ## วินัยในการแก้ไข
 
@@ -51,5 +51,5 @@ repository นี้เป็นเว็บสั่งซื้อภาษา
 
 ## งานค้าง (backlog)
 
-- **การยืนยันการชำระเงินจริง** — `frontend/src/pages/user/OrderSummaryPage.tsx`, `backend/src/user/orders/routes.php`: มีเพียง self-confirmation; ยังไม่มี gateway, webhook, slip upload หรือ timeout job ที่ตรวจสอบได้
-- **การทดสอบอัตโนมัติ** — `frontend/package.json`, `backend/`: ไม่พบ test runner หรือไฟล์ test/spec; ควรเพิ่ม integration test สำหรับ session และ transaction ของ order/payment/preparation ก่อนขยาย workflow
+- **การยกเลิกคำสั่งซื้อที่ค้างชำระ** — `frontend/src/pages/user/OrderSummaryPage.tsx`, `backend/src/user/orders/routes.php`: ยังไม่มี job ที่ยกเลิก `pending_payment` หรือคืนสต็อกอัตโนมัติ แม้ UI อาจสื่อเรื่องกำหนดเวลาชำระ
+- **การทดสอบอัตโนมัติ** — `frontend/package.json`, `backend/`: ไม่พบ test runner หรือไฟล์ test/spec; ควรเพิ่ม integration test สำหรับ session, transaction ของ order/payment/preparation และผลตรวจสลิปก่อนขยาย workflow
