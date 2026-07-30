@@ -47,6 +47,10 @@ function admin_dashboard_route(string $method, string $path): bool
         ]);
     }
 
+    if ($path === '/admin/dashboard/badge-counts') {
+        json_response(['data' => admin_dashboard_badge_counts(app_db())]);
+    }
+
     if ($path === '/admin/dashboard/chart') {
         json_response(['data' => admin_dashboard_chart(app_db(), admin_dashboard_validate_chart_filters($_GET))]);
     }

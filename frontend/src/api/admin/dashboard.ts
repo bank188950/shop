@@ -49,6 +49,9 @@ export type DashboardChartFilters = {
 
 export type DashboardChart = { labels: string[], values: number[] }
 
+/** ตัวเลขบนไอคอนแถบบน: ออเดอร์รอตรวจสอบของวันนี้ และสินค้าที่สต็อกถึงจุดแจ้งเตือน */
+export type AdminBadgeCounts = { newOrders: number, lowStock: number }
+
 export async function getDashboardSummary(filters: DashboardFilters) {
   const params: Record<string, string> = { delivery_date: filters.deliveryDate }
   if (filters.deliveryPeriod !== 'all') params.delivery_period = filters.deliveryPeriod
@@ -56,6 +59,11 @@ export async function getDashboardSummary(filters: DashboardFilters) {
 
   const response = await api.get<{ data: DashboardSummary, locations: AdminOrderLocation[] }>('/admin/dashboard', { params })
   return { summary: response.data.data, locations: response.data.locations }
+}
+
+export async function getAdminBadgeCounts() {
+  const response = await api.get<{ data: AdminBadgeCounts }>('/admin/dashboard/badge-counts')
+  return response.data.data
 }
 
 export async function getDashboardChart(filters: DashboardChartFilters) {

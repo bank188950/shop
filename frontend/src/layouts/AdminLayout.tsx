@@ -1,9 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { ChevronLeft, ClipboardList, ClipboardPlus, CookingPot, Eraser, Image, Layers, LayoutDashboard, LogOut, MapPin, Menu, Package, PackageX, Ruler, Settings, Store, Trash2, Truck, UserRound } from 'lucide-react'
-import { useAdminOrders } from '@/features/admin/orders/hooks/useAdminOrders'
-import { todayIsoDate } from '@/features/admin/orders/utils/order-labels'
-import { useProducts } from '@/features/admin/product/hooks/useProducts'
+import { useAdminBadgeCounts } from '@/features/admin/dashboard/hooks/useDashboard'
 import { badgeCountLabel } from '@/utils/badge-count'
 import { useAdminProfile } from '@/features/admin/profile/hooks/useAdminProfile'
 import { useAdminLogout } from '@/features/admin/auth/hooks/useAdminAuth'
@@ -25,10 +23,10 @@ const items = [
 
 export function AdminLayout() {
   const navigate = useNavigate()
-  // ตัวเลขบนไอคอนคือรายการสั่งซื้อสถานะ "รอตรวจสอบ" ของวันปัจจุบัน นับรวมทั้งรอบเช้าและรอบบ่าย
-  const newOrderFilters = useMemo(() => ({ deliveryDate: todayIsoDate(), deliveryPeriod: 'all' as const, locationId: 'all' as const, orderStatus: 'pending_review' as const, query: '' }), [])
-  const newOrderCount = useAdminOrders(newOrderFilters).data?.orders.length ?? 0
-  const lowStockCount = useProducts(1, 1).data?.meta.lowStock ?? 0
+  // ตัวเลขบนไอคอนคือรายการสั่งซื้อสถานะ "รอตรวจสอบ" ของวันปัจจุบัน นับรวมทั้งรอบเช้าและรอบบ่าย และสินค้าที่สต็อกถึงจุดแจ้งเตือน
+  const badgeCounts = useAdminBadgeCounts().data
+  const newOrderCount = badgeCounts?.newOrders ?? 0
+  const lowStockCount = badgeCounts?.lowStock ?? 0
   const adminProfile = useAdminProfile().data
   const logoutMutation = useAdminLogout()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
