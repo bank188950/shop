@@ -123,7 +123,7 @@ function user_order_route(string $method, string $path): bool
             json_response(['data' => user_order_to_api($order, user_order_items($db, $orderId), user_order_payment_qr($settings, $order))]);
         }
         if (!$settings['payment_account_number'] || !$settings['payment_slip_account_type']) {
-            json_response(['message' => 'ร้านยังไม่ได้ตั้งค่าบัญชีรับเงิน กรุณาติดต่อแอดมิน'], 503);
+            json_response(['message' => 'ยังไม่สามารถรับชำระเงินได้ กรุณาติดต่อแอดมิน'], 503);
         }
 
         // การนับครั้งและการบันทึกผลตรวจเป็น UPDATE ทั้งหมด ถ้าแถวการชำระเงินหายไปจะไม่มีอะไรถูกเขียนและไม่มี error
@@ -138,7 +138,7 @@ function user_order_route(string $method, string $path): bool
         }
 
         $result = slip2go_verify_image($slip['fullPath'], $slip['mimeType'], user_order_slip_conditions($settings, (float) $order['total_amount']));
-        $outcome = user_order_slip_outcome($result['code']);
+        $outcome = user_order_slip_outcome($result, $settings);
 
         try {
             user_order_apply_slip($db, $orderId, user_order_slip_columns($result, $slip['path'], $outcome['isPaid']), $outcome['isPaid']);
@@ -146,7 +146,7 @@ function user_order_route(string $method, string $path): bool
         } catch (PDOException $exception) {
             // ชน unique key ของ slip_trans_ref คือสลิปใบนี้เคยใช้ยืนยันคำสั่งซื้ออื่นไปแล้ว
             if ($exception->getCode() !== '23000') throw $exception;
-            json_response(['message' => 'สลิปนี้ถูกใช้ยืนยันการชำระเงินของคำสั่งซื้ออื่นแล้ว'], 409);
+            json_response(['message' => 'สลิปนี้ถูกใช้ยืนยันการชำระเงินของคำสั่งซื้ออื่นแล้ว กรุณาแนบสลิปของการโอนครั้งนี้'], 409);
         }
 
         if (!$outcome['isPaid']) json_response(['message' => $outcome['message']], 422);

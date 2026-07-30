@@ -249,7 +249,7 @@ export function OrderSummaryPage() {
                 <button type="button" onClick={() => downloadPaymentQr(qrCanvasRef.current, order.orderNumber)} disabled={!order.paymentQr} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brand px-6 text-lg font-extrabold text-brand transition hover:bg-[#e1f3e5] disabled:cursor-not-allowed disabled:opacity-50"><QrCode size={20} aria-hidden="true" />ดาวน์โหลด QR Code</button>
               </div>
               {/* ตะกร้าถูกล้างไปแล้วตอนสร้างคำสั่งซื้อ ใช้ replace เพื่อไม่ให้กดย้อนกลับมาเจอหน้าที่ทำอะไรต่อไม่ได้ */}
-              <div className="mt-4"><SlipUploadForm order={order} onPaid={() => navigate('/my-orders', { replace: true })} onServerError={(message) => { void alert(message, 'error') }} /></div>
+              <div className="mt-4"><SlipUploadForm order={order} onPaid={() => navigate('/my-orders', { replace: true })} /></div>
             </section>}
 
             {order && order.paymentStatus === 'paid' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 text-center max-md:p-4" aria-live="polite">

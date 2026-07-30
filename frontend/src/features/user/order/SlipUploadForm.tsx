@@ -10,12 +10,11 @@ import type { UserOrder } from '@/api/user/orders'
 
 /**
  * แนบสลิปเพื่อยืนยันการชำระเงิน ถ้าตรวจไม่ผ่านจะคงสถานะรอชำระเงินไว้ให้ลูกค้าแนบใหม่ได้
- * ข้อผิดพลาดจากการตรวจไฟล์แสดงใต้ช่องอัปโหลด ส่วนผลตรวจจากฝั่ง server ส่งออกทาง onServerError เพื่อให้หน้าที่เรียกเลือกวิธีแจ้งเอง
+ * ทั้งข้อผิดพลาดของไฟล์และผลตรวจจากฝั่ง server แสดงเป็นข้อความใต้ช่องอัปโหลดเหมือนกัน เพื่อให้ทุกหน้าที่ใช้ component นี้หน้าตาตรงกัน
  */
-export function SlipUploadForm({ order, onPaid, onServerError }: {
+export function SlipUploadForm({ order, onPaid }: {
   order: UserOrder
   onPaid?: (order: UserOrder) => void
-  onServerError?: (message: string) => void
 }) {
   const [serverError, setServerError] = useState('')
   const inputId = useId()
@@ -52,9 +51,7 @@ export function SlipUploadForm({ order, onPaid, onServerError }: {
       })
       onPaid?.(paidOrder)
     } catch (exception) {
-      const message = exception instanceof Error ? exception.message : 'ไม่สามารถยืนยันการชำระเงินได้'
-      if (onServerError) onServerError(message)
-      else setServerError(message)
+      setServerError(exception instanceof Error ? exception.message : 'ไม่สามารถยืนยันการชำระเงินได้')
     }
   })
 
