@@ -44,6 +44,8 @@ backend รับ JPG/PNG ไม่เกิน 5 MB, ตรวจ MIME ซ้�
 
 API admin อ่านและเปลี่ยน order ใน MySQL; route `/admin/*` ถูกคุมด้วย session ตาม [สถาปัตยกรรม](../architecture/overview.md#การกำหนดเส้นทางคำขอและการยืนยันตัวตน). ผู้ดูแลดูและกรอง order ผ่าน `/admin/orders`; bulk status กัน order ที่ยังไม่ `paid`, ส่วนหน้ารายละเอียดสามารถเปลี่ยน payment และ order status ผ่าน `POST /admin/orders/:id`.
 
+response ของ order เพิ่ม `hasSlip` เพื่อบอกว่ามีไฟล์สลิป โดยไม่ส่ง path ภายในออกไป เมื่อเป็น `true` หน้ารายละเอียดจะแสดงการ์ด thumbnail และเปิด Dialog ภาพเต็มเมื่อกดภาพ; ทั้งสองภาพเรียก `GET /admin/orders/:id/slip` ซึ่งอ่านเฉพาะไฟล์ที่ยังมีอยู่จริงใต้ `backend/storage/slips/`. Endpoint อยู่หลัง admin session และไม่ cache (`Cache-Control: private, no-store`) จึงต้องคงการเรียกผ่าน API นี้แทนการสร้าง URL ตรงไปยังไฟล์. การเก็บและล้าง path ของไฟล์ยังอยู่ใน [การล้างไฟล์สลิปของผู้ดูแล](#การล้างไฟล์สลิปของผู้ดูแล) และข้อควรตรวจของ endpoint อยู่ใน [runbook](../operations.md#การตรวจสอบและการทดสอบ).
+
 ```mermaid
 stateDiagram-v2
     [*] --> pending_payment

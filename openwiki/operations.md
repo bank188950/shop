@@ -22,6 +22,7 @@ tags: [operations, deployment, testing, api, security, github-actions]
 | API client | `frontend/src/lib/axios.ts`, `frontend/src/api/{user,admin}/` | Axios ใช้ `VITE_API_URL` หรือ `/api`, รับ JSON และคืน error ภาษาไทยให้หน้า UI |
 | query และ refresh | `frontend/src/main.tsx` | React Query มี stale time 30 วินาที; mutation สำเร็จ invalidate badge ผู้ดูแล |
 | route API | `backend/public/api/index.php` | dispatch health และ route กลุ่ม user/admin สำหรับ auth, catalog, orders, settings, messages, dashboard, order cleanup และ preparation |
+| ภาพสลิปของ order | `backend/src/admin/orders/routes.php`, `repository.php` | `GET /admin/orders/:id/slip` ใช้ได้หลัง admin session เท่านั้น; server รับเฉพาะ path `storage/slips/`, ตรวจว่าไฟล์ยังอยู่จริง แล้วตอบ MIME/ขนาดไฟล์พร้อม `Cache-Control: private, no-store` โดย response order มีเพียง `hasSlip` ไม่เผย path |
 | Slip2Go | `backend/src/shared/slip2go.php`, `specs/payment-slip-verification.md` | PHP เท่านั้นเรียกตรวจสลิปและข้อมูลโควตาด้วย `SLIP2GO_BASE_URL`/`SLIP2GO_API_KEY`; secret ไม่ส่งไป frontend |
 | session | `backend/src/{admin,user}/auth/session.php` | cookie `HttpOnly`, `SameSite=Lax`, strict mode, regenerate ID ตอน login; admin support remember 30 วัน |
 | authorization ผู้ดูแล | `backend/public/api/index.php`, `AdminAuthGuard.tsx` | PHP ปฏิเสธ `/admin/*` หากไม่มี session และ React redirect ไป `/admin/login` |
@@ -50,6 +51,7 @@ npm run build
 | ชำระเงิน | อัปโหลด JPG/PNG ไม่เกิน 5 MB, ตรวจ MIME ฝั่ง server, สถานะเปลี่ยนเป็น paid/pending review เฉพาะผล Slip2Go ที่ผ่านยอดและผู้รับ; ทดสอบกรณีสลิปซ้ำ, provider ขัดข้อง และครบ 3 attempts |
 | preparation/delivery | รับเฉพาะ paid/pending review ที่วันและรอบตรงกัน, นำออกได้เฉพาะ group preparing, ready และ delivered เปลี่ยนเฉพาะสถานะที่ถูกต้อง |
 | badge, quota และ settings | ปิดสวิตช์แล้วไม่ยิง request; badge refresh ทุก 30 วินาที, quota refresh ทุก 5 นาที และตรวจเกณฑ์เตือน 20 สลิป/7 วัน |
+| ภาพสลิปในรายละเอียด order | สำหรับ order ที่ `hasSlip=true` ผู้ดูแลที่มี session ต้องเห็น thumbnail และเปิดภาพเต็มได้จาก `GET /admin/orders/:id/slip`; order ที่ไม่มีหรือถูกล้างไฟล์สลิปแล้วต้องไม่แสดงการ์ด, endpoint ต้องตอบ 404 และห้าม cache ภาพ |
 | ล้างไฟล์สลิป | ดู count และล้างตาม `delivery_date`; ยืนยันว่า DB ล้างเฉพาะ `slip_image_path`, metadata ยังคงอยู่ และตรวจ `backend/storage/slips/` หา orphan หากการลบไฟล์ล้มเหลว |
 | Apache | เข้า `/admin/...` โดยตรงได้ผ่าน SPA fallback และ `/api/health` ยังไป PHP |
 
