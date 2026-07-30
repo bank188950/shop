@@ -77,15 +77,19 @@ erDiagram
 | `products` | สินค้าที่ขายได้ | ราคา, active flag, stock แบบจำนวนขายและจำนวนชิ้น; category กำหนดว่าติดตามชิ้นหรือไม่ |
 | `orders` | ส่วนหัวของคำสั่งซื้อ | วัน/รอบส่ง, status การจัดการและการชำระเงินแยกกัน, ยอดรวมและเวลาเหตุการณ์ |
 | `order_items` | snapshot รายการใน order | product, ชื่อ, หน่วย, จำนวน, ราคา, ยอดบรรทัด |
-| `order_payments` | ระเบียนการชำระ | method, status, amount, เวลา paid/verified และผู้ตรวจ |
+| `order_payments` | ระเบียนการชำระและผลตรวจสลิป | method, status, amount, path รูป, metadata สลิป, code/message, จำนวนครั้งตรวจ และเวลา paid/verified |
 | `preparation_groups` | รอบเตรียมสินค้า | วัน/รอบ, `preparing` หรือ `ready`; order ชี้กลับผ่าน `preparation_group_id` |
-| `settings` | รอบส่ง, popup, advertisement และ badge | cutoff และช่วงส่งถูกใช้ทั้ง UI และ validation การสร้าง order |
+| `settings` | รอบส่ง, popup, advertisement, badge และบัญชีรับเงิน | cutoff/ช่วงส่งใช้ทั้ง UI และ validation; เก็บ PromptPay/บัญชีที่ใช้สร้าง QR และเทียบผู้รับ รวมสวิตช์แจ้งเตือนโควตาสลิป |
 
 `orders.order_status` ใช้ `pending_payment`, `pending_review`, `preparing`, `ready_for_delivery`, `delivered`, `cancelled`; `payment_status` ใช้ `pending`, `paid`, `rejected`, `refunded`. แยกสองแกนนี้เพื่อให้ [workflow ฝั่งผู้ดูแล](workflows/orders-and-fulfillment.md#วงจรการจัดการคำสั่งซื้อฝั่งผู้ดูแล) รับเฉพาะ order ที่จ่ายแล้วเข้าสาย preparation.
 
 ## ความสมบูรณ์ของข้อมูลและข้อจำกัด
 
 การสร้าง order ใน `backend/src/user/orders/repository.php` ใช้ transaction และ `FOR UPDATE`, ตรวจ active/stock, คำนวณยอดจากฐานข้อมูล และลด stock ก่อนสร้าง order/item/payment หากสินค้าไม่พอจะ rollback ทั้งชุด. สินค้าที่ category ติดตามจำนวนชิ้นใช้ `stock_piece_count` และ `pieces_per_sale` เพื่อคำนวณ `stock_quantity` ใหม่.
+
+การตรวจสลิปใน `backend/src/user/orders/payment.php` บันทึก `slip_image_path`, ข้อมูลธุรกรรมที่ provider คืน, `verify_code`, `verify_message` และ `verify_attempts` ในแถว payment เดิม; `slip_trans_ref` มี unique key แต่บันทึกเฉพาะผลที่ผ่าน จึงกันสลิปหนึ่งใบใช้ยืนยันหลาย order โดยไม่จองสลิปที่ตรวจไม่ผ่าน. workflow การเปลี่ยนสถานะอยู่ที่ [คำสั่งซื้อและการจัดส่ง](workflows/orders-and-fulfillment.md#ขั้นตอนการสั่งซื้อและชำระเงินของผู้ใช้).
+
+ผู้ดูแลล้างได้เฉพาะ `slip_image_path` ตาม `orders.delivery_date`; metadata ผลตรวจและ `slip_trans_ref` ไม่ถูกลบเพื่อรองรับ audit และ duplicate guard. การเปลี่ยน DB ก่อนลบไฟล์ทำให้ไม่เหลือ path เสีย แต่การลบไฟล์ที่ล้มเหลวอาจทิ้ง orphan ไว้ ซึ่งเป็นข้อควรตรวจใน [runbook](operations.md#การตรวจสอบและการทดสอบ).
 
 `preparation_groups.location_id` nullable และ repository สร้าง group ข้ามจุดรับได้; delivery view จึงจัดกลุ่มตาม location ของ order ไม่ใช่ location ของ group. `created_by` ของ group ยังไม่ถูกเติม เพราะ schema ชี้ไป `users` ไม่ใช่ `admin`; เป็นข้อจำกัดที่ต้องตัดสินใจหากต้อง audit ผู้ดูแลผู้ปฏิบัติงาน.
 
