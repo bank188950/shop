@@ -48,6 +48,8 @@ require_once dirname(__DIR__, 2) . '/src/admin/orders/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/orders/routes.php';
 require_once dirname(__DIR__, 2) . '/src/admin/dashboard/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/dashboard/routes.php';
+require_once dirname(__DIR__, 2) . '/src/admin/order-cleanup/repository.php';
+require_once dirname(__DIR__, 2) . '/src/admin/order-cleanup/routes.php';
 require_once dirname(__DIR__, 2) . '/src/admin/preparations/validation.php';
 require_once dirname(__DIR__, 2) . '/src/admin/preparations/repository.php';
 require_once dirname(__DIR__, 2) . '/src/admin/preparations/routes.php';
@@ -95,6 +97,7 @@ try {
     if (user_message_route($method, $path)) exit;
     if (admin_dashboard_route($method, $path)) exit;
     if (admin_order_route($method, $path)) exit;
+    if (order_cleanup_route($method, $path)) exit;
     if (preparation_route($method, $path)) exit;
     if (user_route($method, $path)) exit;
 } catch (Throwable $exception) {

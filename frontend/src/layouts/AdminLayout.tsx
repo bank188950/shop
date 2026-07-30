@@ -18,7 +18,7 @@ const items = [
   { label: 'หน่วยสินค้า', icon: Ruler, to: '/admin/product-units' },
   { label: 'สถานที่รับสินค้า', icon: MapPin, to: '/admin/locations' },
   { label: 'แบนเนอร์', icon: Image, to: '/admin/banners' },
-  { label: 'ล้างรายการสั่งซื้อ', icon: Eraser, to: '/admin/order-cleanup' },
+  { label: 'ล้างไฟล์สลิป', icon: Eraser, to: '/admin/order-cleanup' },
   { label: 'ตั้งค่า', icon: Settings, to: '/admin/settings' },
 ]
 
