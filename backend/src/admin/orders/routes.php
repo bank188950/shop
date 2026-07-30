@@ -29,6 +29,18 @@ function admin_order_route(string $method, string $path): bool
         json_response(['message' => sprintf('เปลี่ยนสถานะแล้ว %d รายการสั่งซื้อ', admin_order_set_status($db, $orders, $data['order_status']))]);
     }
 
+    // ส่งไฟล์สลิปผ่าน API เพราะเก็บไว้ใน storage ไม่ใช่ public จึงเปิดจาก URL ตรง ๆ ไม่ได้ และต้องผ่านการตรวจสิทธิ์แอดมินก่อน
+    if ($method === 'GET' && preg_match('#^/admin/orders/(\d+)/slip$#', $path, $matches)) {
+        $file = admin_order_slip_file($db, (int) $matches[1]);
+        if (!$file) json_response(['message' => 'ไม่พบรูปสลิปของรายการสั่งซื้อนี้'], 404);
+
+        header('Content-Type: ' . ((new finfo(FILEINFO_MIME_TYPE))->file($file) ?: 'application/octet-stream'));
+        header('Content-Length: ' . filesize($file));
+        header('Cache-Control: private, no-store');
+        readfile($file);
+        exit;
+    }
+
     if (!preg_match('#^/admin/orders/(\d+)$#', $path, $matches)) return false;
     $orderId = (int) $matches[1];
     $order = admin_order_find($db, $orderId);

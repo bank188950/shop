@@ -1,11 +1,12 @@
-import { ArrowLeft, CheckCircle2, Clock3, MapPin, PackageCheck, Phone, ReceiptText, Save, UserRound } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Clock3, MapPin, PackageCheck, Phone, Receipt, ReceiptText, Save, UserRound } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { deliveryPeriods, formatPrice, orderStatusClass, orderStatusLabel, orderedAtLabel, paymentStatusClass, paymentStatusLabel } from '@/features/admin/orders/utils/order-labels'
 import { useAdminOrder, useUpdateAdminOrderStatus } from '@/features/admin/orders/hooks/useAdminOrders'
-import type { AdminOrderStatus } from '@/api/admin/orders'
+import { adminOrderSlipUrl, type AdminOrderStatus } from '@/api/admin/orders'
 
 const unpaidStatusOptions: AdminOrderStatus[] = ['pending_payment', 'cancelled']
 /** ฝั่งจ่ายแล้วเลือกได้เฉพาะ `รอตรวจสอบ` เพราะขั้นถัดไปต้องเดินผ่านหน้าเตรียมสินค้าและรอบส่งวันนี้เท่านั้น */
@@ -20,6 +21,7 @@ export function OrderDetailPage() {
   const order = orderQuery.data
   const [status, setStatus] = useState<AdminOrderStatus>('pending_payment')
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'paid'>('pending')
+  const [isSlipOpen, setIsSlipOpen] = useState(false)
 
   useEffect(() => {
     if (!order) return
@@ -56,8 +58,14 @@ export function OrderDetailPage() {
       <section className="admin-detail-card"><h2><ReceiptText size={21} aria-hidden="true" />รายการสินค้า</h2><div className="order-item-list">{order.items.map((item) => <div key={item.name}><span><strong>{item.name}</strong><small>{formatPrice(item.unitPrice)} ต่อ {item.unitName}</small></span><strong>{item.quantity} {item.unitName}</strong><strong>{formatPrice(item.lineTotal)}</strong></div>)}</div><div className="order-total"><span>ยอดชำระสุทธิ</span><strong>{formatPrice(order.totalAmount)}</strong></div></section>
       <div className="grid gap-4"><section className="admin-detail-card"><h2><UserRound size={21} aria-hidden="true" />ข้อมูลผู้รับ</h2><dl className="admin-detail-list"><div><dt>ชื่อลูกค้า</dt><dd>{order.userName}</dd></div><div><dt><Phone size={15} aria-hidden="true" /> เบอร์โทรศัพท์</dt><dd>{order.phone || '-'}</dd></div><div><dt>LINE ID</dt><dd>{order.lineId || '-'}</dd></div><div><dt><MapPin size={15} aria-hidden="true" /> จุดรับสินค้า</dt><dd>{order.locationName}</dd></div><div><dt><Clock3 size={15} aria-hidden="true" /> เวลาสั่ง</dt><dd>{orderedAtLabel(order.orderedAt)}</dd></div></dl></section><section className="admin-detail-card"><h2><PackageCheck size={21} aria-hidden="true" />รอบจัดส่ง</h2><p className="delivery-summary"><strong>{deliveryPeriods[order.deliveryPeriod].label}</strong><span>{deliveryPeriods[order.deliveryPeriod].cutoff}</span><span>{deliveryPeriods[order.deliveryPeriod].deliveryTime}</span></p></section></div>
     </div>
-    <section className="admin-detail-card admin-status-editor"><h2><CheckCircle2 size={21} aria-hidden="true" />อัปเดตสถานะ</h2>{isLocked
+    <section className={`admin-detail-card admin-status-editor${order.hasSlip ? ' admin-status-editor-slip' : ''}`}><h2><CheckCircle2 size={21} aria-hidden="true" />อัปเดตสถานะ</h2>{isLocked
       ? <div><div className="admin-status-readonly"><span>การชำระเงิน</span><span className={`admin-status ${paymentStatusClass(order.paymentStatus)}`}>{paymentStatusLabel(order.paymentStatus)}</span></div><div className="admin-status-readonly"><span>สถานะรายการสั่งซื้อ</span><span className={`admin-status ${orderStatusClass(order.orderStatus)}`}>{orderStatusLabel(order.orderStatus)}</span></div></div>
-      : <div><label>การชำระเงิน<Select value={paymentStatus} onValueChange={(value) => changePaymentStatus(value as 'pending' | 'paid')}><SelectTrigger aria-label="การชำระเงิน"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pending">รอชำระเงิน</SelectItem><SelectItem value="paid">จ่ายแล้ว</SelectItem></SelectContent></Select></label><label>สถานะรายการสั่งซื้อ<Select value={status} onValueChange={(value) => setStatus(value as AdminOrderStatus)}><SelectTrigger aria-label="สถานะรายการสั่งซื้อ"><SelectValue /></SelectTrigger><SelectContent>{statusOptions.map((item) => <SelectItem key={item} value={item}>{orderStatusLabel(item)}</SelectItem>)}</SelectContent></Select></label><button className="admin-primary-button" type="button" onClick={saveStatus} disabled={updateMutation.isPending}><Save size={20} aria-hidden="true" />บันทึก</button></div>}</section>
+      : <div><label>การชำระเงิน<Select value={paymentStatus} onValueChange={(value) => changePaymentStatus(value as 'pending' | 'paid')}><SelectTrigger aria-label="การชำระเงิน"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pending">รอชำระเงิน</SelectItem><SelectItem value="paid">จ่ายแล้ว</SelectItem></SelectContent></Select></label><label>สถานะรายการสั่งซื้อ<Select value={status} onValueChange={(value) => setStatus(value as AdminOrderStatus)}><SelectTrigger aria-label="สถานะรายการสั่งซื้อ"><SelectValue /></SelectTrigger><SelectContent>{statusOptions.map((item) => <SelectItem key={item} value={item}>{orderStatusLabel(item)}</SelectItem>)}</SelectContent></Select></label><button className="admin-primary-button" type="button" onClick={saveStatus} disabled={updateMutation.isPending}><Save size={20} aria-hidden="true" />บันทึก</button></div>}{order.hasSlip && <div className="admin-order-slip"><h2><Receipt size={21} aria-hidden="true" />สลิปการโอน</h2><button className="admin-order-slip-button" type="button" onClick={() => setIsSlipOpen(true)} aria-label={`ดูสลิปการโอนของรายการสั่งซื้อ ${order.orderNumber} แบบเต็มภาพ`}><img src={adminOrderSlipUrl(order.id)} alt={`สลิปการโอนของรายการสั่งซื้อ ${order.orderNumber}`} /></button></div>}</section>
+    {order.hasSlip && <Dialog open={isSlipOpen} onOpenChange={setIsSlipOpen}>
+      <DialogContent className="admin-order-slip-dialog">
+        <DialogHeader><DialogTitle>สลิปการโอน {order.orderNumber}</DialogTitle></DialogHeader>
+        <img src={adminOrderSlipUrl(order.id)} alt={`สลิปการโอนของรายการสั่งซื้อ ${order.orderNumber}`} />
+      </DialogContent>
+    </Dialog>}
   </section>
 }

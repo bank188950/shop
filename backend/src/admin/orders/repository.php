@@ -29,6 +29,8 @@ function admin_order_to_api(array $order, array $items): array
         'paymentStatus' => $order['payment_status'],
         'totalAmount' => (float) $order['total_amount'],
         'userNote' => $order['user_note'] ?? '',
+        // ไฟล์สลิปอยู่นอก public จึงส่งได้แค่ว่ามีหรือไม่ ตัวรูปต้องเรียกผ่าน /admin/orders/{id}/slip ที่ตรวจสิทธิ์แล้ว
+        'hasSlip' => !empty($order['slip_image_path']),
         'items' => array_map(static fn (array $item) => [
             'name' => $item['product_name'],
             'unitName' => $item['unit_name'],
@@ -48,10 +50,23 @@ function admin_order_items(PDO $db, int $orderId): array
 
 function admin_order_select(): string
 {
-    return 'SELECT o.*, l.name AS location_name, u.full_name, u.phone, u.line_account
+    return 'SELECT o.*, l.name AS location_name, u.full_name, u.phone, u.line_account, p.slip_image_path
         FROM orders o
         INNER JOIN locations l ON l.id = o.location_id
-        LEFT JOIN users u ON u.id = o.user_id';
+        LEFT JOIN users u ON u.id = o.user_id
+        LEFT JOIN order_payments p ON p.order_id = o.id';
+}
+
+/** พาธเต็มของไฟล์สลิปที่มีอยู่จริง คืน null เมื่อยังไม่แนบสลิป หรือไฟล์ถูกล้างไปแล้วจากหน้าจัดการพื้นที่ */
+function admin_order_slip_file(PDO $db, int $orderId): ?string
+{
+    $statement = $db->prepare('SELECT slip_image_path FROM order_payments WHERE order_id = :order_id');
+    $statement->execute(['order_id' => $orderId]);
+    $path = (string) ($statement->fetchColumn() ?: '');
+    if (!str_starts_with($path, 'storage/slips/')) return null;
+
+    $file = dirname(__DIR__, 3) . '/storage/slips/' . basename($path);
+    return is_file($file) ? $file : null;
 }
 
 /** $filters: delivery_date (บังคับ), delivery_period, location_id, order_status, q */

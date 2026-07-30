@@ -27,7 +27,13 @@ export type AdminOrder = {
   paymentStatus: AdminPaymentStatus
   totalAmount: number
   userNote: string
+  hasSlip: boolean
   items: AdminOrderItem[]
+}
+
+/** รูปสลิปเสิร์ฟผ่าน API ที่ตรวจสิทธิ์แอดมิน จึงต่อ URL จาก baseURL เดียวกับ request อื่น */
+export function adminOrderSlipUrl(orderId: number) {
+  return `${api.defaults.baseURL ?? '/api'}/admin/orders/${orderId}/slip`
 }
 
 export type AdminOrderFilters = {
