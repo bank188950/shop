@@ -1,4 +1,4 @@
-import { Bell, BellRing, CircleAlert, Clock3, Megaphone, Plus, Save, Trash2 } from 'lucide-react'
+import { Bell, BellRing, CircleAlert, Clock3, Megaphone, Plus, Save, Ticket, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
@@ -9,7 +9,7 @@ import { settingsFormSchema, type SettingsFormValues } from '@/features/admin/se
 import { useSaveSettings, useSettings } from '@/features/admin/settings/hooks/useSettings'
 
 const maxAdvertisementCount = 3
-const defaultValues: SettingsFormValues = { morningCutoff: '08:00', morningDelivery: '09:00–10:00', afternoonCutoff: '12:00', afternoonDelivery: '14:00–15:00', noticeMessage: '', isNoticePopupEnabled: false, isBadgeNotificationEnabled: false, advertisements: [{ text: '' }], isAdvertisementVisible: false }
+const defaultValues: SettingsFormValues = { morningCutoff: '08:00', morningDelivery: '09:00–10:00', afternoonCutoff: '12:00', afternoonDelivery: '14:00–15:00', noticeMessage: '', isNoticePopupEnabled: false, isBadgeNotificationEnabled: false, isSlipQuotaAlertEnabled: false, advertisements: [{ text: '' }], isAdvertisementVisible: false }
 
 export function SettingsPage() {
   const settingsQuery = useSettings()
@@ -46,6 +46,10 @@ export function SettingsPage() {
       <div className="notice-settings">
         <div className="admin-section-heading"><div><h2><Bell size={21} aria-hidden="true" />ตั้งค่าแจ้งเตือนออเดอร์ใหม่และสินค้าใกล้หมด</h2><p>เมื่อเปิดใช้งาน ตัวเลขบนไอคอนแถบด้านบนจะอัปเดตให้อัตโนมัติทุก 30 วินาที</p></div></div>
         <label className="notice-popup-toggle"><input type="checkbox" {...register('isBadgeNotificationEnabled')} /><span><strong>เปิดการแจ้งเตือน</strong></span></label>
+      </div>
+      <div className="notice-settings">
+        <div className="admin-section-heading"><div><h2><Ticket size={21} aria-hidden="true" />ตั้งค่าแจ้งเตือนเว็บเช็คสลิปปลอมโควต้าหมด</h2><p>เมื่อเปิดใช้งาน ตัวเลขบนไอคอนแถบด้านบนจะอัปเดตให้อัตโนมัติทุก 5 นาที</p></div></div>
+        <label className="notice-popup-toggle"><input type="checkbox" {...register('isSlipQuotaAlertEnabled')} /><span><strong>เปิดการแจ้งเตือน</strong></span></label>
       </div>
       {error && <p className="banner-form-error" role="alert">{error}</p>}
       <div className="settings-save-action"><button type="submit" className="admin-primary-button" disabled={saveMutation.isPending} aria-busy={saveMutation.isPending}><Save size={18} aria-hidden="true" />{saveMutation.isPending ? 'กำลังบันทึก' : saved ? 'บันทึกแล้ว' : 'บันทึก'}</button></div>

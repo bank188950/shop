@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { getAdminBadgeCounts, getDashboardChart, getDashboardSummary } from '@/api/admin/dashboard'
+import { getAdminBadgeCounts, getDashboardChart, getDashboardSummary, getSlipQuota } from '@/api/admin/dashboard'
 import type { DashboardChartFilters, DashboardFilters } from '@/api/admin/dashboard'
 
 /** แยกออกมาให้ main.tsx สั่งรีเฟรชตัวเลข badge ได้โดยไม่ต้องเขียน key ซ้ำแล้วหลุดจากกัน */
@@ -23,6 +23,20 @@ export function useAdminBadgeCounts(isEnabled: boolean) {
     refetchInterval: 30_000,
     refetchIntervalInBackground: false,
     staleTime: 0,
+  })
+}
+
+/**
+ * โควตาตรวจสลิปของ Slip2Go ดึงซ้ำทุก 5 นาที เพราะเป็นค่าที่เปลี่ยนช้าและการเรียกไม่เสียโทเคน แต่ยังนับเป็น request ของเขา
+ * ถ้าแอดมินปิดการแจ้งเตือนในหน้าตั้งค่า จะไม่ยิง request เลย
+ */
+export function useSlipQuota(isEnabled: boolean) {
+  return useQuery({
+    queryKey: ['admin', 'dashboard', 'slip-quota'] as const,
+    queryFn: getSlipQuota,
+    enabled: isEnabled,
+    refetchInterval: 300_000,
+    refetchIntervalInBackground: false,
   })
 }
 

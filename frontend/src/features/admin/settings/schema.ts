@@ -8,6 +8,7 @@ export const settingsFormSchema = z.object({
   noticeMessage: z.string(),
   isNoticePopupEnabled: z.boolean(),
   isBadgeNotificationEnabled: z.boolean(),
+  isSlipQuotaAlertEnabled: z.boolean(),
   advertisements: z.array(z.object({ text: z.string() })).max(3),
   isAdvertisementVisible: z.boolean(),
 })

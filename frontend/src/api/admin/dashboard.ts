@@ -66,6 +66,21 @@ export async function getAdminBadgeCounts() {
   return response.data.data
 }
 
+export type SlipQuota = {
+  /** false เมื่อเรียก Slip2Go ไม่ได้ เช่นยังไม่ตั้งค่าคีย์หรือเน็ตขัดข้อง */
+  isAvailable: boolean
+  slipRemaining: number
+  daysLeft: number | null
+  packageName: string | null
+  /** backend ตัดสินจากเกณฑ์เดียวกันทั้งระบบ frontend จึงไม่ต้องรู้ตัวเลขเกณฑ์ */
+  isLow: boolean
+}
+
+export async function getSlipQuota() {
+  const response = await api.get<{ data: SlipQuota }>('/admin/dashboard/slip-quota')
+  return response.data.data
+}
+
 export async function getDashboardChart(filters: DashboardChartFilters) {
   const params: Record<string, string> = {
     metric: filters.metric,

@@ -335,6 +335,7 @@ CREATE TABLE `settings` (
   `notice_popup_message` text COLLATE utf8mb4_unicode_ci,
   `is_notice_popup_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `is_badge_notification_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `is_slip_quota_alert_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ;
 
@@ -342,8 +343,8 @@ CREATE TABLE `settings` (
 -- Dumping data for table `settings`
 --
 
-INSERT INTO `settings` (`id`, `morning_order_cutoff`, `morning_delivery_start`, `morning_delivery_end`, `afternoon_order_cutoff`, `afternoon_delivery_start`, `afternoon_delivery_end`, `payment_account_name`, `payment_bank_code`, `payment_account_number`, `payment_promptpay_type`, `payment_promptpay_id`, `payment_slip_account_type`, `notice_popup_message`, `is_notice_popup_enabled`, `is_badge_notification_enabled`, `updated_at`) VALUES
-(1, '07:07:00', '09:00:00', '10:01:00', '19:10:00', '14:00:00', '15:01:00', NULL, '002', NULL, 'msisdn', NULL, '01002', 'ตตตต', 1, 1, '2026-07-27 13:17:05');
+INSERT INTO `settings` (`id`, `morning_order_cutoff`, `morning_delivery_start`, `morning_delivery_end`, `afternoon_order_cutoff`, `afternoon_delivery_start`, `afternoon_delivery_end`, `payment_account_name`, `payment_bank_code`, `payment_account_number`, `payment_promptpay_type`, `payment_promptpay_id`, `payment_slip_account_type`, `notice_popup_message`, `is_notice_popup_enabled`, `is_badge_notification_enabled`, `is_slip_quota_alert_enabled`, `updated_at`) VALUES
+(1, '07:07:00', '09:00:00', '10:01:00', '19:10:00', '14:00:00', '15:01:00', NULL, '002', NULL, 'msisdn', NULL, '01002', 'ตตตต', 1, 1, 0, '2026-07-27 13:17:05');
 
 -- --------------------------------------------------------
 

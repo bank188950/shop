@@ -51,6 +51,27 @@ function admin_dashboard_route(string $method, string $path): bool
         json_response(['data' => admin_dashboard_badge_counts(app_db())]);
     }
 
+    // โควตาของ Slip2Go ไม่ได้อยู่ในฐานข้อมูลเรา ต้องถามจากเขาทุกครั้ง และต้องเรียกจากฝั่ง server เท่านั้นเพราะต้องแนบ secret key
+    if ($path === '/admin/dashboard/slip-quota') {
+        $info = slip2go_account_info();
+        $data = $info['data'];
+        $slipRemaining = isset($data['estimatedQuotaSlip']) ? (int) $data['estimatedQuotaSlip'] : 0;
+
+        $daysLeft = null;
+        if (!empty($data['packageExpiredDate'])) {
+            $expired = date_create_immutable((string) $data['packageExpiredDate']);
+            if ($expired) $daysLeft = (int) (new DateTimeImmutable('today'))->diff($expired)->format('%r%a');
+        }
+
+        json_response(['data' => [
+            'isAvailable' => $info['code'] === '200001',
+            'slipRemaining' => $slipRemaining,
+            'daysLeft' => $daysLeft,
+            'packageName' => $data['package'] ?? null,
+            'isLow' => $slipRemaining <= SLIP2GO_ALERT_SLIP_THRESHOLD || ($daysLeft !== null && $daysLeft <= SLIP2GO_ALERT_DAY_THRESHOLD),
+        ]]);
+    }
+
     if ($path === '/admin/dashboard/chart') {
         json_response(['data' => admin_dashboard_chart(app_db(), admin_dashboard_validate_chart_filters($_GET))]);
     }

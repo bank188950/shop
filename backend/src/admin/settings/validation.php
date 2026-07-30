@@ -35,6 +35,7 @@ function settings_validate_input(array $input): array
         'notice_popup_message' => trim((string) ($input['notice_popup_message'] ?? '')) ?: null,
         'is_notice_popup_enabled' => ($input['is_notice_popup_enabled'] ?? '0') === '1' ? 1 : 0,
         'is_badge_notification_enabled' => ($input['is_badge_notification_enabled'] ?? '0') === '1' ? 1 : 0,
+        'is_slip_quota_alert_enabled' => ($input['is_slip_quota_alert_enabled'] ?? '0') === '1' ? 1 : 0,
         'advertisements' => $advertisements,
         'is_advertisement_visible' => ($input['is_advertisement_visible'] ?? '0') === '1' ? 1 : 0,
     ], $errors];
