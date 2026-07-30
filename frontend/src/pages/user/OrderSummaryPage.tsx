@@ -69,7 +69,13 @@ export function OrderSummaryPage() {
     return product ? [{ ...product, quantity: item.quantity }] : []
   }), [items, products])
   const displayItems = order ? confirmedItems : cartItems
-  const itemCount = useMemo(() => displayItems.reduce((total, item) => total + item.quantity, 0), [displayItems])
+  const itemCount = displayItems.length
+  // สินค้ามีหน่วยต่างกัน (ไม้ แก้ว จาน) จึงรวมจำนวนแยกตามหน่วยแทนการนับรวมเป็นหน่วยเดียว
+  const unitTotals = useMemo(() => {
+    const totals = new Map<string, number>()
+    displayItems.forEach((item) => totals.set(item.unitName, (totals.get(item.unitName) ?? 0) + item.quantity))
+    return [...totals].map(([unitName, quantity]) => ({ unitName, quantity }))
+  }, [displayItems])
   const subtotal = order?.totalAmount ?? displayItems.reduce((total, item) => total + item.price * item.quantity, 0)
 
   const alert = (title: string, icon: 'warning' | 'error' = 'warning') => Swal.fire({ ...swalBaseOptions, icon, title, confirmButtonText: 'ตกลง' })
@@ -227,8 +233,8 @@ export function OrderSummaryPage() {
               <h2 id="summary-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)]">สรุปยอดสั่งซื้อ</h2>
               <dl className="mt-5 grid gap-3 text-lg">
                 <div className="flex justify-between gap-4"><dt>รายการทั้งหมด</dt><dd className="m-0 font-bold">{itemCount} รายการ</dd></div>
-                <div className="flex justify-between gap-4"><dt>จำนวนไม้รวม</dt><dd className="m-0 font-bold">{itemCount} ไม้</dd></div>
-                <div className="flex justify-between gap-4"><dt>ค่าจัดส่ง</dt><dd className="m-0 font-bold">ฟรี</dd></div>
+                {unitTotals.length > 0 && <div className="flex justify-between gap-4"><dt>จำนวน</dt><dd className="m-0 flex flex-wrap justify-end gap-x-5 gap-y-1 font-bold">{unitTotals.map((unit) => <span key={unit.unitName}>{unit.quantity.toLocaleString('th-TH')} {unit.unitName}</span>)}</dd></div>}
+                <div className="flex justify-between gap-4"><dt>ค่าส่ง</dt><dd className="m-0 font-bold">ฟรี</dd></div>
               </dl>
               <div className="mt-5 flex items-center justify-between border-t border-white/25 pt-5"><span className="font-heading text-xl">ยอดชำระสุทธิ</span><strong className="font-heading text-[32px]">{formatPrice(subtotal)}</strong></div>
             </section>
