@@ -9,7 +9,7 @@ import { settingsFormSchema, type SettingsFormValues } from '@/features/admin/se
 import { useSaveSettings, useSettings } from '@/features/admin/settings/hooks/useSettings'
 
 const maxAdvertisementCount = 3
-const defaultValues: SettingsFormValues = { morningCutoff: '08:00', morningDelivery: '09:00–10:00', afternoonCutoff: '12:00', afternoonDelivery: '14:00–15:00', noticeMessage: '', isNoticePopupEnabled: false, isBadgeNotificationEnabled: true, advertisements: [{ text: '' }], isAdvertisementVisible: false }
+const defaultValues: SettingsFormValues = { morningCutoff: '08:00', morningDelivery: '09:00–10:00', afternoonCutoff: '12:00', afternoonDelivery: '14:00–15:00', noticeMessage: '', isNoticePopupEnabled: false, isBadgeNotificationEnabled: false, advertisements: [{ text: '' }], isAdvertisementVisible: false }
 
 export function SettingsPage() {
   const settingsQuery = useSettings()

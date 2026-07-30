@@ -261,6 +261,7 @@ INSERT INTO `products` (`id`, `category_id`, `unit_id`, `name`, `description`, `
 CREATE TABLE `product_categories` (
   `id` bigint UNSIGNED NOT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `display_order` smallint UNSIGNED NOT NULL DEFAULT '0',
   `tracks_piece_quantity` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -271,11 +272,11 @@ CREATE TABLE `product_categories` (
 -- Dumping data for table `product_categories`
 --
 
-INSERT INTO `product_categories` (`id`, `name`, `tracks_piece_quantity`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'ลูกชิ้น', 1, 1, '2026-07-27 14:47:22', '2026-07-27 14:47:22'),
-(2, 'ไส้กรอก', 1, 1, '2026-07-27 14:47:22', '2026-07-27 14:47:22'),
-(3, 'เครื่องดื่ม', 0, 1, '2026-07-27 14:47:22', '2026-07-27 14:47:22'),
-(4, 'อาหารจานเดียว', 0, 1, '2026-07-27 14:47:22', '2026-07-27 14:47:22');
+INSERT INTO `product_categories` (`id`, `name`, `display_order`, `tracks_piece_quantity`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'ลูกชิ้น', 1, 1, 1, '2026-07-27 14:47:22', '2026-07-27 14:47:22'),
+(2, 'ไส้กรอก', 2, 1, 1, '2026-07-27 14:47:22', '2026-07-27 14:47:22'),
+(3, 'เครื่องดื่ม', 3, 0, 1, '2026-07-27 14:47:22', '2026-07-27 14:47:22'),
+(4, 'อาหารจานเดียว', 4, 0, 1, '2026-07-27 14:47:22', '2026-07-27 14:47:22');
 
 -- --------------------------------------------------------
 
@@ -315,7 +316,7 @@ CREATE TABLE `settings` (
   `afternoon_delivery_end` time NOT NULL DEFAULT '15:00:00',
   `notice_popup_message` text COLLATE utf8mb4_unicode_ci,
   `is_notice_popup_enabled` tinyint(1) NOT NULL DEFAULT '0',
-  `is_badge_notification_enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `is_badge_notification_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ;
 
@@ -451,7 +452,8 @@ ALTER TABLE `products`
 ALTER TABLE `product_categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_product_categories_name` (`name`),
-  ADD KEY `idx_product_categories_active` (`is_active`);
+  ADD KEY `idx_product_categories_active` (`is_active`),
+  ADD KEY `idx_product_categories_display_order` (`display_order`);
 
 --
 -- Indexes for table `product_units`
