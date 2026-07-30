@@ -39,7 +39,7 @@ export function MyOrdersPage() {
         {visibleOrders.map((order) => <article key={order.id} className="rounded-2xl border border-[#b9cbbf] bg-white p-5 shadow-sm max-md:p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="m-0 text-base font-bold text-muted">{order.orderNumber} · {thaiDateLabel(order.orderedAt)}</p>
+              <p className="m-0 text-base font-bold text-muted"><span className="font-semibold text-[#2f83d4]">{order.orderNumber}</span> · {thaiDateLabel(order.orderedAt)}</p>
               <h2 className="mt-1 mb-0 font-heading text-2xl text-ink">{orderStatusLabel(order.orderStatus)}</h2>
             </div>
             <span className={`inline-flex min-h-9 items-center rounded-full px-3 text-base font-extrabold ${orderStatusClass(order.orderStatus)}`}>

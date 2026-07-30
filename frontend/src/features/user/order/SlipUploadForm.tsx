@@ -46,7 +46,11 @@ export function SlipUploadForm({ order, onPaid }: {
         showCancelButton: false,
         icon: 'success',
         title: 'ชำระเงินสำเร็จ',
-        html: `คำสั่งซื้อ ${paidOrder.orderNumber}<br />ยอดที่ตรวจสอบแล้ว ${paidOrder.totalAmount.toLocaleString('th-TH')} บาท<br />คำสั่งซื้อเข้าสู่ขั้นตอนรอตรวจสอบ`,
+        html: `<span class="grid gap-2">
+          <span>คำสั่งซื้อ <span class="font-semibold text-[#2f83d4]">${paidOrder.orderNumber}</span></span>
+          <span>ยอดที่ตรวจสอบแล้ว ${paidOrder.totalAmount.toLocaleString('th-TH')} บาท</span>
+          <span>คำสั่งซื้อเข้าสู่ขั้นตอนรอตรวจสอบ</span>
+        </span>`,
         confirmButtonText: 'ตกลง',
       })
       onPaid?.(paidOrder)
