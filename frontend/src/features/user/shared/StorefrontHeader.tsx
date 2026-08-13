@@ -35,22 +35,22 @@ export function StorefrontHeader() {
 
   return (
     <header className="relative z-10 border-b border-[#ecf0ea] bg-canvas/95">
-      <div className="mx-auto flex min-h-[92px] w-full max-w-[1488px] items-center justify-between gap-6 px-6 py-3 max-md:min-h-[74px] max-md:px-[18px] max-md:py-2">
-        <Link className="flex shrink-0 items-center gap-3 text-[#195a2b] no-underline max-md:gap-2" to="/" aria-label="ลูกชิ้นทอดล้อเลื่อน หน้าหลัก">
-          <img className="size-[62px] rounded-full object-cover mix-blend-multiply max-md:size-12" src="/images/logo.png" alt="โลโกลูกชิ้นทอดล้อเลื่อน" />
-          <span className="grid leading-[1.05]">
-            <strong className="font-heading text-xl tracking-[-0.05em] max-md:text-base">ลูกชิ้นทอดล้อเลื่อน</strong>
-            <small className="mt-1.5 text-base font-semibold text-[#56805c] max-md:mt-0.5 max-md:text-sm">อาหารสดใหม่จากกระทะทุกวัน</small>
+      <div className="mx-auto flex min-h-[92px] w-full max-w-[1488px] items-center justify-between gap-6 px-6 py-3 max-lg:min-h-[74px] max-lg:gap-2 max-lg:px-[18px] max-lg:py-2 max-sm:min-h-16 max-sm:px-2">
+        <Link className="flex shrink-0 items-center gap-3 text-[#195a2b] no-underline max-lg:gap-2 max-sm:gap-1.5" to="/" aria-label="ลูกชิ้นทอดล้อเลื่อน หน้าหลัก">
+          <img className="size-[62px] rounded-full object-cover mix-blend-multiply max-lg:size-12 max-sm:size-10" src="/images/logo.png" alt="โลโกลูกชิ้นทอดล้อเลื่อน" />
+          <span className="grid leading-[1.05] max-sm:w-[148px] max-[360px]:w-[126px]">
+            <strong className="font-heading text-xl tracking-[-0.05em] max-lg:text-base max-sm:text-sm">ลูกชิ้นทอดล้อเลื่อน</strong>
+            <small className="mt-1.5 text-base font-semibold text-[#56805c] max-lg:mt-0.5 max-lg:text-sm max-sm:whitespace-nowrap max-sm:text-[9px]">อาหารสดใหม่จากกระทะทุกวัน</small>
           </span>
         </Link>
-        <div className="flex items-center gap-4 max-md:gap-1">
+        <div className="flex shrink-0 items-center gap-4 max-lg:gap-1">
           <Link to="/my-chats" className="hidden size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none sm:inline-flex" aria-label="ดูข้อความจากร้านค้า"><MessageCircle size={24} strokeWidth={2.3} aria-hidden="true" /></Link>
           <Link to="/my-orders" className="hidden size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none sm:inline-flex" aria-label="ออเดอร์ของฉัน"><ClipboardList size={24} strokeWidth={2.3} aria-hidden="true" /></Link>
           <div ref={cartMenuRef} className="relative">
-            <button className="relative grid size-11 place-items-center border-0 bg-transparent p-2 text-[#165c2e]" type="button" onClick={() => setIsCartOpen((open) => !open)} aria-label={`${isCartOpen ? 'ปิด' : 'เปิด'}ตะกร้า มี ${itemCount} รายการ`} aria-expanded={isCartOpen} aria-controls="header-cart-menu">
-              <ShoppingCart size={25} strokeWidth={2.3} />{itemCount > 0 && <span className="absolute right-0 top-0 grid min-h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-xs font-extrabold text-white">{itemCount}</span>}
+            <button className="relative grid size-11 place-items-center border-0 bg-transparent p-2 text-[#165c2e] max-lg:size-9 max-sm:size-8" type="button" onClick={() => setIsCartOpen((open) => !open)} aria-label={`${isCartOpen ? 'ปิด' : 'เปิด'}ตะกร้า มี ${itemCount} รายการ`} aria-expanded={isCartOpen} aria-controls="header-cart-menu">
+              <ShoppingCart size={25} strokeWidth={2.3} className="max-lg:size-5" />{itemCount > 0 && <span className="absolute right-0 top-0 grid min-h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-xs font-extrabold text-white max-sm:min-h-4 max-sm:min-w-4 max-sm:text-[10px]">{itemCount}</span>}
             </button>
-            {isCartOpen && <div id="header-cart-menu" className="absolute right-0 top-[calc(100%+10px)] z-20 w-[min(360px,calc(100vw-28px))] rounded-2xl border border-[#b9cbbf] bg-canvas p-4 shadow-xl shadow-[#183326]/15" role="dialog" aria-label="ตะกร้าสินค้า">
+            {isCartOpen && <div id="header-cart-menu" className="absolute right-0 top-[calc(100%+10px)] z-20 w-[min(360px,calc(100vw-28px))] rounded-2xl border border-[#b9cbbf] bg-canvas p-4 shadow-xl shadow-[#183326]/15 max-sm:fixed max-sm:inset-x-3.5 max-sm:top-[calc(env(safe-area-inset-top)+4rem)] max-sm:w-auto" role="dialog" aria-label="ตะกร้าสินค้า">
               <h2 className="m-0 font-heading text-xl text-ink">สินค้าที่สั่ง</h2>
               <button type="button" onClick={() => setIsCartOpen(false)} className="group absolute right-2 top-2 grid size-11 place-items-center rounded-full text-muted transition hover:text-brand" aria-label="ปิดตะกร้าสินค้า"><span className="grid size-9 place-items-center rounded-full transition group-hover:bg-[#e1f3e5]"><X size={18} strokeWidth={2.5} aria-hidden="true" /></span></button>
               {cartItems.length ? <>

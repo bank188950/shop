@@ -15,7 +15,7 @@ import { userLoginDialogOpenEvent } from '@/features/user/shared/auth-dialog-eve
 
 const inputClassName = 'mt-1.5 h-12 border-[#b9cbbf] bg-white px-3 text-base text-ink placeholder:text-[#728077] focus-visible:border-brand focus-visible:ring-brand/25'
 const actionButtonClassName = 'min-h-12 rounded-full bg-[#76503a] px-5 text-lg font-extrabold text-white hover:bg-[#5f3d2b]'
-const triggerButtonClassName = 'min-h-11 rounded-full bg-[#76503a] px-5 py-2.5 text-lg font-extrabold text-white shadow-md shadow-[#76503a]/20 hover:bg-[#5f3d2b] max-md:px-3.5 max-sm:size-11 max-sm:px-0'
+const triggerButtonClassName = 'min-h-11 rounded-full bg-[#76503a] px-5 py-2.5 text-lg font-extrabold text-white shadow-md shadow-[#76503a]/20 hover:bg-[#5f3d2b] max-lg:size-9 max-lg:min-h-9 max-lg:px-0 max-lg:py-0 max-sm:size-8 max-sm:min-h-8'
 
 function fieldClassName(hasError: boolean) {
   return `${inputClassName}${hasError ? ' border-[#c84646] focus-visible:border-[#c84646] focus-visible:ring-[#c84646]/25' : ''}`
@@ -144,23 +144,23 @@ export function AuthDialogs() {
 
   if (authQuery.isLoading) return null
 
-  if (authQuery.data) return <div className="flex items-center gap-2">
-    <span className="grid leading-tight max-sm:hidden">
+  if (authQuery.data) return <div className="flex items-center gap-2 max-lg:gap-1">
+    <span className="grid leading-tight max-lg:hidden">
       <small className="text-sm font-semibold text-muted">สวัสดี</small>
       <strong className="max-w-40 truncate text-base font-extrabold text-ink">{authQuery.data.name}</strong>
     </span>
     <Link to="/my-profile" className={`inline-flex items-center justify-center gap-2 no-underline ${triggerButtonClassName}`} aria-label="จัดการ">
-      <UserCog size={18} aria-hidden="true" /><span className="max-sm:hidden">จัดการ</span>
+      <UserCog size={18} aria-hidden="true" /><span className="max-lg:hidden">จัดการ</span>
     </Link>
     <Button type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending} aria-busy={logoutMutation.isPending} className={triggerButtonClassName} aria-label="ออกจากระบบ">
-      <LogOut size={18} aria-hidden="true" /><span className="max-sm:hidden">ออกจากระบบ</span>
+      <LogOut size={18} aria-hidden="true" /><span className="max-lg:hidden">ออกจากระบบ</span>
     </Button>
   </div>
 
   return <>
     <Dialog open={openDialog === 'register'} onOpenChange={(open) => { setOpenDialog(open ? 'register' : null); if (!open) registerMutation.reset() }}>
       <DialogTrigger asChild>
-        <Button type="button" className={triggerButtonClassName} aria-label="สมัครสมาชิก"><UserPlus size={18} aria-hidden="true" /><span className="max-sm:hidden">สมัครสมาชิก</span></Button>
+        <Button type="button" className={triggerButtonClassName} aria-label="สมัครสมาชิก"><UserPlus size={18} aria-hidden="true" /><span className="max-lg:hidden">สมัครสมาชิก</span></Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false} className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border-[#b9cbbf] bg-canvas p-5 shadow-2xl sm:max-w-[560px] sm:p-6">
         <DialogCloseButton />
@@ -174,7 +174,7 @@ export function AuthDialogs() {
 
     <Dialog open={openDialog === 'login'} onOpenChange={(open) => { setOpenDialog(open ? 'login' : null); if (!open) loginMutation.reset() }}>
       <DialogTrigger asChild>
-        <Button type="button" className={triggerButtonClassName} aria-label="เข้าสู่ระบบ"><CircleUserRound size={18} aria-hidden="true" /><span className="max-sm:hidden">เข้าสู่ระบบ</span></Button>
+        <Button type="button" className={triggerButtonClassName} aria-label="เข้าสู่ระบบ"><CircleUserRound size={18} aria-hidden="true" /><span className="max-lg:hidden">เข้าสู่ระบบ</span></Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false} className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border-[#b9cbbf] bg-canvas p-5 shadow-2xl sm:max-w-[460px] sm:p-6">
         <DialogCloseButton />
@@ -183,6 +183,7 @@ export function AuthDialogs() {
           <DialogDescription className="text-base leading-relaxed text-muted">เข้าสู่ระบบเพื่อจัดการข้อมูลและติดตามคำสั่งซื้อของคุณ</DialogDescription>
         </DialogHeader>
         <LoginForm loginMutation={loginMutation} onSuccess={() => setOpenDialog(null)} />
+        <Button type="button" variant="link" onClick={() => setOpenDialog('register')} className="mx-auto min-h-11 text-base font-bold text-brand hover:text-brand-dark">ยังไม่มีบัญชี? สมัครสมาชิก</Button>
       </DialogContent>
     </Dialog>
   </>
