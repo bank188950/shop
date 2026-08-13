@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CircleUserRound, LogOut, UserCog, UserPlus, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Controller, useForm } from 'react-hook-form'
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useUserAuth, useUserLogin, useUserLogout, useUserRegister } from '@/features/user/auth/hooks/useUserAuth'
 import { useUserLocations } from '@/features/user/shared/hooks/useUserLocations'
 import { loginFormSchema, registerFormSchema, type LoginFormValues, type RegisterFormValues } from '@/features/user/auth/schema'
+import { userLoginDialogOpenEvent } from '@/features/user/shared/auth-dialog-events'
 
 const inputClassName = 'mt-1.5 h-12 border-[#b9cbbf] bg-white px-3 text-base text-ink placeholder:text-[#728077] focus-visible:border-brand focus-visible:ring-brand/25'
 const actionButtonClassName = 'min-h-12 rounded-full bg-[#76503a] px-5 text-lg font-extrabold text-white hover:bg-[#5f3d2b]'
@@ -134,6 +135,12 @@ export function AuthDialogs() {
   const registerMutation = useUserRegister()
   const loginMutation = useUserLogin()
   const logoutMutation = useUserLogout()
+
+  useEffect(() => {
+    const openLoginDialog = () => setOpenDialog('login')
+    document.addEventListener(userLoginDialogOpenEvent, openLoginDialog)
+    return () => document.removeEventListener(userLoginDialogOpenEvent, openLoginDialog)
+  }, [])
 
   if (authQuery.isLoading) return null
 

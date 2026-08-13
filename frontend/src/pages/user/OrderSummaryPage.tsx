@@ -7,6 +7,7 @@ import { swalBaseOptions } from '@/lib/swal'
 import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
+import { openUserLoginDialog } from '@/features/user/shared/auth-dialog-events'
 import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
 import { productStockLabel } from '@/features/user/shared/utils/product-labels'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
@@ -82,7 +83,8 @@ export function OrderSummaryPage() {
 
   const confirmOrder = async () => {
     if (!user) {
-      await alert('กรุณาเข้าสู่ระบบก่อนสั่งซื้อ')
+      const loginPrompt = await alert('กรุณาเข้าสู่ระบบก่อนสั่งซื้อ')
+      if (loginPrompt.isConfirmed) openUserLoginDialog()
       return
     }
     if (!user.locationId) {
