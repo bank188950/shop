@@ -38,9 +38,9 @@ export function StorefrontHeader() {
       <div className="mx-auto flex min-h-[92px] w-full max-w-[1488px] items-center justify-between gap-6 px-6 py-3 max-lg:min-h-[74px] max-lg:gap-2 max-lg:px-[18px] max-lg:py-2 max-sm:min-h-16 max-sm:px-2">
         <Link className="flex shrink-0 items-center gap-3 text-[#195a2b] no-underline max-lg:gap-2 max-sm:gap-1.5" to="/" aria-label="ลูกชิ้นทอดล้อเลื่อน หน้าหลัก">
           <img className="size-[62px] rounded-full object-cover mix-blend-multiply max-lg:size-12 max-sm:size-10" src="/images/logo.png" alt="โลโกลูกชิ้นทอดล้อเลื่อน" />
-          <span className="grid leading-[1.05] max-sm:w-[148px] max-[360px]:w-[126px]">
-            <strong className="font-heading text-xl tracking-[-0.05em] max-lg:text-base max-sm:text-sm">ลูกชิ้นทอดล้อเลื่อน</strong>
-            <small className="mt-1.5 text-base font-semibold text-[#56805c] max-lg:mt-0.5 max-lg:text-sm max-sm:whitespace-nowrap max-sm:text-[9px]">อาหารสดใหม่จากกระทะทุกวัน</small>
+          <span className="grid leading-[1.05] max-sm:w-32">
+            <strong className="font-heading text-xl tracking-[-0.05em] max-lg:text-base max-sm:whitespace-nowrap max-sm:text-xs">ลูกชิ้นทอดล้อเลื่อน</strong>
+            <small className="mt-1.5 text-base font-semibold text-[#56805c] max-lg:mt-0.5 max-lg:text-sm max-sm:whitespace-nowrap max-sm:text-[9.5px]">อาหารสดใหม่จากกระทะทุกวัน</small>
           </span>
         </Link>
         <div className="flex shrink-0 items-center gap-4 max-lg:gap-1">

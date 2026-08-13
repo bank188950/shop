@@ -15,7 +15,7 @@ import { userLoginDialogOpenEvent } from '@/features/user/shared/auth-dialog-eve
 
 const inputClassName = 'mt-1.5 h-12 border-[#b9cbbf] bg-white px-3 text-base text-ink placeholder:text-[#728077] focus-visible:border-brand focus-visible:ring-brand/25'
 const actionButtonClassName = 'min-h-12 rounded-full bg-[#76503a] px-5 text-lg font-extrabold text-white hover:bg-[#5f3d2b]'
-const triggerButtonClassName = 'min-h-11 rounded-full bg-[#76503a] px-5 py-2.5 text-lg font-extrabold text-white shadow-md shadow-[#76503a]/20 hover:bg-[#5f3d2b] max-lg:size-9 max-lg:min-h-9 max-lg:px-0 max-lg:py-0 max-sm:size-8 max-sm:min-h-8'
+const triggerButtonClassName = 'min-h-11 rounded-full bg-[#76503a] px-5 py-2.5 text-lg font-extrabold text-white shadow-md shadow-[#76503a]/20 hover:bg-[#5f3d2b] max-lg:size-9 max-lg:min-h-9 max-lg:px-0 max-lg:py-0'
 
 function fieldClassName(hasError: boolean) {
   return `${inputClassName}${hasError ? ' border-[#c84646] focus-visible:border-[#c84646] focus-visible:ring-[#c84646]/25' : ''}`
