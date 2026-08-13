@@ -24,6 +24,9 @@ backend/storage/products/*
 backend/public/uploads/products/*
 !backend/public/uploads/products/.gitkeep
 
+# Deploy build output (สร้างจาก scratchpad/build-deploy.sh ไม่ต้อง commit)
+/deploy/
+
 # Logs, caches, and temporary files
 *.log
 *.cache
