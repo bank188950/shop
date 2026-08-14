@@ -155,7 +155,7 @@ export function OrderSummaryPage() {
                       <DialogTrigger asChild>
                         <button type="button" className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full text-[#f97316] transition hover:bg-[#fff1e6] active:scale-95 max-md:size-7" aria-label={`ดูรายละเอียด ${item.name}`}><Info size={22} strokeWidth={2.5} /></button>
                       </DialogTrigger>
-                      <DialogContent showCloseButton={false} className="max-w-md border border-[#d8dfd5] bg-white shadow-2xl">
+                      <DialogContent showCloseButton={false} className="sm:max-w-md border border-[#d8dfd5] bg-white shadow-2xl">
                         <DialogClose asChild><Button type="button" variant="ghost" size="icon" className="absolute right-2 top-1 z-10 size-8 rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand" aria-label="ปิดหน้าต่าง"><X size={18} strokeWidth={2.5} aria-hidden="true" /></Button></DialogClose>
                         <img className="mt-4 aspect-[1.4/1] w-full rounded-lg object-cover" src={item.imageUrl ?? ''} alt={item.name} />
                         <DialogHeader>
