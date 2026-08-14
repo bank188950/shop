@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { CircleUserRound, LogOut, UserCog, UserPlus, X } from 'lucide-react'
+import { useEffect, useRef, useState, type ComponentProps } from 'react'
+import { CircleUserRound, Eye, EyeOff, LogOut, UserCog, UserPlus, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,6 +27,18 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 function FormError({ message }: { message?: string }) {
   return message ? <p className="m-0 rounded-xl bg-[#fbeaea] px-3 py-3.5 text-center text-base font-semibold text-[#c84646]" role="alert">{message}</p> : null
+}
+
+/** ช่องรหัสผ่านพร้อมปุ่มลูกตาสลับซ่อน/แสดงรหัสผ่าน */
+function PasswordInput({ className, ...props }: ComponentProps<'input'>) {
+  const [isVisible, setIsVisible] = useState(false)
+
+  return <div className="relative">
+    <Input type={isVisible ? 'text' : 'password'} className={`${className} pr-12`} {...props} />
+    <button type="button" className="absolute right-1 top-1.5 grid h-12 w-11 place-items-center rounded-full text-muted transition hover:text-brand" onClick={() => setIsVisible((visible) => !visible)} aria-label={isVisible ? 'ซ่อนรหัสผ่าน' : 'แสดงรหัสผ่าน'} aria-pressed={isVisible}>
+      {isVisible ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
+    </button>
+  </div>
 }
 
 function DialogCloseButton() {
@@ -63,12 +75,12 @@ function RegisterForm({ registerMutation, onSuccess }: { registerMutation: Retur
       </div>
       <div>
         <Label htmlFor="register-password" className="text-base font-bold text-ink">รหัสผ่าน</Label>
-        <Input id="register-password" type="password" autoComplete="new-password" maxLength={10} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'register-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} {...register('password')} />
+        <PasswordInput id="register-password" autoComplete="new-password" maxLength={10} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'register-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} {...register('password')} />
         <FieldError id="register-password-error" message={errors.password?.message} />
       </div>
       <div>
         <Label htmlFor="register-confirm-password" className="text-base font-bold text-ink">ยืนยันรหัสผ่าน</Label>
-        <Input id="register-confirm-password" type="password" autoComplete="new-password" maxLength={10} aria-invalid={Boolean(errors.confirmPassword)} aria-describedby={errors.confirmPassword ? 'register-confirm-password-error' : undefined} className={fieldClassName(Boolean(errors.confirmPassword))} {...register('confirmPassword')} />
+        <PasswordInput id="register-confirm-password" autoComplete="new-password" maxLength={10} aria-invalid={Boolean(errors.confirmPassword)} aria-describedby={errors.confirmPassword ? 'register-confirm-password-error' : undefined} className={fieldClassName(Boolean(errors.confirmPassword))} {...register('confirmPassword')} />
         <FieldError id="register-confirm-password-error" message={errors.confirmPassword?.message} />
       </div>
       <div>
@@ -121,7 +133,7 @@ function LoginForm({ loginMutation, onSuccess }: { loginMutation: ReturnType<typ
     </div>
     <div>
       <Label htmlFor="login-password" className="text-base font-bold text-ink">รหัสผ่าน</Label>
-      <Input id="login-password" type="password" autoComplete="current-password" maxLength={10} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'login-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} {...register('password')} />
+      <PasswordInput id="login-password" autoComplete="current-password" maxLength={10} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'login-password-error' : undefined} className={fieldClassName(Boolean(errors.password))} {...register('password')} />
       <FieldError id="login-password-error" message={errors.password?.message} />
     </div>
     <FormError message={loginMutation.isError ? loginMutation.error.message : undefined} />
@@ -131,6 +143,18 @@ function LoginForm({ loginMutation, onSuccess }: { loginMutation: ReturnType<typ
 
 export function AuthDialogs() {
   const [openDialog, setOpenDialog] = useState<'register' | 'login' | null>(null)
+  // ปุ่มเปิด modal อยู่บนสุดของหน้า ตอนปิด modal radix จะคืน focus ให้ปุ่มแล้วดึงจอขึ้นไปด้วย จึงต้องคืน focus เองแบบไม่เลื่อนจอ
+  const registerTriggerRef = useRef<HTMLButtonElement>(null)
+  const loginTriggerRef = useRef<HTMLButtonElement>(null)
+  const closeDialogWithoutScroll = (triggerRef: typeof loginTriggerRef) => (event: Event) => {
+    event.preventDefault()
+    triggerRef.current?.focus({ preventScroll: true })
+  }
+  // เข้าสู่ระบบหรือสมัครสมาชิกสำเร็จแล้วเลื่อนขึ้นบนสุด ลูกค้าจะได้เห็นชื่อตัวเองบน header
+  const closeDialogAfterAuth = () => {
+    setOpenDialog(null)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
   const authQuery = useUserAuth()
   const registerMutation = useUserRegister()
   const loginMutation = useUserLogin()
@@ -160,29 +184,29 @@ export function AuthDialogs() {
   return <>
     <Dialog open={openDialog === 'register'} onOpenChange={(open) => { setOpenDialog(open ? 'register' : null); if (!open) registerMutation.reset() }}>
       <DialogTrigger asChild>
-        <Button type="button" className={triggerButtonClassName} aria-label="สมัครสมาชิก"><UserPlus size={18} aria-hidden="true" /><span className="max-lg:hidden">สมัครสมาชิก</span></Button>
+        <Button ref={registerTriggerRef} type="button" className={triggerButtonClassName} aria-label="สมัครสมาชิก"><UserPlus size={18} aria-hidden="true" /><span className="max-lg:hidden">สมัครสมาชิก</span></Button>
       </DialogTrigger>
-      <DialogContent showCloseButton={false} className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border-[#b9cbbf] bg-canvas p-5 shadow-2xl sm:max-w-[560px] sm:p-6">
+      <DialogContent showCloseButton={false} onCloseAutoFocus={closeDialogWithoutScroll(registerTriggerRef)} className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border-[#b9cbbf] bg-canvas p-5 shadow-2xl sm:max-w-[560px] sm:p-6">
         <DialogCloseButton />
         <DialogHeader className="pr-10 text-left">
           <DialogTitle className="font-heading text-2xl text-ink">สมัครสมาชิก</DialogTitle>
           <DialogDescription className="text-base leading-relaxed text-muted">กรอกข้อมูลเพื่อสร้างบัญชีสำหรับสั่งซื้อและติดตามรายการได้สะดวกขึ้น</DialogDescription>
         </DialogHeader>
-        <RegisterForm registerMutation={registerMutation} onSuccess={() => setOpenDialog(null)} />
+        <RegisterForm registerMutation={registerMutation} onSuccess={closeDialogAfterAuth} />
       </DialogContent>
     </Dialog>
 
     <Dialog open={openDialog === 'login'} onOpenChange={(open) => { setOpenDialog(open ? 'login' : null); if (!open) loginMutation.reset() }}>
       <DialogTrigger asChild>
-        <Button type="button" className={triggerButtonClassName} aria-label="เข้าสู่ระบบ"><CircleUserRound size={18} aria-hidden="true" /><span className="max-lg:hidden">เข้าสู่ระบบ</span></Button>
+        <Button ref={loginTriggerRef} type="button" className={triggerButtonClassName} aria-label="เข้าสู่ระบบ"><CircleUserRound size={18} aria-hidden="true" /><span className="max-lg:hidden">เข้าสู่ระบบ</span></Button>
       </DialogTrigger>
-      <DialogContent showCloseButton={false} className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border-[#b9cbbf] bg-canvas p-5 shadow-2xl sm:max-w-[460px] sm:p-6">
+      <DialogContent showCloseButton={false} onCloseAutoFocus={closeDialogWithoutScroll(loginTriggerRef)} className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border-[#b9cbbf] bg-canvas p-5 shadow-2xl sm:max-w-[480px] sm:p-6">
         <DialogCloseButton />
         <DialogHeader className="pr-10 text-left">
           <DialogTitle className="font-heading text-2xl text-ink">เข้าสู่ระบบ</DialogTitle>
-          <DialogDescription className="text-base leading-relaxed text-muted">เข้าสู่ระบบเพื่อจัดการข้อมูลและติดตามคำสั่งซื้อของคุณ</DialogDescription>
+          <DialogDescription className="text-base leading-relaxed text-muted">เข้าสู่ระบบเพื่อทำการสั่งซื้อสินค้าและติดตามคำสั่งซื้อของคุณ</DialogDescription>
         </DialogHeader>
-        <LoginForm loginMutation={loginMutation} onSuccess={() => setOpenDialog(null)} />
+        <LoginForm loginMutation={loginMutation} onSuccess={closeDialogAfterAuth} />
         <Button type="button" variant="link" onClick={() => setOpenDialog('register')} className="mx-auto min-h-11 text-base font-bold text-brand hover:text-brand-dark">ยังไม่มีบัญชี? สมัครสมาชิก</Button>
       </DialogContent>
     </Dialog>

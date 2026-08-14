@@ -56,6 +56,7 @@ export function OrderSummaryPage() {
   const [order, setOrder] = useState<UserOrder | null>(null)
   const [confirmedItems, setConfirmedItems] = useState<CartLine[]>([])
   const qrCanvasRef = useRef<HTMLCanvasElement>(null)
+  const deliverySectionRef = useRef<HTMLElement>(null)
 
   const navigate = useNavigate()
   const productsQuery = useUserProducts()
@@ -92,7 +93,15 @@ export function OrderSummaryPage() {
       return
     }
     if (!delivery) {
-      await alert('กรุณาเลือกรอบการสั่งซื้อ')
+      // sweetalert2 คืน focus ให้ปุ่มเดิมหลังปิด popup แล้วดึงจอกลับที่เดิม จึงปิด returnFocus แล้วย้าย focus เองทั้งสองทาง
+      const triggerButton = document.activeElement as HTMLElement | null
+      const deliveryPrompt = await Swal.fire({ ...swalBaseOptions, icon: 'warning', title: 'กรุณาเลือกรอบการสั่งซื้อ', confirmButtonText: 'ตกลง', returnFocus: false })
+      if (!deliveryPrompt.isConfirmed) {
+        triggerButton?.focus({ preventScroll: true })
+        return
+      }
+      deliverySectionRef.current?.focus({ preventScroll: true })
+      deliverySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       return
     }
 
@@ -189,7 +198,7 @@ export function OrderSummaryPage() {
               </div>
             </section>
 
-            <section className="rounded-[18px] border border-[#b9cbbf] p-5 max-md:p-4" aria-labelledby="delivery-heading">
+            <section ref={deliverySectionRef} tabIndex={-1} className="scroll-mt-4 rounded-[18px] border border-[#b9cbbf] p-5 outline-none max-md:p-4" aria-labelledby="delivery-heading">
               <h2 id="delivery-heading" className="m-0 inline-flex items-center gap-2 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink"><Clock size={28} strokeWidth={2.5} className="text-brand" aria-hidden="true" />เลือกรอบการสั่งซื้อ</h2>
               <div className="mt-4 grid grid-cols-2 gap-4 max-md:grid-cols-1">
                 {(Object.entries(deliveryOptions) as [DeliveryPeriod, typeof deliveryOptions.morning][]).map(([value, option]) => {
