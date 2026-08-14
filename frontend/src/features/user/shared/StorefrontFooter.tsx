@@ -17,7 +17,7 @@ export function StorefrontFooter() {
         <a className="text-inherit underline decoration-white/55 underline-offset-4 hover:text-white" href="#delivery">จัดส่งช่วงเช้า{deliveryRangeLabel(settingsQuery.data?.morning)}</a>
         <a className="text-inherit underline decoration-white/55 underline-offset-4 hover:text-white" href="#delivery">จัดส่งช่วงบ่าย{deliveryRangeLabel(settingsQuery.data?.afternoon)}</a>
       </nav>
-      <p className="m-0 text-lg text-[#c8dfc4]">© 2026 ลูกชิ้นทอดล้อเลื่อน - By Tawatchai</p>
+      <p className="m-0 text-lg text-[#c8dfc4]">© 2026 ลูกชิ้นทอดล้อเลื่อน - By ล้อเลื่อนกรุ๊ป</p>
     </footer>
   )
 }
