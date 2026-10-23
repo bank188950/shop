@@ -93,12 +93,12 @@ export function StorefrontHeader() {
             <small className="mt-1.5 text-base font-semibold text-[#56805c] max-lg:mt-0.5 max-lg:text-sm max-sm:truncate max-sm:text-[9.5px]">มากกว่าคำว่าอร่อย</small>
           </span>
         </Link>
-        <div className="flex shrink-0 items-center gap-4 max-lg:gap-1 max-sm:gap-0">
-          {!isInstalledApp && <button type="button" onClick={addToHomeScreen} className="inline-flex size-11 items-center justify-center border-0 bg-transparent p-0 text-[#195a2b] max-lg:size-9 max-sm:h-8 max-sm:w-7 max-[22.5rem]:h-7 max-[22.5rem]:w-6" aria-label="เพิ่มร้านไว้ที่หน้าจอหลัก"><HousePlus size={24} strokeWidth={2.3} className="max-lg:size-5" aria-hidden="true" /></button>}
-          <Link to="/my-chats" className="inline-flex size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none max-lg:size-9 max-sm:h-8 max-sm:w-7 max-[22.5rem]:h-7 max-[22.5rem]:w-6" aria-label="ดูข้อความจากร้านค้า"><MessageCircle size={24} strokeWidth={2.3} className="max-lg:size-5" aria-hidden="true" /></Link>
-          <Link to="/my-orders" className="inline-flex size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none max-lg:size-9 max-sm:h-8 max-sm:w-7 max-[22.5rem]:h-7 max-[22.5rem]:w-6" aria-label="ออเดอร์ของฉัน"><ClipboardList size={24} strokeWidth={2.3} className="max-lg:size-5" aria-hidden="true" /></Link>
+        <div className="flex shrink-0 items-center gap-4 max-lg:gap-2 max-sm:gap-1.5 max-[22.5rem]:gap-1">
+          {!isInstalledApp && <button type="button" onClick={addToHomeScreen} className="inline-flex size-11 items-center justify-center border-0 bg-transparent p-0 text-[#195a2b] max-lg:size-9 max-sm:size-8 max-[22.5rem]:size-7" aria-label="เพิ่มร้านไว้ที่หน้าจอหลัก"><HousePlus size={24} strokeWidth={2.3} className="max-lg:size-5" aria-hidden="true" /></button>}
+          <Link to="/my-chats" className="inline-flex size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none max-lg:size-9 max-sm:size-8 max-[22.5rem]:size-7" aria-label="ดูข้อความจากร้านค้า"><MessageCircle size={24} strokeWidth={2.3} className="max-lg:size-5" aria-hidden="true" /></Link>
+          <Link to="/my-orders" className="inline-flex size-11 items-center justify-center text-[#195a2b] no-underline transition hover:shadow-none max-lg:size-9 max-sm:size-8 max-[22.5rem]:size-7" aria-label="ออเดอร์ของฉัน"><ClipboardList size={24} strokeWidth={2.3} className="max-lg:size-5" aria-hidden="true" /></Link>
           <div ref={cartMenuRef} className="relative">
-            <button className="relative grid size-11 place-items-center border-0 bg-transparent p-2 text-[#165c2e] max-sm:p-0 max-lg:size-9 max-sm:h-8 max-sm:w-7 max-[22.5rem]:h-7 max-[22.5rem]:w-6" type="button" onClick={() => setIsCartOpen((open) => !open)} aria-label={`${isCartOpen ? 'ปิด' : 'เปิด'}ตะกร้า มี ${itemCount} รายการ`} aria-expanded={isCartOpen} aria-controls="header-cart-menu">
+            <button className="relative grid size-11 place-items-center border-0 bg-transparent p-2 text-[#165c2e] max-sm:p-0 max-lg:size-9 max-sm:size-8 max-[22.5rem]:size-7" type="button" onClick={() => setIsCartOpen((open) => !open)} aria-label={`${isCartOpen ? 'ปิด' : 'เปิด'}ตะกร้า มี ${itemCount} รายการ`} aria-expanded={isCartOpen} aria-controls="header-cart-menu">
               <ShoppingCart size={25} strokeWidth={2.3} className="max-lg:size-5" />{itemCount > 0 && <span className="absolute right-0 top-0 grid min-h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-xs font-extrabold text-white max-sm:min-h-4 max-sm:min-w-4 max-sm:text-[10px]">{itemCount}</span>}
             </button>
             {isCartOpen && <div id="header-cart-menu" className="absolute right-0 top-[calc(100%+10px)] z-20 w-[min(360px,calc(100vw-28px))] rounded-2xl border border-[#b9cbbf] bg-canvas p-4 shadow-xl shadow-[#183326]/15 max-sm:fixed max-sm:inset-x-3.5 max-sm:top-[calc(env(safe-area-inset-top)+4rem)] max-sm:w-auto" role="dialog" aria-label="ตะกร้าสินค้า">
@@ -121,7 +121,7 @@ export function StorefrontHeader() {
             </div>}
           </div>
           {/* ไอคอนบนมือถือชิดกันแบบ gap-0 จึงแยกปุ่มสมาชิกออกมาให้มีระยะของตัวเอง */}
-          <div className="flex items-center gap-4 max-lg:gap-1 max-sm:ml-1.5"><AuthDialogs /></div>
+          <div className="flex items-center gap-4 max-lg:ml-3 max-lg:gap-3 max-sm:gap-2.5 max-[22.5rem]:ml-2 max-[22.5rem]:gap-2"><AuthDialogs /></div>
         </div>
       </div>
     </header>
