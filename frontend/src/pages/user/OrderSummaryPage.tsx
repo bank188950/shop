@@ -1,4 +1,4 @@
-import { Check, ChevronLeft, Clock, Info, Minus, PanelsTopLeft, Plus, QrCode, Send, SunMedium, Sunset, UserRound, X } from 'lucide-react'
+import { Check, ChevronLeft, Clock, Info, Minus, PanelsTopLeft, Plus, QrCode, Send, SunMedium, Sunset, UserRound } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { QRCodeCanvas } from 'qrcode.react'
@@ -7,9 +7,9 @@ import { swalBaseOptions } from '@/lib/swal'
 import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
+import { StickyCart } from '@/features/user/shared/StickyCart'
 import { openUserLoginDialog } from '@/features/user/shared/auth-dialog-events'
 import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
-import { productStockLabel } from '@/features/user/shared/utils/product-labels'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
 import { useCreateUserOrder, useDeliverySettings } from '@/features/user/order/hooks/useUserOrders'
 import { SlipUploadForm } from '@/features/user/order/SlipUploadForm'
@@ -18,8 +18,7 @@ import { downloadPaymentQr } from '@/features/user/order/utils/payment-qr'
 import type { UserOrder, DeliveryPeriod } from '@/api/user/orders'
 import type { UserProduct } from '@/api/user/products'
 import { useCartStore } from '@/stores/cart-store'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import { ProductDetailDialog } from '@/features/user/shared/ProductDetailDialog'
 
 type CartLine = UserProduct & { quantity: number }
 
@@ -143,12 +142,12 @@ export function OrderSummaryPage() {
   }
 
   return (
-    <section className="min-h-screen overflow-hidden">
+    <section className={`min-h-screen overflow-hidden ${isOrderConfirmed ? '' : 'pb-32 max-md:pb-28'}`}>
       <StorefrontHeader />
       <AnnouncementBar />
       <main id="top" className="mx-auto w-full max-w-[1488px] px-6 py-8 max-md:px-3.5 max-md:py-5">
         {!isOrderConfirmed && <Link to="/" className="mb-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#76503a] px-5 text-xl font-extrabold text-white no-underline shadow-md shadow-[#76503a]/20 transition hover:bg-[#5f3d2b]">
-          <ChevronLeft size={22} strokeWidth={2.75} aria-hidden="true" /> เลือกเมนูเพิ่ม
+          <ChevronLeft size={22} strokeWidth={2.75} aria-hidden="true" /> สั่งเมนูเพิ่ม
         </Link>}
         <div id="cart" className="grid grid-cols-[minmax(0,1.35fr)_minmax(320px,.95fr)] gap-6 max-lg:grid-cols-1">
           <div className="grid content-start gap-5">
@@ -160,23 +159,9 @@ export function OrderSummaryPage() {
               <div className="mt-5 grid gap-4">
                 {displayItems.length ? displayItems.map((item) => (
                   <article key={item.id} className="relative grid grid-cols-[112px_minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-[#bdcbbb] bg-white p-3 max-md:grid-cols-[88px_minmax(0,1fr)] max-md:gap-3">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <button type="button" className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full text-[#f97316] transition hover:bg-[#fff1e6] active:scale-95 max-md:size-7" aria-label={`ดูรายละเอียด ${item.name}`}><Info size={22} strokeWidth={2.5} /></button>
-                      </DialogTrigger>
-                      <DialogContent showCloseButton={false} className="sm:max-w-md border border-[#d8dfd5] bg-white shadow-2xl">
-                        <DialogClose asChild><Button type="button" variant="ghost" size="icon" className="absolute right-2 top-1 z-10 size-8 rounded-full text-muted hover:bg-[#e1f3e5] hover:text-brand" aria-label="ปิดหน้าต่าง"><X size={18} strokeWidth={2.5} aria-hidden="true" /></Button></DialogClose>
-                        <img className="mt-4 aspect-[1.4/1] w-full rounded-lg object-cover" src={item.imageUrl ?? ''} alt={item.name} />
-                        <DialogHeader>
-                          <DialogTitle className="font-heading text-2xl text-ink">{item.name}</DialogTitle>
-                          <DialogDescription className="text-base leading-relaxed text-[#455048]">{item.description}</DialogDescription>
-                        </DialogHeader>
-                        <div className="flex items-center justify-between border-t border-[#e2e8e3] pt-4">
-                          <span className="text-lg font-bold text-muted">{productStockLabel(item)}</span>
-                          <strong className="font-heading text-2xl text-brand">{formatPrice(item.price)}</strong>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <ProductDetailDialog product={item}>
+                      <button type="button" className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full text-[#f97316] transition hover:bg-[#fff1e6] active:scale-95 max-md:size-7" aria-label={`ดูรายละเอียด ${item.name}`}><Info size={22} strokeWidth={2.5} /></button>
+                    </ProductDetailDialog>
                     <img className="size-[112px] rounded-lg object-cover max-md:size-[88px]" src={item.imageUrl ?? ''} alt={item.name} />
                     <div className="min-w-0">
                       <h2 className="m-0 font-heading text-[22px] leading-tight text-ink">{item.name}</h2>
@@ -279,6 +264,7 @@ export function OrderSummaryPage() {
         </div>
       </main>
       <StorefrontFooter />
+      {!isOrderConfirmed && <StickyCart variant="continue-shopping" />}
     </section>
   )
 }

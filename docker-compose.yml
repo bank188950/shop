@@ -1,0 +1,45 @@
+# สภาพแวดล้อมสำหรับพัฒนาในเครื่อง: ฐานข้อมูล + PHP API
+# frontend รันด้วย `npm run dev` ใน frontend/ แล้ว proxy /api มาที่ localhost:8000
+services:
+  db:
+    # ไฟล์ dump มาจาก MariaDB 11.4 และใช้ collation utf8mb4_uca1400_ai_ci ซึ่ง MySQL 8 ไม่รองรับ
+    image: mariadb:11.4
+    container_name: shop-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: lorluean_shop_db
+      MARIADB_USER: shop
+      MARIADB_PASSWORD: shop
+      TZ: Asia/Bangkok
+    ports:
+      # ใช้ 3307 เพื่อไม่ชนกับ MySQL ตัวอื่นที่อาจรันอยู่ที่ 3306
+      - "3307:3306"
+    volumes:
+      - shop-db-data:/var/lib/mysql
+      # import อัตโนมัติเฉพาะตอนสร้าง volume ครั้งแรกเท่านั้น
+      - ./wwwtech2_lorluean_shop_db.sql:/docker-entrypoint-initdb.d/01-dump.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: ./backend
+    container_name: shop-api
+    restart: unless-stopped
+    working_dir: /app
+    command: php -S 0.0.0.0:8000 -t public
+    environment:
+      TZ: Asia/Bangkok
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  shop-db-data:

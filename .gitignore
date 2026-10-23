@@ -31,6 +31,7 @@ backend/public/uploads/products/*
 *.log
 *.cache
 *.tmp
+*.sql
 
 # Editor settings
 .idea/
