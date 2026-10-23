@@ -1,4 +1,4 @@
-import { Check, ChevronLeft, Clock, Info, Minus, PanelsTopLeft, Plus, QrCode, Send, SunMedium, Sunset, UserRound } from 'lucide-react'
+import { AlarmClockOff, Check, ChevronLeft, Clock, Info, Minus, PanelsTopLeft, Plus, QrCode, Send, Store, SunMedium, Sunset, UserRound } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { QRCodeCanvas } from 'qrcode.react'
@@ -10,6 +10,7 @@ import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
 import { StickyCart } from '@/features/user/shared/StickyCart'
 import { openUserLoginDialog } from '@/features/user/shared/auth-dialog-events'
 import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
+import { useAnnouncements } from '@/features/user/shared/hooks/useAnnouncements'
 import { useUserAuth } from '@/features/user/auth/hooks/useUserAuth'
 import { useCreateUserOrder, useDeliverySettings } from '@/features/user/order/hooks/useUserOrders'
 import { SlipUploadForm } from '@/features/user/order/SlipUploadForm'
@@ -62,6 +63,10 @@ export function OrderSummaryPage() {
   const authQuery = useUserAuth()
   const settingsQuery = useDeliverySettings()
   const createOrderMutation = useCreateUserOrder()
+  // ร้านปิดใช้การติก `เปิดการใช้งาน` ของการแจ้งข้อมูลเตือนในหน้าตั้งค่า และแสดงข้อความที่แอดมินพิมพ์ไว้
+  const notice = useAnnouncements().data?.notice
+  const isStoreClosed = notice?.isEnabled ?? false
+  const isOrderTimeOver = settingsQuery.data ? !settingsQuery.data.morning.isOpen && !settingsQuery.data.afternoon.isOpen : false
   const user = authQuery.data
   const products = productsQuery.data
   const isOrderConfirmed = Boolean(order)
@@ -234,7 +239,14 @@ export function OrderSummaryPage() {
               </dl>
               <div className="mt-5 flex items-center justify-between border-t border-white/25 pt-5"><span className="font-heading text-xl">ยอดชำระสุทธิ</span><strong className="font-heading text-[32px]">{formatPrice(subtotal)}</strong></div>
             </section>
-            {!isOrderConfirmed && <button type="button" onClick={confirmOrder} disabled={!cartItems.length || createOrderMutation.isPending} aria-busy={createOrderMutation.isPending} className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#76503a] px-4 text-xl font-extrabold text-white transition hover:bg-[#5f3d2b] disabled:cursor-not-allowed disabled:opacity-50">{createOrderMutation.isPending ? 'กำลังสร้างคำสั่งซื้อ' : 'ยืนยันการเลือกสินค้า'} <Send size={20} aria-hidden="true" /></button>}
+            {!isOrderConfirmed && (isStoreClosed || isOrderTimeOver) && <div role="status" className="flex min-h-[54px] items-start gap-3 rounded-[18px] border border-[#f2b866] bg-[#fff4e5] px-5 py-4 text-[#8a4b12]">
+              {isStoreClosed ? <Store size={26} strokeWidth={2.5} className="mt-0.5 shrink-0" aria-hidden="true" /> : <AlarmClockOff size={26} strokeWidth={2.5} className="mt-0.5 shrink-0" aria-hidden="true" />}
+              <div className="min-w-0">
+                <p className="m-0 font-heading text-xl">{isStoreClosed ? 'วันนี้ร้านปิด' : 'วันนี้ปิดรับออเดอร์แล้ว'}</p>
+                {isStoreClosed ? notice?.message && <p className="mt-1 mb-0 whitespace-pre-line text-lg font-bold">{notice.message}</p> : <p className="mt-1 mb-0 text-lg font-bold">แวะมาสั่งใหม่ได้พรุ่งนี้นะครับ</p>}
+              </div>
+            </div>}
+            {!isOrderConfirmed && !isStoreClosed && !isOrderTimeOver && <button type="button" onClick={confirmOrder} disabled={!cartItems.length || createOrderMutation.isPending} aria-busy={createOrderMutation.isPending} className="inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#76503a] px-4 text-xl font-extrabold text-white transition hover:bg-[#5f3d2b] disabled:cursor-not-allowed disabled:opacity-50">{createOrderMutation.isPending ? 'กำลังสร้างคำสั่งซื้อ' : 'ยืนยันการเลือกสินค้า'} <Send size={20} aria-hidden="true" /></button>}
 
             {order && order.paymentStatus === 'pending' && <section className="rounded-[18px] border border-[#b9cbbf] bg-[#f1f8f3] p-5 max-md:p-4" aria-labelledby="payment-heading" aria-live="polite">
               <h2 id="payment-heading" className="m-0 font-heading text-[clamp(1.5rem,3vw,2rem)] text-ink">ช่องทางการชำระเงิน</h2>
