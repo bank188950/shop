@@ -2,12 +2,14 @@ import { ClipboardList, MessageCircle, ShoppingCart, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthDialogs } from '@/features/user/shared/AuthDialogs'
+import { useRemoveUnavailableCartItems } from '@/features/user/shared/hooks/useRemoveUnavailableCartItems'
 import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
 import { useCartStore } from '@/stores/cart-store'
 
 export function StorefrontHeader() {
   const items = useCartStore((state) => state.items)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  useRemoveUnavailableCartItems()
   const cartMenuRef = useRef<HTMLDivElement>(null)
   const productsQuery = useUserProducts()
   const products = productsQuery.data
