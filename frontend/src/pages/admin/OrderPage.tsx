@@ -28,7 +28,7 @@ export function OrderPage() {
     setPage((currentPage) => Math.min(currentPage, pageCount))
   }, [pageCount])
 
-  // จุดรับสินค้าที่เลือกไว้อาจไม่มีรายการสั่งซื้อในวันที่เพิ่งเลือก จึงต้องคืนค่าเป็นทั้งหมดเพื่อไม่ให้ตัวกรองค้างที่ค่าที่เลือกไม่ได้แล้ว
+  // จุดรับสินค้าที่เลือกไว้อาจถูกปิดใช้งานไปแล้ว จึงต้องคืนค่าเป็นทั้งหมดเพื่อไม่ให้ตัวกรองค้างที่ค่าที่เลือกไม่ได้แล้ว
   useEffect(() => {
     if (!ordersQuery.data || ordersQuery.isPlaceholderData || locationId === 'all') return
     if (!locations.some((location) => location.id === locationId)) setLocationId('all')

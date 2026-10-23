@@ -106,11 +106,10 @@ function admin_order_find(PDO $db, int $orderId): ?array
     return $statement->fetch() ?: null;
 }
 
-/** จุดรับสินค้าที่มีรายการสั่งซื้อของวันนั้น ใช้เป็นตัวเลือกใน filter */
-function admin_order_locations(PDO $db, string $deliveryDate): array
+/** จุดรับสินค้าที่เปิดใช้งานทั้งหมด ใช้เป็นตัวเลือกใน filter แม้จุดนั้นยังไม่มีรายการสั่งซื้อในวันที่เลือก */
+function admin_order_locations(PDO $db): array
 {
-    $statement = $db->prepare('SELECT DISTINCT l.id, l.name FROM orders o INNER JOIN locations l ON l.id = o.location_id WHERE o.delivery_date = :delivery_date ORDER BY l.name');
-    $statement->execute(['delivery_date' => $deliveryDate]);
+    $statement = $db->query('SELECT id, name FROM locations WHERE is_active = 1 ORDER BY name');
     return array_map(static fn (array $location) => ['id' => (int) $location['id'], 'name' => $location['name']], $statement->fetchAll());
 }
 

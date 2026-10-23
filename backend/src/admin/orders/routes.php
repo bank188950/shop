@@ -11,7 +11,7 @@ function admin_order_route(string $method, string $path): bool
         $filters = admin_order_validate_filters($_GET);
         json_response([
             'data' => admin_order_list($db, $filters),
-            'locations' => admin_order_locations($db, $filters['delivery_date']),
+            'locations' => admin_order_locations($db),
         ]);
     }
 
