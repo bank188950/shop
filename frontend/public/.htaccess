@@ -1,3 +1,8 @@
+# ไม่ให้ search engine เก็บ index ทุกไฟล์ รวมรูปภาพและ API ที่ meta tag ใน index.html คุมไม่ถึง
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
 RewriteEngine On
 
 # ให้ PHP API ทำงานตามไฟล์จริงของมัน

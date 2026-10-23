@@ -57,6 +57,11 @@ ENV
 cat > "$PUB/.htaccess" <<'HT'
 Options -Indexes
 
+# ไม่ให้ search engine เก็บ index ทุกไฟล์ รวมรูปภาพและ API ที่ meta tag ใน index.html คุมไม่ถึง
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
 # กันไม่ให้เปิดไฟล์ .env และไฟล์ที่ขึ้นต้นด้วยจุดผ่านเว็บ
 <FilesMatch "^\.">
     <IfModule mod_authz_core.c>

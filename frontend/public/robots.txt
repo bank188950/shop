@@ -1,0 +1,4 @@
+# ปล่อยให้ crawler เข้าได้ เพื่อให้เห็น noindex ใน meta tag และ header X-Robots-Tag
+# ถ้า Disallow ไว้ Google จะอ่าน noindex ไม่ได้ และยังเก็บ URL ไว้ใน index ได้
+User-agent: *
+Allow: /
