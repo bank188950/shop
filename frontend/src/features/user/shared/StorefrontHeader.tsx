@@ -6,7 +6,7 @@ import { AuthDialogs } from '@/features/user/shared/AuthDialogs'
 import { useRemoveUnavailableCartItems } from '@/features/user/shared/hooks/useRemoveUnavailableCartItems'
 import { useUserProducts } from '@/features/user/shared/hooks/useUserProducts'
 import { useCartStore } from '@/stores/cart-store'
-import { isRunningAsInstalledApp, promptInstall } from '@/lib/install-prompt'
+import { isMarkedInstalled, isRunningAsInstalledApp, promptInstall } from '@/lib/install-prompt'
 import { swalBaseOptions } from '@/lib/swal'
 import { homeScreenGuide } from '@/utils/home-screen'
 import type { HomeScreenGuide } from '@/utils/home-screen'
@@ -33,16 +33,23 @@ const homeScreenSteps: Record<HomeScreenGuide, { title: string, html: string }> 
     title: 'กรุณาเปิดเว็บนี้ในเบราว์เซอร์ก่อน',
     html: 'กดปุ่ม <b>⋯</b> หรือ <b>⋮</b> แล้วเลือก “เปิดในเบราว์เซอร์”<br>Android ให้เปิดใน Chrome, iPhone ให้เปิดใน Safari<br>จากนั้นกดไอคอนบ้านอีกครั้ง',
   },
+  'android-desktop-mode': {
+    title: 'กรุณาปิดโหมดเว็บไซต์เวอร์ชันเดสก์ท็อป',
+    html: 'กดปุ่ม <b>⋮</b> มุมขวาบนของ Chrome<br>แล้วเอาติ๊กออกที่ “เว็บไซต์เวอร์ชันเดสก์ท็อป”<br>จากนั้นกดไอคอนบ้านอีกครั้ง',
+  },
   desktop: {
     title: 'เพิ่มได้เฉพาะบนโทรศัพท์มือถือ',
     html: 'เปิดเว็บร้านบนโทรศัพท์<br>แล้วกดไอคอนบ้านเพื่อเพิ่มร้านไว้ที่หน้าจอหลัก',
   },
 }
 
-// Android ที่ browser พร้อมแล้วจะเด้งหน้าต่างติดตั้งของระบบ กดยืนยันครั้งเดียวได้ไอคอนเลย; ที่เหลือสอนวิธีแทน
+// Android ที่ browser พร้อมแล้วจะเด้งหน้าต่างติดตั้งของระบบ กดยืนยันครั้งเดียวได้ไอคอนเลย
+// ติดตั้งแล้ว Chrome ไม่ให้ติดตั้งซ้ำ จึงบอกว่าเพิ่มไว้แล้ว ที่เหลือสอนวิธีแทน
 async function addToHomeScreen() {
   if (await promptInstall()) return
-  const steps = homeScreenSteps[homeScreenGuide(navigator.userAgent, navigator.maxTouchPoints)]
+  const steps = isMarkedInstalled()
+    ? { title: 'เพิ่มร้านไว้ที่หน้าจอหลักแล้ว', html: 'เปิดร้านได้จากไอคอนบนหน้าจอหลักของโทรศัพท์' }
+    : homeScreenSteps[homeScreenGuide(navigator.userAgent, navigator.maxTouchPoints)]
   void Swal.fire({ ...swalBaseOptions, icon: 'info', title: steps.title, html: steps.html, showCancelButton: false, confirmButtonText: 'ตกลง' })
 }
 
