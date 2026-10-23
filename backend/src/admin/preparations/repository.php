@@ -102,12 +102,10 @@ function preparation_orders_by_group(PDO $db, array $groupIds, int $locationId):
     return array_map(static fn (array $rows) => preparation_rows_to_api($db, $rows), $grouped);
 }
 
-/** จุดรับสินค้าที่มีรายการสั่งซื้อในวันและรอบที่เลือก ใช้เป็นตัวเลือกใน filter */
-function preparation_locations(PDO $db, string $deliveryDate, string $deliveryPeriod): array
+/** จุดรับสินค้าที่เปิดใช้งานทั้งหมด ใช้เป็นตัวเลือกใน filter แม้จุดนั้นยังไม่มีรายการสั่งซื้อในวันและรอบที่เลือก */
+function preparation_locations(PDO $db): array
 {
-    $statement = $db->prepare('SELECT DISTINCT l.id, l.name FROM orders o INNER JOIN locations l ON l.id = o.location_id
-        WHERE o.delivery_date = :delivery_date AND o.delivery_period = :delivery_period ORDER BY l.name');
-    $statement->execute(['delivery_date' => $deliveryDate, 'delivery_period' => $deliveryPeriod]);
+    $statement = $db->query('SELECT id, name FROM locations WHERE is_active = 1 ORDER BY name');
     return array_map(static fn (array $location) => ['id' => (int) $location['id'], 'name' => $location['name']], $statement->fetchAll());
 }
 
@@ -144,7 +142,7 @@ function preparation_board(PDO $db, array $filters): array
         'queue' => preparation_queue($db, $filters),
         'batches' => $batches,
         'deliveryGroups' => array_values($deliveryGroups),
-        'locations' => preparation_locations($db, $filters['delivery_date'], $filters['delivery_period']),
+        'locations' => preparation_locations($db),
     ];
 }
 

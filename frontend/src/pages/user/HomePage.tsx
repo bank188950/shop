@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { showNoticePopup } from '@/components/sweetalert2/notice-popup'
 import { useAnnouncements } from '@/features/user/shared/hooks/useAnnouncements'
 import { HeroBanner } from '@/features/user/home/HeroBanner'
@@ -8,7 +8,6 @@ import { AnnouncementBar } from '@/features/user/shared/AnnouncementBar'
 import { StickyCart } from '@/features/user/shared/StickyCart'
 import { StorefrontFooter } from '@/features/user/shared/StorefrontFooter'
 import { StorefrontHeader } from '@/features/user/shared/StorefrontHeader'
-import { isNoticePopupShown, markNoticePopupShown } from '@/lib/notice-popup-session'
 
 export function HomePage() {
   // ใช้ query เดียวกับแถบประกาศ จึงไม่มี request เพิ่ม; popup ขึ้นตามสถานะเปิดใช้งาน ต่อให้ยังไม่ได้กรอกข้อความ
@@ -16,10 +15,11 @@ export function HomePage() {
   const isNoticeEnabled = notice?.isEnabled ?? false
   const noticeMessage = notice?.message ?? ''
 
-  // ขึ้นครั้งเดียวจนกว่าจะปิด browser ทุกหน้าต่าง การรีเฟรชหรือเปิดแท็บใหม่จึงไม่แสดงซ้ำ
+  // ขึ้นทุกครั้งที่เข้าหน้าแรก แต่ไม่ขึ้นซ้ำระหว่างอยู่หน้าเดิมเมื่อ query refetch แล้วข้อความเปลี่ยน
+  const isNoticeShownRef = useRef(false)
   useEffect(() => {
-    if (!isNoticeEnabled || isNoticePopupShown()) return
-    markNoticePopupShown()
+    if (!isNoticeEnabled || isNoticeShownRef.current) return
+    isNoticeShownRef.current = true
     void showNoticePopup(noticeMessage)
   }, [isNoticeEnabled, noticeMessage])
 

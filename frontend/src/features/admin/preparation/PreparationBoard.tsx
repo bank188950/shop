@@ -47,7 +47,7 @@ export function PreparationBoard() {
   const allQueueSelected = paidQueue.length > 0 && paidQueue.every((order) => selectedOrderIds.includes(order.id))
   const selectedQueueOrders = paidQueue.filter((order) => selectedOrderIds.includes(order.id))
 
-  // จุดรับที่เลือกไว้อาจไม่มีรายการสั่งซื้อในวันหรือรอบที่เพิ่งเลือก จึงต้องคืนค่าเป็นทุกจุดรับไม่ให้ตัวกรองค้าง
+  // จุดรับที่เลือกไว้อาจถูกปิดใช้งานไปแล้ว จึงต้องคืนค่าเป็นทุกจุดรับไม่ให้ตัวกรองค้าง
   useEffect(() => {
     if (!boardQuery.data || boardQuery.isPlaceholderData || locationId === 'all') return
     if (!locations.some((location) => location.id === locationId)) setLocationId('all')
