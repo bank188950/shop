@@ -4,6 +4,8 @@ import { MutationCache, QueryClient, QueryClientProvider } from '@tanstack/react
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AppRouter } from '@/app/router'
 import { adminBadgeCountsKey } from '@/features/admin/dashboard/hooks/useDashboard'
+// ดัก beforeinstallprompt ตั้งแต่โหลดหน้า ก่อน header จะ render
+import '@/lib/install-prompt'
 import '@/styles/index.css'
 import '@/styles/index-admin.css'
 
